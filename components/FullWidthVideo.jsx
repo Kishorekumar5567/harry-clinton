@@ -25,45 +25,55 @@ function VideoScreen({ row, index, total, screenRef, onNav }) {
   };
 
   const togglePlay = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation?.();
     const v = ref.current;
     if (!v) return;
-    if (playing) v.pause();
-    else v.play().catch(() => {});
-    setPlaying(!playing);
+    if (playing) {
+      v.pause();
+      setPlaying(false);
+    } else {
+      v.play().catch(() => {});
+      setPlaying(true);
+    }
   };
 
   if (failed) return null;
   return (
-    <div ref={screenRef} className="group/vscreen relative h-[100svh] w-full overflow-hidden bg-neutral-950">
+    <div
+      ref={screenRef}
+      className="video-section group/vscreen relative w-full overflow-hidden bg-black"
+    >
       <video
         ref={ref}
         src={row.src}
         poster={row.poster || undefined}
-        className="h-full w-full object-cover"
+        className="responsive-video w-full h-auto block object-cover aspect-video md:aspect-auto md:max-h-[85vh] cursor-pointer"
         autoPlay={row.autoplay}
         muted={!row.muteOff}
         loop={row.loop}
         playsInline
         preload="metadata"
+        onClick={togglePlay}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
         onError={() => setFailed(true)}
       />
-      <div className="absolute bottom-6 right-5 flex gap-2">
+      <div className="absolute bottom-2.5 right-2.5 md:bottom-4 md:right-4 flex items-center gap-2 z-10">
         <button
           type="button"
           aria-label={playing ? "Pause video" : "Play video"}
           onClick={togglePlay}
-          className="flex h-10 w-10 items-center justify-center  border border-white/25 bg-neutral-950/55 text-white backdrop-blur-sm transition-colors hover:border-gold hover:bg-gold hover:text-neutral-950"
+          className="video-ctrl-btn flex h-7 w-7 md:h-9 md:w-9 items-center justify-center border border-white/20 bg-black/60 text-white backdrop-blur-sm transition-all hover:border-[#c6a15b] hover:bg-[#c6a15b] hover:text-black shadow-md cursor-pointer"
         >
-          <i className={`bi ${playing ? "bi-pause-fill" : "bi-play-fill"} leading-none`} />
+          <i className={`bi ${playing ? "bi-pause-fill" : "bi-play-fill"} text-xs md:text-sm leading-none`} />
         </button>
         <button
           type="button"
           aria-label={muted ? "Unmute video" : "Mute video"}
           onClick={toggleMute}
-          className="flex h-10 w-10 items-center justify-center  border border-white/25 bg-neutral-950/55 text-white backdrop-blur-sm transition-colors hover:border-gold hover:bg-gold hover:text-neutral-950"
+          className="video-ctrl-btn flex h-7 w-7 md:h-9 md:w-9 items-center justify-center border border-white/20 bg-black/60 text-white backdrop-blur-sm transition-all hover:border-[#c6a15b] hover:bg-[#c6a15b] hover:text-black shadow-md cursor-pointer"
         >
-          <i className={`bi ${muted ? "bi-volume-mute-fill" : "bi-volume-up-fill"} leading-none`} />
+          <i className={`bi ${muted ? "bi-volume-mute-fill" : "bi-volume-up-fill"} text-xs md:text-sm leading-none`} />
         </button>
       </div>
       {total > 1 && (
@@ -71,18 +81,24 @@ function VideoScreen({ row, index, total, screenRef, onNav }) {
           <button
             type="button"
             aria-label="Previous video"
-            onClick={(e) => { e.stopPropagation(); onNav(-1); }}
-            className="absolute left-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center  border border-white/25 bg-neutral-950/55 text-white opacity-0 backdrop-blur-sm transition-all duration-300 hover:border-gold hover:bg-gold hover:text-neutral-950 focus-visible:opacity-100 group-hover/vscreen:opacity-100"
+            onClick={(e) => {
+              e?.stopPropagation?.();
+              onNav(-1);
+            }}
+            className="video-ctrl-btn absolute left-3 md:left-5 top-1/2 flex h-8 w-8 md:h-10 md:w-10 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/60 text-white opacity-0 backdrop-blur-sm transition-all duration-300 hover:border-[#c6a15b] hover:bg-[#c6a15b] hover:text-black focus-visible:opacity-100 group-hover/vscreen:opacity-100 z-10 cursor-pointer"
           >
-            <i className="bi bi-chevron-left text-lg leading-none" />
+            <i className="bi bi-chevron-left text-xs md:text-sm leading-none" />
           </button>
           <button
             type="button"
             aria-label="Next video"
-            onClick={(e) => { e.stopPropagation(); onNav(1); }}
-            className="absolute right-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center  border border-white/25 bg-neutral-950/55 text-white opacity-0 backdrop-blur-sm transition-all duration-300 hover:border-gold hover:bg-gold hover:text-neutral-950 focus-visible:opacity-100 group-hover/vscreen:opacity-100"
+            onClick={(e) => {
+              e?.stopPropagation?.();
+              onNav(1);
+            }}
+            className="video-ctrl-btn absolute right-3 md:right-5 top-1/2 flex h-8 w-8 md:h-10 md:w-10 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/60 text-white opacity-0 backdrop-blur-sm transition-all duration-300 hover:border-[#c6a15b] hover:bg-[#c6a15b] hover:text-black focus-visible:opacity-100 group-hover/vscreen:opacity-100 z-10 cursor-pointer"
           >
-            <i className="bi bi-chevron-right text-lg leading-none" />
+            <i className="bi bi-chevron-right text-xs md:text-sm leading-none" />
           </button>
         </>
       )}
