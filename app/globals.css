@@ -1,0 +1,321 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+/* =========================================================================
+   EXCLUSIVE BRAND TYPEFACE: MAINLUX
+   Only MAINLUX is used across the entire website in bold & italic.
+   ========================================================================= */
+@font-face {
+  font-family: "MAINLUX";
+  src: url("/fonts/MAINLUX-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MAINLUX";
+  src: url("/fonts/MAINLUX-SemiBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MAINLUX";
+  src: url("/fonts/MAINLUX-SemiBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MAINLUX";
+  src: url("/fonts/MAINLUX-Italic.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MAINLUX";
+  src: url("/fonts/MAINLUX-Italic.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --font-mainlux: "MAINLUX", var(--font-mainlux), Arial, sans-serif;
+  --font-display: var(--font-mainlux);
+  --font-sans: var(--font-mainlux);
+
+  /* -------------------------------------------------------------------------
+     DOCUMENTATION TYPOGRAPHY SPECIFICATION: STRICT 4-SIZE SYSTEM
+     Tier 1: Headers / Main Hero Headings      -> 32px (2rem)
+     Tier 2: Titles / Section Headings         -> 22px (1.375rem)
+     Tier 3: Subtitles / Body Text / Buttons   -> 15px (0.9375rem)
+     Tier 4: Captions / Eyebrows / Small Meta  -> 12px (0.75rem)
+     ------------------------------------------------------------------------- */
+  --type-header: 32px;
+  --type-title: 22px;
+  --type-body: 15px;
+  --type-caption: 12px;
+}
+
+@theme {
+  --font-display: var(--font-mainlux), "MAINLUX", Arial, sans-serif;
+  --font-sans: var(--font-mainlux), "MAINLUX", Arial, sans-serif;
+  --font-mainlux: var(--font-mainlux), "MAINLUX", Arial, sans-serif;
+  --color-gold: #c6a15b;
+  --color-gold-deep: #a8823f;
+  --color-ink: #101010;
+  --color-cream: #f7f4ec;
+
+  /* Standardized Tailwind type scale locked strictly to the 4 tiers */
+  --text-xs: 12px;
+  --text-sm: 12px;
+  --text-base: 15px;
+  --text-lg: 15px;
+  --text-xl: 22px;
+  --text-2xl: 22px;
+  --text-3xl: 22px;
+  --text-4xl: 32px;
+  --text-5xl: 32px;
+  --text-6xl: 32px;
+  --text-7xl: 32px;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+/* Site-wide exclusive font family: MAINLUX */
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+  color: #171717;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Universal font application without breaking icon fonts or SVGs */
+*:not(.bi):not([class^="bi-"]):not([class*=" bi-"]):not(svg):not(path) {
+  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif;
+}
+
+/* =========================================================================
+   STRICT 4-TIER SIZING SYSTEM (HEADERS, TITLES, SUBTITLES, CAPTIONS)
+   ========================================================================= */
+
+/* TIER 1: HEADERS / HERO HEADINGS (32px, bold) */
+h1,
+.type-header,
+.text-header,
+.modal-title {
+  font-size: var(--type-header) !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+}
+
+/* TIER 2: TITLES / SECTION HEADINGS / CARD HEADINGS (22px, bold) */
+h2,
+h3,
+h4,
+.type-title,
+.text-title {
+  font-size: var(--type-title) !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+}
+
+/* TIER 3: SUBTITLES / BODY / PARAGRAPHS / BUTTONS / INPUTS (15px) */
+p,
+body,
+button,
+input,
+select,
+textarea,
+li,
+a,
+.type-body,
+.text-body,
+.type-subtitle,
+.text-subtitle {
+  font-size: var(--type-body);
+  line-height: 1.6;
+}
+
+/* TIER 4: CAPTIONS / EYEBROWS / BADGES / META (12px, bold/tracking) */
+small,
+.eyebrow,
+.type-caption,
+.text-caption,
+.badge {
+  font-size: var(--type-caption) !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+::selection {
+  background: #c6a15b;
+  color: #fff;
+}
+
+.font-display {
+  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+}
+
+/* fashionable luxe scrollbar — site-wide */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #c6a15b #f1efe9;
+}
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #f1efe9;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d8b978 0%, #c6a15b 55%, #a8823f 100%);
+  border-radius: 0;
+  border: 2px solid #f1efe9;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c6a15b 0%, #a8823f 100%);
+  border-color: #e7e2d5;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* slimmer variant for inner panels, dropdowns */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: #c9b98f transparent;
+}
+.scroll-slim::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d8b978 0%, #a8823f 100%);
+  border-radius: 0;
+  border: none;
+}
+
+/* primary + ghost buttons */
+.btn-primary {
+  display: inline-block;
+  background: #101010;
+  color: #fff;
+  font-size: var(--type-body);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.btn-primary:hover {
+  background: #c6a15b;
+  transform: translateY(-2px);
+}
+.btn-ghost {
+  display: inline-block;
+  border: 1px solid #101010;
+  font-size: var(--type-body);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  transition: all 0.3s ease;
+}
+.btn-ghost:hover {
+  background: #101010;
+  color: #fff;
+}
+
+/* train ticker text */
+.rb-anim { display: inline-block; will-change: transform; }
+
+/* announcement ticker */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: inline-flex;
+  min-width: 200%;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* slow zoom */
+@keyframes slow-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+.animate-slow-zoom {
+  animation: slow-zoom 12s ease-in-out infinite alternate;
+}
+
+/* gold underline link sweep */
+.link-sweep {
+  position: relative;
+}
+.link-sweep::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: #c6a15b;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s ease;
+}
+.link-sweep:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* lenis recommended styles */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee, .animate-slow-zoom, .fade-in-out-text { animation: none; }
+}
+
+/* sharp-square site rule: no round corners anywhere */
+*, *::before, *::after { border-radius: 0 !important; }
+.c-icon { border-radius: 50% !important; }
+
+/* Brand typeface scopes */
+.hc-bar-font, .hc-bar-font * {
+  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+}
+.hc-display-font {
+  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+}
+
+.hc-dot { border-radius: 50% !important; }

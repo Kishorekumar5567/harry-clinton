@@ -1,0 +1,72 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+test-results/
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# media NEVER lives in this repo — all images/video/fonts come from the
+# backend (/Uploads) or remote CDN at runtime, never bundled or committed.
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.avif
+*.bmp
+*.mp4
+*.mov
+*.webm
+*.avi
+*.mkv
+*.ttf
+*.otf
+*.woff
+*.woff2
+!app/favicon.ico
+
+# EXCEPTION: brand splash video + logos live in the frontend by design
+# (opening splash + header/footer wordmarks). Everything else stays backend-only.
+!public/brand/**
+!public/slides/**
+
+# EXCEPTION: MAINLUX brand typeface, required at BUILD time by next/font/local
+# (app/layout.js) for the notification bar / navbar / running bar. Unlike runtime
+# media it cannot be lazy-loaded from /Uploads, so it has to be committed.
+!fonts/*.ttf
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
