@@ -120,17 +120,9 @@ export default function SplashScreen() {
           type="button"
           onClick={dismiss}
           aria-label="Skip intro video"
-          className="group flex items-center gap-2 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.25em] !text-white !bg-[#101010]/80 border border-[#c6a15b]/40 backdrop-blur-md transition-all duration-300 hover:!bg-[#c6a15b] hover:!text-neutral-950 hover:!border-[#c6a15b] hover:shadow-[0_4px_20px_rgba(198,161,91,0.35)] cursor-pointer"
+          className="px-3 py-2 text-[10px] font-normal uppercase tracking-[0.2em] text-white/80 transition-colors duration-200 hover:text-[#c6a15b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white cursor-pointer"
         >
           <span>Skip</span>
-          <svg
-            className="w-3 h-3 text-[#c6a15b] group-hover:text-neutral-950 group-hover:translate-x-0.5 transition-all duration-200"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-          </svg>
         </button>
       </div>
     </div>
