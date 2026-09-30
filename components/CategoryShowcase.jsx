@@ -201,14 +201,14 @@ export default function CategoryShowcase() {
 
                 {/* Content */}
                 <div className="absolute inset-0 p-8 md:p-10 flex flex-col justify-end text-[#f7f4ec] z-20">
-                  <div className="transform transition-transform duration-700 translate-y-6 group-hover:translate-y-0">
-                    <h3 className="font-display text-3xl md:text-4xl lg:text-5xl mb-3 text-[#f7f4ec] font-medium tracking-wide">
+                  <div>
+                    <h3 className="font-display !text-[32px] !leading-tight mb-0 text-[#f7f4ec] font-medium tracking-wide">
                       {category.name}
                     </h3>
-                    <p className="text-sm md:text-base text-[#f7f4ec]/80 mb-8 opacity-0 transition-opacity duration-700 group-hover:opacity-100 max-w-xs font-sans font-light">
+                    <p className="mt-0 max-h-0 max-w-xs overflow-hidden text-[#f7f4ec]/80 opacity-0 translate-y-2 transition-all duration-500 ease-out group-hover:mt-3 group-hover:mb-5 group-hover:max-h-24 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:mt-3 group-focus-within:mb-5 group-focus-within:max-h-24 group-focus-within:translate-y-0 group-focus-within:opacity-100 !text-[15px] leading-relaxed font-sans font-light">
                       {category.tagline}
                     </p>
-                    <div className="inline-flex items-center space-x-3 text-[#c6a15b] uppercase tracking-[0.2em] text-xs font-semibold group-hover:text-[#f7f4ec] transition-colors duration-500">
+                    <div className="inline-flex items-center space-x-3 text-[#c6a15b] uppercase tracking-[0.2em] !text-[14px] font-semibold group-hover:text-[#f7f4ec] transition-colors duration-500">
                       <span>Discover</span>
                       <motion.span 
                         initial={{ x: 0 }}
