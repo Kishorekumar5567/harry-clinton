@@ -55,7 +55,7 @@ export default function AppointmentCTA() {
                 </div>
 
                 {/* Heading */}
-                <h2 className="font-display text-[26px] sm:text-[34px] lg:text-[38px] font-bold text-white tracking-tight leading-[1.2] mb-4">
+                <h2 className="font-display !text-[32px] !leading-tight font-bold text-white tracking-tight mb-4">
                   Your Perfect Suit Awaits
                 </h2>
 
