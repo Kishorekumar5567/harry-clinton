@@ -155,16 +155,17 @@ export default function CategoryShowcase() {
     };
   }, []);
   return (
-    <section className="py-24 bg-[#f7f4ec] text-[#101010]">
+    <section className="py-12 bg-[#f7f4ec] text-[#101010] md:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal>
           <SectionHeading
             eyebrow={eyebrow}
             title={title}
+            titleClassName="!text-[32px] !leading-tight"
           />
         </Reveal>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {cards.map((category, index) => {
             const src = category.adminImage ? resolveUploadUrl(category.adminImage) : images[category.key];
             return (
