@@ -104,7 +104,7 @@ export default function HomeFaqs() {
   return (
     <section className="w-full bg-white py-16 md:py-24 border-b border-neutral-200/60">
       <div className="mx-auto w-[92%] lg:w-[84%] 2xl:w-[80%]">
-        <h2 className="text-center font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-neutral-950 uppercase">
+        <h2 className="text-center font-display !text-[32px] !leading-tight font-bold tracking-tight text-neutral-950 uppercase">
           {title}
         </h2>
         {subtitle ? (
