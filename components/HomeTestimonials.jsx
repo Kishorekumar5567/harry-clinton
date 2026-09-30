@@ -147,10 +147,10 @@ export default function HomeTestimonials() {
         <Reveal>
           {/* Header Block: Clean, Simple, Single Section */}
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-[12px] font-bold uppercase tracking-[0.25em] text-[#c6a15b] block mb-2">
+            <span className="font-display !text-[32px] sm:!text-[40px] md:!text-[48px] !leading-tight font-bold uppercase tracking-tight text-[#c6a15b] block mb-2">
               {copy.eyebrow}
             </span>
-            <h2 className="font-display text-[32px] font-bold text-neutral-950 uppercase tracking-wide mb-4">
+            <h2 className="font-display !text-[32px] sm:!text-[40px] md:!text-[48px] !leading-tight font-bold text-neutral-950 uppercase tracking-wide mb-4">
               {copy.title}
             </h2>
 
