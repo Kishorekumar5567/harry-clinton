@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { apiGet, unwrap, resolveUploadUrl } from "@/lib/api";
-import { CATEGORY_MAINS, CATEGORIES } from "@/lib/catalog";
-import ProductGrid from "@/components/ProductGrid";
+import { CATEGORY_MAINS } from "@/lib/catalog";
 import CategoryHero from "@/components/CategoryHero";
 import "./category-main.css";
 
@@ -106,10 +105,6 @@ export default async function CategoryMain({ category }) {
         )}
       </section>
 
-      <ProductGrid
-        keyword=""
-        keywords={[...(CATEGORIES[category]?.keywords || []), category, main.heroTitle]}
-      />
     </>
   );
 }
