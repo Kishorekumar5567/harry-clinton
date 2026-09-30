@@ -121,12 +121,12 @@ export default function HomeFaqs() {
                   aria-expanded={isOpen}
                   className="flex w-full items-center justify-between p-5 sm:p-6 text-left font-medium text-neutral-900 transition-colors"
                 >
-                  <span className="text-[15px] sm:text-[16px] leading-snug">{`${i + 1}) ${faq.question}`}</span>
+                  <span className="!text-[18px] sm:!text-[20px] !leading-snug">{`${i + 1}) ${faq.question}`}</span>
                   <span className="ml-4 text-xl font-light text-[#c6a15b] shrink-0">{isOpen ? "−" : "+"}</span>
                 </button>
                 {isOpen && (
                   <div
-                    className="px-5 pb-5 sm:px-6 sm:pb-6 text-[14px] sm:text-[15px] leading-relaxed text-neutral-600 border-t border-neutral-100 pt-4"
+                    className="px-5 pb-5 sm:px-6 sm:pb-6 !text-[16px] sm:!text-[17px] !leading-relaxed text-neutral-600 border-t border-neutral-100 pt-4"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }}
                   />
                 )}
