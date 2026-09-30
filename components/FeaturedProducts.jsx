@@ -97,7 +97,7 @@ export default function FeaturedProducts() {
         <SectionHeading
           title={cfg.title}
           sub={cfg.sub}
-          titleClassName="!text-[32px] sm:!text-[40px] md:!text-[48px] !font-display !font-bold !leading-tight uppercase tracking-tight"
+          titleClassName="!text-[32px] sm:!text-[40px] md:!text-[48px] !font-display !font-bold !leading-tight !text-neutral-500 uppercase tracking-tight"
           subClassName="!text-[32px] sm:!text-[40px] md:!text-[48px] !leading-tight !font-display !font-bold !text-neutral-950"
         />
 
