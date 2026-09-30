@@ -42,6 +42,7 @@ export default function AppointmentCTA() {
                     width={112}
                     height={38}
                     className="object-contain"
+                    style={{ height: "auto" }}
                   />
                 </div>
 

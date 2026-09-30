@@ -39,7 +39,7 @@ export default function ProductCard({ product, index = 0 }) {
       className="group relative"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
-        <Link href={href} aria-label={product.name}>
+        <Link href={href} aria-label={product.name} className="relative block h-full w-full">
           <Image
             src={product.image || PLACEHOLDER_IMAGE}
             alt={product.name}
