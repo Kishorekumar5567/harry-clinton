@@ -120,7 +120,7 @@ export default function SplashScreen() {
           type="button"
           onClick={dismiss}
           aria-label="Skip intro video"
-          className="!border-0 !bg-transparent !shadow-none px-3 py-2 text-[10px] font-normal uppercase tracking-[0.2em] !text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-colors duration-200 hover:!text-[#c6a15b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white cursor-pointer"
+          className="!border-0 !bg-transparent !shadow-none px-3 py-2 !text-[10px] !font-normal !text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white cursor-pointer"
         >
           <span>Skip</span>
         </button>
