@@ -102,7 +102,7 @@ export default function HomeFaqs() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-14">
+    <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-14">
       <h2 className="text-center font-display text-4xl font-bold">{title}</h2>
       {subtitle ? (
         <p className="mt-2 text-center text-sm text-neutral-500">{subtitle}</p>

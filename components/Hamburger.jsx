@@ -176,20 +176,24 @@ export default function Hamburger({ categories, onActiveChange }) {
 
         .hamburger.active span:nth-child(1) {
           width: 3px;
-          height: 110%;
-          top: -5%;
+          height: 100%;
+          top: 0;
           left: 0;
         }
 
         .hamburger.active span:nth-child(2) {
-          width: 70%;
-          left: 15%;
+          width: 100%;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          height: 3px;
         }
 
         .hamburger.active span:nth-child(3) {
           width: 3px;
-          height: 110%;
-          bottom: -5%;
+          height: 100%;
+          top: 0;
+          bottom: 0;
           left: auto;
           right: 0;
         }

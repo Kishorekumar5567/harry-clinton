@@ -126,7 +126,7 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       <h2 className="mb-4 font-display text-4xl font-bold">My Addresses</h2>
       {message.text && (
         <div className={`mb-4 p-3 text-sm ${message.isError ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>

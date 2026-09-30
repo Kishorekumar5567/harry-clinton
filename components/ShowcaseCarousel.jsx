@@ -38,12 +38,12 @@ export default function ShowcaseCarousel({
   const isPlaceholderUrl = (u) => !u || u.includes("cdn.example.com") || u.includes("example.com");
 
   const fallbackItems = [
-    { img: "/brand/Designer.jpeg", text: title, link: fallbackLink },
-    { img: "/brand/Wedding.jpeg", text: title, link: fallbackLink },
-    { img: "/brand/SmartCasual.jpeg", text: title, link: fallbackLink },
-    { img: "/brand/Designer.jpeg", text: title, link: fallbackLink },
-    { img: "/brand/Wedding.jpeg", text: title, link: fallbackLink },
-    { img: "/brand/SmartCasual.jpeg", text: title, link: fallbackLink },
+    { img: "/slides/slider1.png", text: title, link: fallbackLink },
+    { img: "/slides/slider6.png", text: title, link: fallbackLink },
+    { img: "/slides/slider7.png", text: title, link: fallbackLink },
+    { img: "/slides/slider8.png", text: title, link: fallbackLink },
+    { img: "/slides/slider3.png", text: title, link: fallbackLink },
+    { img: "/slides/slider5.png", text: title, link: fallbackLink },
   ];
 
   useEffect(() => {
@@ -131,12 +131,21 @@ export default function ShowcaseCarousel({
     <div style={{ position: "relative", width: "100%", height: isMobile ? "300px" : "500px" }}>
       <div
         style={{
-          position: "absolute", bottom: "0", left: "0",
-          width: isMobile ? "75vw" : "700px",
-          padding: isMobile ? "6px 16px" : "8px 24px",
-          color: "white", fontSize: isMobile ? "24px" : "48px", fontWeight: "bold",
+          position: "absolute",
+          bottom: isMobile ? "20px" : "36px",
+          left: isMobile ? "16px" : "36px",
+          width: "fit-content",
+          maxWidth: isMobile ? "85vw" : "700px",
+          padding: isMobile ? "8px 20px" : "12px 32px",
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          fontSize: isMobile ? "22px" : "38px",
+          fontWeight: "bold",
           fontFamily: "var(--font-mainlux), 'MAINLUX', Arial, sans-serif",
-          textShadow: "0px 2px 8px rgba(0,0,0,0.6)", zIndex: 5, pointerEvents: "none",
+          lineHeight: 1.15,
+          boxShadow: "0 6px 24px rgba(0, 0, 0, 0.25)",
+          zIndex: 5,
+          pointerEvents: "none",
         }}
       >
         {title}
@@ -206,6 +215,7 @@ export default function ShowcaseCarousel({
       </div>
       <style jsx>{`
         .hc-slider {
+          box-sizing: border-box;
           white-space: nowrap;
           overflow-x: auto;
           overflow-y: hidden;
@@ -215,7 +225,8 @@ export default function ShowcaseCarousel({
           -ms-overflow-style: none;
           border-bottom: ${hasBorder ? "10px solid white" : "none"};
           border-top: ${hasBorder ? "10px solid white" : "none"};
-          border-left: ${hasBorder ? "10px solid white" : "none"};
+          border-left: none;
+          border-right: none;
           height: 100%;
         }
         .hc-slider::-webkit-scrollbar {

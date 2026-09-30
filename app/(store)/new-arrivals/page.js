@@ -51,7 +51,7 @@ export default async function NewArrivalsPage() {
         </div>
       </div>
 
-      <div id="new-arrivals-grid" className="mx-auto max-w-7xl px-4 py-12">
+      <div id="new-arrivals-grid" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <NewArrivalsGrid products={latest} />
       </div>
     </div>

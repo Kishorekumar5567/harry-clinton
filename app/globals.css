@@ -354,3 +354,27 @@ html.lenis, html.lenis body { height: auto; }
 .video-ctrl-btn {
   border-radius: 50% !important;
 }
+
+/* Standardized site container system for uniform left & right border spacing */
+.site-container {
+  width: 100%;
+  max-width: 80rem; /* 1280px (max-w-7xl) */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem; /* 16px (mobile) */
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .site-container {
+    padding-left: 1.5rem; /* 24px (tablet) */
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-container {
+    padding-left: 2rem; /* 32px (desktop) */
+    padding-right: 2rem;
+  }
+}

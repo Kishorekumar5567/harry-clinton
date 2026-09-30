@@ -37,7 +37,7 @@ export default async function HCSpotlightPage() {
         </div>
       </div>
 
-      <div id="spotlight-content" className="mx-auto max-w-7xl px-4 py-14">
+      <div id="spotlight-content" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
         <p className="eyebrow text-neutral-500">Cover Story</p>
         <div className="mt-4 border border-neutral-200 p-8 md:p-12">
           <p className="eyebrow text-gold">Cover Story</p>

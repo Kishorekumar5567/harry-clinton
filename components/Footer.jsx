@@ -153,7 +153,7 @@ export default function Footer() {
   return (
     <>
       <footer id="site-footer" className="flex h-[100svh] flex-col justify-between overflow-hidden bg-black py-6 text-white">
-        <div className="mx-auto w-full max-w-7xl shrink-0 px-4">
+        <div className="mx-auto w-full max-w-7xl shrink-0 px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 md:grid-cols-12">
             <div className="md:col-span-4">
               <h4 className="font-bold">
@@ -258,7 +258,7 @@ export default function Footer() {
           <hr className="my-6 border-neutral-800" />
         </div>
 
-        <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col items-center justify-center px-4 py-4 text-center">
+        <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-4 text-center">
           <div className="flex w-full items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

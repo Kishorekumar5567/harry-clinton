@@ -24,7 +24,7 @@ function BarIcon({ label, children }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.7"
+      strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
       role="img"
@@ -35,10 +35,22 @@ function BarIcon({ label, children }) {
   );
 }
 const SearchGlyph = () => (
-  <BarIcon label="Search">
-    <circle cx="10.5" cy="10.5" r="7" />
-    <line x1="21" y1="21" x2="15.5" y2="15.5" />
-  </BarIcon>
+  <svg
+    width="25"
+    height="25"
+    viewBox="0 0 25 25"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    role="img"
+    aria-label="Search"
+    style={{ display: "block", width: "25px", height: "25px" }}
+  >
+    <circle cx="9.5" cy="9.5" r="8" />
+    <line x1="15.2" y1="15.2" x2="23.8" y2="23.8" />
+  </svg>
 );
 const HeartGlyph = () => (
   <BarIcon label="Wishlist">
@@ -106,7 +118,7 @@ export default function HeaderBar({ categories }) {
     <>
       {searchOpen && <SearchDropdown onClose={() => setSearchOpen(false)} />}
 
-      <header className="hc-bar-font topbar-enter relative sticky top-0 z-[80] flex h-[60px] items-center justify-between bg-white px-4">
+      <header className="hc-bar-font topbar-enter relative sticky top-0 z-[80] flex h-[60px] items-center justify-between bg-white px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4">
           <Hamburger categories={categories} onActiveChange={setMenuActive} />
 
@@ -212,7 +224,17 @@ export default function HeaderBar({ categories }) {
         .hicon svg { display: block; width: 25px; height: 25px; flex: none; }
         .topbar-enter { animation: topbarDrop 0.55s cubic-bezier(0.16, 0.8, 0.24, 1) both; }
         @keyframes topbarDrop { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
-        .c-home { position: relative; }
+        .c-home {
+          position: relative;
+          width: 25px;
+          height: 25px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0;
+          padding: 0;
+          flex: none;
+        }
         /* Reference mark: not a letter "C" — a 25px circle with a 3px border
            whose RIGHT edge is transparent, so the gap opens rightward and
            reads as a C. Hovering spins it a full turn, sweeping the gap
@@ -221,7 +243,8 @@ export default function HeaderBar({ categories }) {
           display: block;
           position: relative;
           width: 25px; height: 25px;
-          margin: auto; padding: 0;
+          margin: 0; padding: 0;
+          box-sizing: border-box;
           background: transparent;
           border: 3px solid #000;
           border-right-color: transparent;
