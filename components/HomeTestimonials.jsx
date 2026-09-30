@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { apiCached, homeKV } from "@/lib/api";
 import Reveal from "@/components/Reveal";
 
@@ -74,6 +75,8 @@ const GOOGLE_REVIEW_URL = "";
 export default function HomeTestimonials() {
   const [reviews, setReviews] = useState(INITIAL_REVIEWS);
   const [page, setPage] = useState(0);
+  const [pageDirection, setPageDirection] = useState(1);
+  const reduceMotion = useReducedMotion();
   const [isUpcomingModalOpen, setIsUpcomingModalOpen] = useState(false);
   const [copy, setCopy] = useState({
     eyebrow: "WHAT OUR CLIENTS SAY",
@@ -129,13 +132,14 @@ export default function HomeTestimonials() {
   const totalPages = Math.ceil(reviews.length / pageSize);
   const visibleReviews = reviews.slice(page * pageSize, page * pageSize + pageSize);
 
-  const handlePrev = () => {
-    setPage((prev) => (prev > 0 ? prev - 1 : totalPages - 1));
+  const goToPage = (nextPage, direction) => {
+    setPageDirection(direction);
+    setPage(nextPage);
   };
 
-  const handleNext = () => {
-    setPage((prev) => (prev < totalPages - 1 ? prev + 1 : 0));
-  };
+  const handlePrev = () => goToPage(page > 0 ? page - 1 : totalPages - 1, -1);
+
+  const handleNext = () => goToPage(page < totalPages - 1 ? page + 1 : 0, 1);
 
   return (
     <section className="w-full bg-[#faf9f6] py-16 md:py-24 border-y border-neutral-200/60">
@@ -210,8 +214,19 @@ export default function HomeTestimonials() {
           </div>
 
           {/* Clean 3-Card Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {visibleReviews.map((rev) => (
+          <div className="overflow-hidden">
+            <AnimatePresence mode="wait" initial={false} custom={pageDirection}>
+              <motion.div
+                key={page}
+                custom={pageDirection}
+                initial={{ opacity: 0, x: reduceMotion ? 0 : pageDirection * 48 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: reduceMotion ? 0 : pageDirection * -48 }}
+                transition={{ duration: reduceMotion ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                aria-live="polite"
+              >
+                {visibleReviews.map((rev) => (
               <div
                 key={rev.id}
                 className="bg-white border border-neutral-200 p-6 md:p-7 flex flex-col justify-between shadow-sm hover:border-[#c6a15b]/60 hover:shadow-md transition-all duration-300"
@@ -257,7 +272,9 @@ export default function HomeTestimonials() {
                   </span>
                 </div>
               </div>
-            ))}
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Clean Navigation Controls */}
@@ -277,7 +294,7 @@ export default function HomeTestimonials() {
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setPage(idx)}
+                    onClick={() => goToPage(idx, idx >= page ? 1 : -1)}
                     aria-label={`Go to review page ${idx + 1}`}
                     className={`h-1.5 transition-all duration-200 cursor-pointer ${
                       idx === page ? "w-6 bg-[#c6a15b]" : "w-2 bg-neutral-300 hover:bg-neutral-400"
