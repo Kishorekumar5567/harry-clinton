@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { apiGet, unwrap, resolveUploadUrl } from "@/lib/api";
 import { CATEGORY_MAINS, CATEGORIES } from "@/lib/catalog";
-import { PLACEHOLDER_IMAGE } from "./ProductCard";
-import ProductGrid from "./ProductGrid";
+import ProductGrid from "@/components/ProductGrid";
+import CategoryHero from "@/components/CategoryHero";
+import "./category-main.css";
 
-// Category main page: same structure as the previous UI —
-// hero + Shop Now, marquee, subcategory cards (3 + rest), tail grid.
 export default async function CategoryMain({ category }) {
   const main = CATEGORY_MAINS[category];
   const [cats, subs, settings] = await Promise.all([
@@ -14,131 +13,140 @@ export default async function CategoryMain({ category }) {
     apiGet("/Settings").then(unwrap).catch(() => []),
   ]);
 
-  const get = (key) => {
-    const m = (Array.isArray(settings) ? settings : []).find(
-      (s) => s.setting_key?.toLowerCase() === key || s.key?.toLowerCase() === key
+  const settingsList = Array.isArray(settings) ? settings : [];
+  const getSetting = (key) => {
+    const row = settingsList.find(
+      (setting) => setting.setting_key?.toLowerCase() === key || setting.key?.toLowerCase() === key
     );
-    return m?.setting_value ?? m?.value ?? "";
+    return row?.setting_value ?? row?.value ?? "";
   };
-  const key = (suffix) => `category_${category.toLowerCase().replace(/\s+/g, "_")}_${suffix}`;
-  const tryParse = (str) => {
-    if (!str) return null;
+  const settingKey = (suffix) => `category_${category.toLowerCase().replace(/\s+/g, "_")}_${suffix}`;
+  const parseWords = (value) => {
+    if (!value) return null;
     try {
-      return JSON.parse(str);
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : null;
     } catch {
       return null;
     }
   };
-
-  const heroTitle = get(key("hero_title")) || main.heroTitle;
-  const heroSubtitle = get(key("hero_subtitle")) || main.heroSubtitle;
-  const marquee = tryParse(get(key("marquee_words"))) || main.marquee;
-
-  const matched = (Array.isArray(cats) ? cats : []).find(
-    (c) =>
-      c.menu_category_slug?.toLowerCase() === category.toLowerCase() ||
-      c.menu_category_name?.toLowerCase() === category.toLowerCase()
-  );
-  let subcategories = main.subs;
-  if (matched) {
-    const filtered = (Array.isArray(subs) ? subs : [])
-      .filter((s) => s.menu_category_id === matched.menu_category_id)
-      .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-      .map((s, idx) => ({
-        name: s.menu_subcategory_name,
-        link:
-          (s.redirect_link || "").replace(/^\/collection\//, "/") ||
-          `/${s.menu_subcategory_slug || s.menu_subcategory_name.toLowerCase().replace(/\s+/g, "-")}`,
-        image: resolveUploadUrl(s.menu_subcategory_image_url || s.image_url) || null,
-        video: resolveUploadUrl(s.video_url) || null,
-      }));
-    if (filtered.length > 0) subcategories = filtered;
-  }
-
-  const CATEGORY_VIDEOS = {
-    suits: "/brand/suitcatvideo.mp4",
-    babysuits: "/brand/baby-1st-birthday.mp4",
-    trousers: "/brand/business-category.mp4",
-    indowestern: "/brand/wedding-label.mp4",
-    shirts: "/brand/luxury-wedding-home.mp4",
+  const categoryMedia = (value) => {
+    if (!value) return null;
+    // Keep local assets local; uploaded backend media still resolves to its origin.
+    if (value.startsWith("/category-pages/")) return value;
+    return resolveUploadUrl(value);
   };
-  const heroVideo = CATEGORY_VIDEOS[category.toLowerCase()] || null;
+
+  const heroImage = categoryMedia(getSetting(settingKey("hero_image"))) || main.heroImage;
+  const heroTitle = getSetting(settingKey("hero_title")) || main.heroTitle;
+  const heroSubtitle = getSetting(settingKey("hero_subtitle")) || main.heroSubtitle;
+  const marquee = parseWords(getSetting(settingKey("marquee_words"))) || main.marquee;
+
+  const matchedCategory = (Array.isArray(cats) ? cats : []).find(
+    (row) =>
+      row.menu_category_slug?.toLowerCase() === category.toLowerCase() ||
+      row.menu_category_name?.toLowerCase() === category.toLowerCase()
+  );
+
+  let subcategories = main.subs;
+  if (matchedCategory) {
+    const apiSubcategories = (Array.isArray(subs) ? subs : [])
+      .filter((row) => String(row.menu_category_id) === String(matchedCategory.menu_category_id))
+      .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+      .slice(0, 5)
+      .map((row, index) => {
+        const fallback = main.subs[index] || {};
+        const name = row.menu_subcategory_name || fallback.name || "";
+        const slug = row.menu_subcategory_slug || name.toLowerCase().replace(/\s+/g, "-");
+        return {
+          name,
+          link:
+            (row.redirect_link || "").replace(/^\/collection\//, "/") ||
+            `/${slug}`,
+          image: categoryMedia(row.menu_subcategory_image_url || row.image_url) || fallback.image || null,
+          video: categoryMedia(row.video_url) || fallback.video || null,
+        };
+      });
+    if (apiSubcategories.length > 0) {
+      subcategories = [
+        ...apiSubcategories,
+        ...main.subs.slice(apiSubcategories.length),
+      ].slice(0, 5);
+    }
+  }
 
   return (
     <>
-      <section className="relative overflow-hidden bg-neutral-950">
-        {heroVideo && (
-          <video
-            src={heroVideo}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 h-full w-full object-cover opacity-45"
-          />
-        )}
-        <div className="relative z-10 flex min-h-[480px] flex-col items-start justify-center px-6 text-white md:px-16">
-          <h1 className="font-display text-5xl font-bold md:text-6xl">{heroTitle}</h1>
-          <h5 className="mt-2 text-lg font-normal text-neutral-200">{heroSubtitle}</h5>
-          <a href="#category-grid" className="btn-primary mt-6  !bg-white !text-neutral-950 hover:!bg-gold">
-            Shop Now
-          </a>
-        </div>
-      </section>
+      <CategoryHero image={heroImage} title={heroTitle} subtitle={heroSubtitle} />
 
-      <div className="overflow-hidden bg-neutral-100">
-        <div className="animate-marquee py-4">
-          {Array(4).fill(marquee).flat().map((word, idx) => (
-            <span key={idx} className="mx-4 font-bold uppercase">
-              {word}
-            </span>
-          ))}
+      <div className="category-marquee" aria-label={marquee.join(" ")}>
+        <div className="category-marquee__track" aria-hidden="true">
+          {[0, 1, 2, 3].flatMap((copy) =>
+            marquee.map((word, index) => (
+              <span className="category-marquee__word" key={`${copy}-${index}`}>
+                {word}
+              </span>
+            ))
+          )}
         </div>
       </div>
 
-      <div id="category-grid" className="mx-auto max-w-7xl px-4 py-10">
-        <div className="grid gap-2 md:grid-cols-3">
-          {subcategories.slice(0, 3).map((cat, i) => (
-            <CategoryCard key={i} cat={cat} />
+      <section id="category-grid" className="category-cards" aria-label={`${heroTitle} categories`}>
+        <div className="category-cards__row category-cards__row--three">
+          {subcategories.slice(0, 3).map((item, index) => (
+            <CategoryCard key={`${item.name}-${index}`} item={item} />
           ))}
         </div>
         {subcategories.length > 3 && (
-          <div className="mt-2 grid gap-2 md:grid-cols-2">
-            {subcategories.slice(3).map((cat, i) => (
-              <CategoryCard key={i} cat={cat} />
+          <div className="category-cards__row category-cards__row--two">
+            {subcategories.slice(3, 5).map((item, index) => (
+              <CategoryCard key={`${item.name}-${index + 3}`} item={item} />
             ))}
           </div>
         )}
-      </div>
+      </section>
 
       <ProductGrid
         keyword=""
-        keywords={[...((CATEGORIES[category]?.keywords || [])), category, main.heroTitle]}
+        keywords={[...(CATEGORIES[category]?.keywords || []), category, main.heroTitle]}
       />
     </>
   );
 }
 
-function CategoryCard({ cat }) {
-  const inner = (
+function CategoryCard({ item }) {
+  const content = (
     <>
-      {cat.video ? (
-        <video src={cat.video} className="h-80 w-full object-cover" autoPlay loop muted playsInline />
+      {item.video ? (
+        <video
+          src={item.video}
+          className="category-card__media"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          aria-label={item.name}
+        />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={cat.image || PLACEHOLDER_IMAGE} alt={cat.name} loading="lazy" className="h-80 w-full object-cover" />
+        <img
+          src={item.image || "/brand/logo-black.png"}
+          alt={item.name}
+          className="category-card__media"
+          loading="lazy"
+        />
       )}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-lg font-semibold text-white">
-        {cat.name}
-      </div>
+      <div className="category-card__shade" />
+      <div className="category-card__title">{item.name}</div>
     </>
   );
-  if (!cat.link) {
-    return <div className="relative cursor-pointer overflow-hidden shadow-sm">{inner}</div>;
-  }
-  return (
-    <Link href={cat.link} className="relative block overflow-hidden shadow-sm">
-      {inner}
+
+  return item.link ? (
+    <Link href={item.link} className="category-card">
+      {content}
     </Link>
+  ) : (
+    <div className="category-card">{content}</div>
   );
 }
