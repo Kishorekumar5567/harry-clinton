@@ -102,31 +102,38 @@ export default function HomeFaqs() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-14">
-      <h2 className="text-center font-display text-4xl font-bold">{title}</h2>
-      {subtitle ? (
-        <p className="mt-2 text-center text-sm text-neutral-500">{subtitle}</p>
-      ) : null}
-      <div className="mt-8 space-y-3">
-        {faqs.map((faq, i) => {
-          const id = i + 1;
-          const isOpen = openId === id;
-          return (
-            <div key={id} className="border border-neutral-200">
-              <button
-                onClick={() => setOpenId(isOpen ? null : id)}
-                aria-expanded={isOpen}
-                className="flex w-full items-center justify-between p-4 text-left font-medium"
-              >
-                {`${i + 1}) ${faq.question}`}
-                <span className="ml-3 text-gold">{isOpen ? "−" : "+"}</span>
-              </button>
-              {isOpen && (
-                <p className="px-4 pb-4 text-sm text-neutral-600" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }} />
-              )}
-            </div>
-          );
-        })}
+    <section className="w-full bg-white py-16 md:py-24 border-b border-neutral-200/60">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-center font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-neutral-950 uppercase">
+          {title}
+        </h2>
+        {subtitle ? (
+          <p className="mt-3 text-center text-sm sm:text-base text-neutral-500 max-w-2xl mx-auto">{subtitle}</p>
+        ) : null}
+        <div className="mt-12 space-y-4">
+          {faqs.map((faq, i) => {
+            const id = i + 1;
+            const isOpen = openId === id;
+            return (
+              <div key={id} className="border border-neutral-200 bg-white transition-colors duration-200 hover:border-neutral-300">
+                <button
+                  onClick={() => setOpenId(isOpen ? null : id)}
+                  aria-expanded={isOpen}
+                  className="flex w-full items-center justify-between p-5 sm:p-6 text-left font-medium text-neutral-900 transition-colors"
+                >
+                  <span className="text-[15px] sm:text-[16px] leading-snug">{`${i + 1}) ${faq.question}`}</span>
+                  <span className="ml-4 text-xl font-light text-[#c6a15b] shrink-0">{isOpen ? "−" : "+"}</span>
+                </button>
+                {isOpen && (
+                  <div
+                    className="px-5 pb-5 sm:px-6 sm:pb-6 text-[14px] sm:text-[15px] leading-relaxed text-neutral-600 border-t border-neutral-100 pt-4"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
