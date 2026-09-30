@@ -97,8 +97,8 @@ export default function FeaturedProducts() {
         <SectionHeading
           title={cfg.title}
           sub={cfg.sub}
-          titleClassName="!text-[32px] sm:!text-[40px] md:!text-[48px]"
-          subClassName="!text-[18px] sm:!text-[20px] md:!text-[22px] !leading-relaxed"
+          titleClassName="!text-[32px] sm:!text-[40px] md:!text-[48px] !font-display !font-bold !leading-tight uppercase tracking-tight"
+          subClassName="!text-[32px] sm:!text-[40px] md:!text-[48px] !leading-tight !font-display !font-bold !text-neutral-950"
         />
 
         <div className={`grid grid-cols-2 gap-4 md:gap-6 mt-10 ${COLS_CLS[cfg.cols] || "md:grid-cols-4"}`}>
