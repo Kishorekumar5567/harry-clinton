@@ -162,6 +162,7 @@ export default function CategoryShowcase() {
             eyebrow={eyebrow}
             title={title}
             titleClassName="!text-[40px] sm:!text-[48px] md:!text-[56px]"
+            eyebrowClassName="!text-[40px] sm:!text-[48px] md:!text-[56px] !leading-tight !font-display !font-bold"
           />
         </Reveal>
 
