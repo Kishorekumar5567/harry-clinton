@@ -19,7 +19,7 @@ export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // Admin controls (tbl_settings home_new_arrivals_*): copy, how many, cols.
-  const [cfg, setCfg] = useState({ eyebrow: "CURATED FOR YOU", title: "New Arrivals", sub: "The latest additions to our bespoke collection.", count: 8, cols: 4 });
+  const [cfg, setCfg] = useState({ title: "New Arrivals", sub: "The latest additions to our bespoke collection.", count: 8, cols: 4 });
 
   useEffect(() => {
     async function loadProducts() {
@@ -35,7 +35,6 @@ export default function FeaturedProducts() {
           ? Number(kv.home_new_arrivals_cols)
           : 4;
         setCfg({
-          eyebrow: kv.home_new_arrivals_eyebrow || "CURATED FOR YOU",
           title: kv.home_new_arrivals_title || "New Arrivals",
           sub: kv.home_new_arrivals_subtitle || "The latest additions to our bespoke collection.",
           count,
@@ -96,9 +95,10 @@ export default function FeaturedProducts() {
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow={cfg.eyebrow}
           title={cfg.title}
           sub={cfg.sub}
+          titleClassName="!text-[40px] sm:!text-[48px] md:!text-[56px]"
+          subClassName="!text-[20px] sm:!text-[22px] md:!text-[24px] !leading-relaxed"
         />
 
         <div className={`grid grid-cols-2 gap-4 md:gap-6 mt-10 ${COLS_CLS[cfg.cols] || "md:grid-cols-4"}`}>

@@ -10,6 +10,7 @@ export default function SectionHeading({
   dark = false,
   titleClassName = "",
   eyebrowClassName = "",
+  subClassName = "",
 }) {
   const alignCls = align === "center" ? "text-center" : "text-left";
   return (
@@ -19,7 +20,7 @@ export default function SectionHeading({
           <p className={`eyebrow ${dark ? "text-gold" : "text-neutral-500"} ${eyebrowClassName}`}>{eyebrow}</p>
         )}
         <h2 className={`mt-2 font-display !text-[32px] !leading-tight font-bold ${dark ? "text-white" : ""} ${titleClassName}`}>{title}</h2>
-        {sub && <p className={`mt-3 ${dark ? "text-neutral-300" : "text-neutral-500"}`}>{sub}</p>}
+        {sub && <p className={`mt-3 ${dark ? "text-neutral-300" : "text-neutral-500"} ${subClassName}`}>{sub}</p>}
       </div>
     </Reveal>
   );
