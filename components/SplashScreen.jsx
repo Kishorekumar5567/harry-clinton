@@ -101,14 +101,14 @@ export default function SplashScreen() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black"
       role="dialog"
       aria-label="Harry Clinton intro"
     >
       <video
         ref={videoRef}
         src="/brand/hc-splash.mp4"
-        className="h-full w-full object-cover"
+        className="h-full w-full object-cover lg:scale-[1.12] xl:scale-[1.22] 2xl:scale-[1.3]"
         autoPlay
         muted
         playsInline
