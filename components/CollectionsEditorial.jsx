@@ -135,17 +135,17 @@ export default function CollectionsEditorial() {
                     <div className={`absolute top-0 bottom-0 w-1/2 pointer-events-none opacity-20 bg-gradient-to-b from-white/10 to-transparent transition-opacity duration-700 group-hover:opacity-30 ${isEven ? 'left-0' : 'right-0'}`} />
                     
                     <div className={`relative z-10 flex min-h-[320px] w-full flex-col justify-center px-8 py-12 sm:min-h-[360px] md:w-3/5 md:px-16 md:py-16 lg:min-h-[420px] lg:w-1/2 ${isEven ? 'ml-auto text-left' : 'mr-auto text-left md:text-right md:items-end'}`}>
-                      <span className="mb-3 block text-base font-semibold uppercase tracking-[0.16em] text-[#c6a15b] sm:text-lg">
+                      <span className="mb-3 block text-base font-semibold uppercase tracking-[0.16em] text-[#c6a15b] sm:text-lg lg:text-xl 2xl:text-2xl">
                         {collection.eyebrow}
                       </span>
-                      <h3 className="mb-0 font-display text-4xl font-bold leading-[1.05] text-white sm:text-5xl lg:text-7xl">
+                      <h3 className="mb-0 font-display text-4xl font-bold leading-[1.05] text-white sm:text-5xl lg:text-7xl xl:text-8xl 2xl:text-9xl">
                         {collection.name}
                       </h3>
                       <div className="transition-all duration-500 ease-out lg:max-h-0 lg:translate-y-3 lg:overflow-hidden lg:opacity-0 lg:group-hover:max-h-40 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 lg:group-focus-within:max-h-40 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100">
-                        <p className={`mb-6 mt-4 max-w-md font-sans text-lg leading-relaxed text-gray-200 sm:text-xl ${isEven ? '' : 'md:ml-auto md:text-right'}`}>
+                        <p className={`mb-6 mt-4 max-w-md font-sans text-lg leading-relaxed text-gray-200 sm:text-xl lg:text-2xl ${isEven ? '' : 'md:ml-auto md:text-right'}`}>
                           {collection.description}
                         </p>
-                        <div className={`flex w-fit items-center text-sm font-medium uppercase tracking-wide text-[#c6a15b] sm:text-base ${isEven ? '' : 'md:ml-auto'}`}>
+                        <div className={`flex w-fit items-center text-sm font-medium uppercase tracking-wide text-[#c6a15b] sm:text-base lg:text-lg xl:text-xl ${isEven ? '' : 'md:ml-auto'}`}>
                           <span className="mr-2">Explore Collection</span>
                           <svg
                             className="h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1"
