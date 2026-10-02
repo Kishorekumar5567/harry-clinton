@@ -134,7 +134,7 @@ export default function CollectionsEditorial() {
                     ) : null}
                     <div className={`absolute top-0 bottom-0 w-1/2 pointer-events-none opacity-20 bg-gradient-to-b from-white/10 to-transparent transition-opacity duration-700 group-hover:opacity-30 ${isEven ? 'left-0' : 'right-0'}`} />
                     
-                    <div className={`relative z-10 flex min-h-[320px] w-full flex-col justify-center px-8 py-12 sm:min-h-[360px] md:w-3/5 md:px-16 md:py-16 lg:min-h-[420px] lg:w-1/2 ${isEven ? 'ml-auto text-left' : 'mr-auto text-left md:text-right md:items-end'}`}>
+                    <div className={`relative z-10 flex min-h-[320px] w-full flex-col justify-end px-8 py-12 sm:min-h-[360px] md:w-3/5 md:px-16 md:py-16 lg:min-h-[420px] lg:w-1/2 ${isEven ? 'ml-auto text-left' : 'mr-auto text-left md:text-right md:items-end'}`}>
                       <span className="mb-3 block text-base font-semibold uppercase tracking-[0.16em] text-[#c6a15b] sm:text-lg lg:text-xl 2xl:text-2xl">
                         {collection.eyebrow}
                       </span>
