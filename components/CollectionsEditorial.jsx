@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import Reveal from '@/components/Reveal';
 import SectionHeading from '@/components/SectionHeading';
 import { apiCached, precacheMedia, resolveUploadUrl } from '@/lib/api';
@@ -110,6 +109,8 @@ export default function CollectionsEditorial() {
         <SectionHeading 
           eyebrow="SIGNATURE COLLECTIONS" 
           title="The Edits" 
+          eyebrowClassName="!text-[20px] sm:!text-[25px] md:!text-[30px] !leading-tight !font-display !font-bold"
+          titleClassName="!text-[20px] sm:!text-[25px] md:!text-[30px]"
         />
         
         <div className="mt-16 space-y-12">
