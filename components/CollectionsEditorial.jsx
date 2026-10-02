@@ -119,7 +119,7 @@ export default function CollectionsEditorial() {
             return (
               <Reveal key={collection.name}>
                 <Link href={collection.href} className="block group">
-                  <div className={`relative w-full  overflow-hidden shadow-xl transition-all duration-700 ease-out hover:shadow-2xl hover:scale-[1.01] ${collection.bgGradient}`}>
+                  <div className={`relative min-h-[320px] w-full overflow-hidden shadow-xl transition-all duration-700 ease-out hover:shadow-2xl hover:scale-[1.01] sm:min-h-[360px] lg:min-h-[420px] ${collection.bgGradient}`}>
                     {images[collection.key] ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -134,26 +134,28 @@ export default function CollectionsEditorial() {
                     ) : null}
                     <div className={`absolute top-0 bottom-0 w-1/2 pointer-events-none opacity-20 bg-gradient-to-b from-white/10 to-transparent transition-opacity duration-700 group-hover:opacity-30 ${isEven ? 'left-0' : 'right-0'}`} />
                     
-                    <div className={`flex flex-col relative z-10 px-8 py-16 md:px-16 md:py-24 w-full md:w-3/5 lg:w-1/2 ${isEven ? 'ml-auto text-left' : 'mr-auto text-left md:text-right md:items-end'}`}>
-                      <span className="text-[#c6a15b] font-semibold tracking-widest text-sm uppercase mb-4 block">
+                    <div className={`relative z-10 flex min-h-[320px] w-full flex-col justify-center px-8 py-12 sm:min-h-[360px] md:w-3/5 md:px-16 md:py-16 lg:min-h-[420px] lg:w-1/2 ${isEven ? 'ml-auto text-left' : 'mr-auto text-left md:text-right md:items-end'}`}>
+                      <span className="mb-3 block text-base font-semibold uppercase tracking-[0.16em] text-[#c6a15b] sm:text-lg">
                         {collection.eyebrow}
                       </span>
-                      <h3 className="font-display text-4xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight">
+                      <h3 className="mb-0 font-display text-4xl font-bold leading-[1.05] text-white sm:text-5xl lg:text-7xl">
                         {collection.name}
                       </h3>
-                      <p className={`font-sans text-gray-300 text-lg md:text-xl mb-10 leading-relaxed max-w-md ${isEven ? '' : 'md:text-right'}`}>
-                        {collection.description}
-                      </p>
-                      <div className="flex items-center text-[#c6a15b] font-medium tracking-wide uppercase text-sm group/link w-fit">
-                        <span className="mr-2">Explore Collection</span>
-                        <svg 
-                          className="w-5 h-5 transform transition-transform duration-300 group-hover/link:translate-x-2" 
-                          fill="none" 
-                          viewBox="0 0 24 24" 
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
+                      <div className="transition-all duration-500 ease-out lg:max-h-0 lg:translate-y-3 lg:overflow-hidden lg:opacity-0 lg:group-hover:max-h-40 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 lg:group-focus-within:max-h-40 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100">
+                        <p className={`mb-6 mt-4 max-w-md font-sans text-lg leading-relaxed text-gray-200 sm:text-xl ${isEven ? '' : 'md:ml-auto md:text-right'}`}>
+                          {collection.description}
+                        </p>
+                        <div className={`flex w-fit items-center text-sm font-medium uppercase tracking-wide text-[#c6a15b] sm:text-base ${isEven ? '' : 'md:ml-auto'}`}>
+                          <span className="mr-2">Explore Collection</span>
+                          <svg
+                            className="h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   </div>
