@@ -74,6 +74,13 @@ export default function ProductDetailLoader({ id }) {
           .filter(Boolean);
         const sizesList = Array.isArray(sizes) ? sizes : [];
         const clothList = Array.isArray(clothTypes) ? clothTypes : [];
+        const colorAttr = (Array.isArray(attrs) ? attrs : []).find(
+          (a) => a.attribute_slug?.toLowerCase() === "color" || a.attribute_name?.toLowerCase() === "color"
+        );
+        const variantColor = (variantId) =>
+          (Array.isArray(attrValues) ? attrValues : []).find(
+            (v) => v.product_variant_id === variantId && v.attribute_id === colorAttr?.attribute_id
+          )?.attribute_value || "";
 
         const builtVariants = (Array.isArray(variants) ? variants : [])
           .filter((v) => v.product_id === p.product_id)
@@ -87,6 +94,7 @@ export default function ProductDetailLoader({ id }) {
               label: sizeRow?.size_name || v.variant_name || "M",
               sizeName: sizeRow?.size_name || "",
               clothName: clothRow?.cloth_type_name || "",
+              color: variantColor(v.product_variant_id) || null,
               available:
                 v.stock_qty === undefined || v.stock_qty === null
                   ? true
@@ -94,6 +102,16 @@ export default function ProductDetailLoader({ id }) {
               image: resolveUploadUrl(ownMedia[0]?.media_url) || null,
             };
           });
+        const variantGalleryForColor = (colorName) => {
+          const ids = builtVariants
+            .filter((v) => v.color && v.color.toLowerCase() === colorName.toLowerCase())
+            .map((v) => v.product_variant_id);
+          return variantMedia
+            .filter((m) => ids.includes(m.product_variant_id))
+            .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+            .map((m) => resolveUploadUrl(m.media_url))
+            .filter(Boolean);
+        };
 
         const reviewsList = Array.isArray(reviews) ? reviews : [];
         const price = Number(p.base_price) || 0;
@@ -130,6 +148,8 @@ export default function ProductDetailLoader({ id }) {
           gold: { name: "Gold", hex: "#c6a15b" },
           "champagne gold": { name: "Champagne Gold", hex: "#c6a15b" },
           silver: { name: "Silver", hex: "#c4c8cc" },
+          platinum: { name: "Platinum", hex: "#e5e4e2", border: "#bebebe" },
+          ice: { name: "Menthol Ice", hex: "#00ffff", border: "#00ced1" },
           violet: { name: "Violet", hex: "#3e1c4a" },
           purple: { name: "Purple", hex: "#361842" },
           yellow: { name: "Yellow", hex: "#d4a017" },
@@ -179,9 +199,6 @@ export default function ProductDetailLoader({ id }) {
         const selfColorMeta = detectColor(p.product_name);
         const selfColorName = selfColorMeta?.name || "Original";
 
-        const colorAttr = (Array.isArray(attrs) ? attrs : []).find(
-          (a) => a.attribute_slug?.toLowerCase() === "color" || a.attribute_name?.toLowerCase() === "color"
-        );
         let rawColors = [];
         if (colorAttr) {
           const pVals = (Array.isArray(attrValues) ? attrValues : []).filter(
@@ -197,6 +214,10 @@ export default function ProductDetailLoader({ id }) {
         if (selfColorMeta && !rawColors.some((c) => c.toLowerCase() === selfColorMeta.name.toLowerCase())) {
           rawColors.unshift(selfColorMeta.name);
         }
+        const variantsForColor = (colorName) => {
+          const matching = builtVariants.filter((v) => !v.color || v.color.toLowerCase() === colorName.toLowerCase());
+          return matching.length > 0 ? matching : builtVariants;
+        };
         for (const sib of siblingProducts) {
           const sibColor = detectColor(sib.product_name);
           if (sibColor && !rawColors.some((c) => c.toLowerCase() === sibColor.name.toLowerCase())) {
@@ -220,8 +241,8 @@ export default function ProductDetailLoader({ id }) {
               productId: p.product_id,
               title: p.product_name,
               price,
-              images: gallery,
-              variants: builtVariants,
+              images: variantGalleryForColor(colName).length > 0 ? variantGalleryForColor(colName) : gallery,
+              variants: variantsForColor(colName),
             };
           }
           const matchingSib = siblingProducts.find((sib) => {
@@ -243,7 +264,7 @@ export default function ProductDetailLoader({ id }) {
               title: matchingSib.product_name,
               price: Number(matchingSib.base_price) || price,
               images: sibMedia.length > 0 ? sibMedia : gallery,
-              variants: builtVariants,
+              variants: variantsForColor(colName),
             };
           }
           return {
@@ -254,8 +275,8 @@ export default function ProductDetailLoader({ id }) {
             productId: p.product_id,
             title: p.product_name,
             price,
-            images: gallery,
-            variants: builtVariants,
+            images: variantGalleryForColor(colName).length > 0 ? variantGalleryForColor(colName) : gallery,
+            variants: variantsForColor(colName),
           };
         });
 
