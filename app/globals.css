@@ -256,8 +256,7 @@ html.lenis, html.lenis body { height: auto; }
 /* sharp-square site rule: no round corners anywhere */
 *, *::before, *::after { border-radius: 0 !important; }
 .c-icon { border-radius: 50% !important; }
-.product-color-swatch,
-.product-color-swatch__check { border-radius: 50% !important; }
+.product-color-swatch { border-radius: 50% !important; }
 
 /* Brand typeface scopes */
 .hc-bar-font, .hc-bar-font * {

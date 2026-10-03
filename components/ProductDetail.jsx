@@ -275,7 +275,6 @@ export default function ProductDetail({ product }) {
                   {colorVariants.map((c) => {
                     const isSelected =
                       (selectedColor || activeColorObj.name || "").toLowerCase() === c.name.toLowerCase();
-                    const isLight = ["#fcfcfc", "#f7f4ec", "#f5f0e6", "#d8cebe"].includes(c.hex.toLowerCase());
                     return (
                       <button
                         key={c.name}
@@ -293,11 +292,6 @@ export default function ProductDetail({ product }) {
                           border: c.border ? `1.5px solid ${c.border}` : "1.5px solid rgba(0,0,0,0.18)",
                         }}
                       >
-                        {isSelected && (
-                          <span
-                            className={`product-color-swatch__check w-2.5 h-2.5 rounded-full ${isLight ? "bg-neutral-950" : "bg-white"}`}
-                          />
-                        )}
                         {/* Luxury floating tooltip on hover */}
                         <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-neutral-900 text-white text-[10px] px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-30 font-bold uppercase tracking-widest shadow-lg border border-white/10">
                           {c.name}
