@@ -97,71 +97,18 @@ button,
 input,
 select,
 textarea {
-  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+  font-family: "MAINLUX", Arial, sans-serif;
   color: #171717;
   background: #fff;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Universal font application without breaking icon fonts or SVGs */
-*:not(.bi):not([class^="bi-"]):not([class*=" bi-"]):not(svg):not(path) {
-  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif;
-}
-
-/* =========================================================================
-   STRICT 4-TIER SIZING SYSTEM (HEADERS, TITLES, SUBTITLES, CAPTIONS)
-   ========================================================================= */
-
-/* TIER 1: HEADERS / HERO HEADINGS (32px, bold) */
-h1,
-.type-header,
-.text-header,
-.modal-title {
-  font-size: var(--type-header) !important;
-  line-height: 1.25 !important;
-  font-weight: 700 !important;
-}
-
-/* TIER 2: TITLES / SECTION HEADINGS / CARD HEADINGS (22px, bold) */
-h2,
-h3,
-h4,
-.type-title,
-.text-title {
-  font-size: var(--type-title) !important;
-  line-height: 1.35 !important;
-  font-weight: 600 !important;
-}
-
-/* TIER 3: SUBTITLES / BODY / PARAGRAPHS / BUTTONS / INPUTS (15px) */
-p,
-body,
-button,
-input,
-select,
-textarea,
-li,
-a,
-.type-body,
-.text-body,
-.type-subtitle,
-.text-subtitle {
-  font-size: var(--type-body);
-  line-height: 1.6;
-}
-
-/* TIER 4: CAPTIONS / EYEBROWS / BADGES / META (12px, bold/tracking) */
-small,
-.eyebrow,
-.type-caption,
-.text-caption,
-.badge {
-  font-size: var(--type-caption) !important;
-  line-height: 1.4 !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
+/*
+   Do not impose global heading/body sizes or assign a font to every element.
+   Page templates own their typography and inherit MAINLUX from the document
+   base, allowing reference-specific CSS to control its own family, weight,
+   style, size, and line-height.
+*/
 
 ::selection {
   background: #c6a15b;
@@ -169,7 +116,7 @@ small,
 }
 
 .font-display {
-  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+  font-family: "MAINLUX", Arial, sans-serif;
 }
 
 /* fashionable luxe scrollbar — site-wide */
@@ -309,13 +256,16 @@ html.lenis, html.lenis body { height: auto; }
 /* sharp-square site rule: no round corners anywhere */
 *, *::before, *::after { border-radius: 0 !important; }
 .c-icon { border-radius: 50% !important; }
+.product-color-swatch,
+.product-color-swatch__check { border-radius: 50% !important; }
 
 /* Brand typeface scopes */
 .hc-bar-font, .hc-bar-font * {
-  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+  /* Match the reference RunningBar and OfferBar font directly. */
+  font-family: "MAINLUX", Arial, sans-serif;
 }
 .hc-display-font {
-  font-family: var(--font-mainlux), "MAINLUX", Arial, sans-serif !important;
+  font-family: "MAINLUX", Arial, sans-serif;
 }
 
 .hc-dot { border-radius: 50% !important; }
@@ -377,4 +327,76 @@ html.lenis, html.lenis body { height: auto; }
     padding-left: 2rem; /* 32px (desktop) */
     padding-right: 2rem;
   }
+}
+/* Reference storefront breadcrumb shared by every non-home route. */
+.breadcrumb-wrap {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+  padding: 0 24px;
+  overflow: hidden;
+}
+.breadcrumb-list {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  max-width: 1280px;
+  margin: 0;
+  padding: 0;
+  color: #666;
+  font-family: MAINLUX, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+  padding-right: 0.5rem;
+  color: #6c757d;
+}
+.breadcrumb-item:not(:last-child)::after {
+  content: "/";
+  color: #bbb;
+  font-size: 12px;
+}
+.breadcrumb-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b38b59;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.breadcrumb-link:hover {
+  color: #8a653c;
+  text-decoration: underline;
+}
+.breadcrumb-current {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111;
+  font-weight: 600;
+}
+.breadcrumb-current-dark { color: #fff; }
+.breadcrumb-link-dark { color: #aaa; }
+@media (max-width: 600px) {
+  .breadcrumb-wrap { height: 40px; padding: 0 16px; }
+  .breadcrumb-list { font-size: 12px; }
+  .breadcrumb-list > .breadcrumb-item:last-child { min-width: 0; flex-shrink: 1; }
 }

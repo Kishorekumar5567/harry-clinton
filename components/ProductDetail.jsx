@@ -9,7 +9,6 @@ import { useCart } from "./CartProvider";
 import WishlistHeart from "./WishlistHeart";
 import { PLACEHOLDER_IMAGE } from "./ProductCard";
 import ProductCard from "./ProductCard";
-import Breadcrumb from "./Breadcrumb";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 import ReviewsSection from "./ReviewsSection";
@@ -156,7 +155,6 @@ export default function ProductDetail({ product }) {
 
   return (
     <>
-      <Breadcrumb trail={[{ label: "Shop", href: "/suits" }, { label: displayTitle }]} />
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid items-start gap-10 md:grid-cols-2">
           {/* Left: Gallery (Image updates dynamically based on selected color) */}
@@ -283,7 +281,7 @@ export default function ProductDetail({ product }) {
                         onClick={() => handleColorChange(c.name)}
                         aria-label={`Select color ${c.name}`}
                         title={c.name}
-                        className={`group relative h-10 w-10 rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer ${
+                        className={`product-color-swatch group relative h-10 w-10 rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer ${
                           isSelected
                             ? "ring-2 ring-[#c6a15b] ring-offset-2 scale-110 shadow-md"
                             : "hover:scale-105 hover:ring-1 hover:ring-neutral-400 opacity-90 hover:opacity-100"
@@ -295,7 +293,7 @@ export default function ProductDetail({ product }) {
                       >
                         {isSelected && (
                           <span
-                            className={`w-2.5 h-2.5 rounded-full ${isLight ? "bg-neutral-950" : "bg-white"}`}
+                            className={`product-color-swatch__check w-2.5 h-2.5 rounded-full ${isLight ? "bg-neutral-950" : "bg-white"}`}
                           />
                         )}
                         {/* Luxury floating tooltip on hover */}
