@@ -166,6 +166,7 @@ export default function ProductDetail({ product }) {
                 alt={`${displayTitle} in ${selectedColor || "atelier colorway"}`}
                 fill
                 priority
+                unoptimized
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-all duration-300 ease-in-out"
               />
@@ -227,11 +228,12 @@ export default function ProductDetail({ product }) {
                         : "border-neutral-200 opacity-65 hover:opacity-100 hover:border-neutral-400"
                     }`}
                   >
-                    <Image
-                      src={src}
-                      alt={`${displayTitle} ${selectedColor} view ${i + 1}`}
-                      fill
-                      sizes="140px"
+                      <Image
+                        src={src}
+                        alt={`${displayTitle} ${selectedColor} view ${i + 1}`}
+                        fill
+                        unoptimized
+                        sizes="140px"
                       className="object-cover"
                     />
                   </button>
