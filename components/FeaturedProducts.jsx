@@ -46,7 +46,9 @@ export default function FeaturedProducts() {
           .slice(0, count);
 
         const mappedProducts = activeProducts.map((p) => {
-          const productMedia = (mediaData || []).filter((m) => m.product_id === p.product_id);
+          const productMedia = (mediaData || []).filter(
+            (m) => m.product_id === p.product_id && !m.product_variant_id
+          );
           const primaryMedia =
             productMedia.find((m) => m.isprimary === 1 || m.isprimary === true) || productMedia[0];
 
