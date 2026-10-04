@@ -165,6 +165,19 @@ function CollectionCard({ product }) {
 }
 
 const COLOR_DOTS = {
+  "obsidian black": { name: "Obsidian Black", hex: "#0a0a0a", border: "#222222" },
+  "platinum silver": { name: "Platinum Silver", hex: "#c0c0c0", border: "#9e9e9e" },
+  "royal black": { name: "Royal Black", hex: "#000000", border: "#333333" },
+  "luxury gold": { name: "Luxury Gold", hex: "#d4af37", border: "#b7950b" },
+  "velvet maroon": { name: "Velvet Maroon", hex: "#800000", border: "#5c0000" },
+  "royal cream": { name: "Royal Cream", hex: "#f5f5dc", border: "#d8d0b0" },
+  "emerald green": { name: "Emerald Green", hex: "#0b6623", border: "#145a32" },
+  "classic black": { name: "Classic Black", hex: "#000000", border: "#333333" },
+  "midnight blue": { name: "Midnight Blue", hex: "#191970", border: "#0f1a4a" },
+  "silver mist": { name: "Silver Mist", hex: "#c0c0c0", border: "#a9a9a9" },
+  "pearl white": { name: "Pearl White", hex: "#f8f8ff", border: "#dcdcdc" },
+  "champagne gold": { name: "Champagne Gold", hex: "#f7e7ce", border: "#d6c29c" },
+  "ruby red": { name: "Ruby Red", hex: "#9b111e", border: "#7b0d18" },
   black: { name: "Black", hex: "#111111" },
   burgundy: { name: "Burgundy", hex: "#4f111e" },
   red: { name: "Red", hex: "#8a1c1c" },
@@ -182,9 +195,12 @@ const COLOR_DOTS = {
 };
 
 function colorDots(product) {
-  const text = `${product.name || ""} ${(product.colors || []).join(" ")}`.toLowerCase();
-  const found = Object.entries(COLOR_DOTS)
-    .filter(([name]) => new RegExp(`\\b${name}\\b`, "i").test(text))
-    .map(([, color]) => color);
+  const keys = Object.keys(COLOR_DOTS).sort((a, b) => b.length - a.length);
+  const sources = [...(product.colors || []), product.name || ""];
+  const found = [];
+  for (const source of sources) {
+    const key = keys.find((name) => new RegExp(`\\b${name}\\b`, "i").test(String(source)));
+    if (key && !found.some((color) => color.name === COLOR_DOTS[key].name)) found.push(COLOR_DOTS[key]);
+  }
   return found.length > 0 ? found.slice(0, 4) : [{ name: "Original", hex: "#777777" }];
 }
