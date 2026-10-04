@@ -122,11 +122,10 @@ export default function ShowcaseCarousel({
     goToSlide(activeIndex);
   }, [activeIndex, goToSlide]);
 
-  // Hide broken cards after they error, so a carousel with all-placeholder data collapses instead of showing 9x "HC Spotlight" alt text.
-  const visibleItems = items.filter((_, i) => !failed[i]);
-  if (visibleItems.length === 0) return null;
-
   const onImgError = (idx) => setFailed((m) => ({ ...m, [idx]: true }));
+  // Keep the section visible while the live backend is slow or unavailable.
+  // API content replaces these fallback slides as soon as it arrives.
+  const displayItems = items.length > 0 ? items : fallbackItems;
 
   return (
     <div style={{ position: "relative", width: "100%", height: isMobile ? "300px" : "500px" }}>
@@ -162,7 +161,7 @@ export default function ShowcaseCarousel({
         className="hc-slider"
       >
         <div style={{ display: "inline-flex" }}>
-          {items.map((item, i) =>
+          {displayItems.map((item, i) =>
             failed[i] ? null : (
               <div
                 key={i}
@@ -195,7 +194,7 @@ export default function ShowcaseCarousel({
       </div>
 
       <div className="hc-slider-dots">
-        {items.map((_, i) =>
+        {displayItems.map((_, i) =>
           failed[i] ? null : (
             <span
               key={i}
