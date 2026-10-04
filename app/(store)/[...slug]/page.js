@@ -141,7 +141,7 @@ export default async function SlugPage({ params }) {
         <CollectionView
           meta={{
             title: db.title,
-            eyebrow: "Style by HC",
+             eyebrow: db.row?.eyebrow || "Style by HC",
             description: db.row?.description || "",
             bannerImage,
           }}
@@ -233,7 +233,7 @@ export default async function SlugPage({ params }) {
           mediaList.find((m) => m.style_collection_id === matched.style_collection_id);
         meta = {
           title: matched.title || matched.style_collection_name || def.title,
-          eyebrow: matched.eyebrow || matched.eyebrow_text || matched.subtitle || def.eyebrow,
+           eyebrow: matched.eyebrow || matched.eyebrow_text || matched.subtitle || def.eyebrow,
           description: matched.description || matched.short_description || def.description,
           bannerImage:
             resolveUploadUrl(matchedMedia?.media_url) ||
