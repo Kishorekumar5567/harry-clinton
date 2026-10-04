@@ -17,6 +17,7 @@ export default function ShowcaseCarousel({
   intervalMs = 1800,
   backward = false,
   hasBorder = true,
+  topBorder = false,
 }) {
   const router = useRouter();
   const [items, setItems] = useState([]);
@@ -224,7 +225,7 @@ export default function ShowcaseCarousel({
           scrollbar-width: none;
           -ms-overflow-style: none;
           border-bottom: ${hasBorder ? "10px solid white" : "none"};
-           border-top: none;
+           border-top: ${hasBorder && topBorder ? "10px solid white" : "none"};
           border-left: ${hasBorder ? "10px solid white" : "none"};
           border-right: none;
           height: 100%;

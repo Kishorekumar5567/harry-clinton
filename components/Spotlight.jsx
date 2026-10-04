@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { homeKV } from "@/lib/api";
 import ShowcaseCarousel from "./ShowcaseCarousel";
 
-// Spotlight + Style carousels with admin titles, exactly matching hc-home-page
+// Spotlight + Style carousels with admin titles, matching the shared slider
+// frame applied by the reference styles to both carousel sections.
 function useHomeTitle(column, fallback) {
   const [title, setTitle] = useState(fallback);
 
@@ -37,6 +38,7 @@ export function Spotlight() {
       fallbackLink="/hc-spotlight"
       intervalMs={1800}
       hasBorder={true}
+      topBorder={true}
     />
   );
 }
@@ -54,7 +56,7 @@ export function StyleByHC() {
       fallbackLink="/style-by-hc"
       intervalMs={2000}
       backward={true}
-      hasBorder={false}
+      hasBorder={true}
     />
   );
 }
