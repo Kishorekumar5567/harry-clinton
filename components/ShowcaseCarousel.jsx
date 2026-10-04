@@ -132,12 +132,12 @@ export default function ShowcaseCarousel({
       <div
         style={{
           position: "absolute",
-          bottom: isMobile ? "20px" : "36px",
+          bottom: isMobile ? "16px" : "36px",
           left: isMobile ? "16px" : "36px",
           width: "fit-content",
           maxWidth: isMobile ? "85vw" : "700px",
           padding: isMobile ? "8px 20px" : "12px 32px",
-          backgroundColor: "#ffffff",
+          backgroundColor: "rgba(255, 255, 255, 0.72)",
           color: "#000000",
           fontSize: isMobile ? "22px" : "38px",
           fontWeight: "bold",
@@ -224,8 +224,8 @@ export default function ShowcaseCarousel({
           scrollbar-width: none;
           -ms-overflow-style: none;
           border-bottom: ${hasBorder ? "10px solid white" : "none"};
-          border-top: ${hasBorder ? "10px solid white" : "none"};
-          border-left: none;
+           border-top: none;
+          border-left: ${hasBorder ? "10px solid white" : "none"};
           border-right: none;
           height: 100%;
         }
