@@ -209,11 +209,13 @@ export default async function SlugPage({ params }) {
   if (resolved.type === "collection") {
     const def = COLLECTIONS[resolved.collection];
     const data = await getCategoryData(resolved);
-    let meta = {
+       let meta = {
       title: def.title,
       eyebrow: def.eyebrow,
       description: def.description,
-      bannerImage: def.bannerImage || null,
+       bannerImage: def.bannerImage || null,
+       ctaText: "Explore collection",
+       ctaLink: "#collection-products",
     };
     try {
       const [collections, media] = await Promise.all([
@@ -232,9 +234,11 @@ export default async function SlugPage({ params }) {
           mediaList.find((m) => m.style_collection_id === matched.style_collection_id && m.isprimary) ||
           mediaList.find((m) => m.style_collection_id === matched.style_collection_id);
         meta = {
-          title: matched.title || matched.style_collection_name || def.title,
+           title: matched.title || matched.collection_name || matched.style_collection_name || def.title,
            eyebrow: matched.eyebrow || matched.eyebrow_text || matched.subtitle || def.eyebrow,
-          description: matched.description || matched.short_description || def.description,
+           description: matched.description || matched.short_description || def.description,
+           ctaText: matched.cta_text || "Explore collection",
+           ctaLink: matched.redirect_link || "#collection-products",
           bannerImage:
             resolveUploadUrl(matchedMedia?.media_url) ||
             resolveUploadUrl(matched.banner_image_url || matched.image_url) ||

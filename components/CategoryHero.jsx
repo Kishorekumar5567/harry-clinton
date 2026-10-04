@@ -2,19 +2,23 @@
 
 import { useEffect, useRef } from "react";
 
-export default function CategoryHero({ image, title, subtitle }) {
-  const heroRef = useRef(null);
+export default function CategoryHero({ image, title, subtitle, description, ctaText = "Shop Now", ctaLink = "#category-grid" }) {
   const imageRef = useRef(null);
 
   useEffect(() => {
     const updateParallax = () => {
-      const hero = heroRef.current;
       const media = imageRef.current;
-      if (!hero || !media) return;
+      if (!media) return;
 
-      const bounds = hero.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(bounds.height, -bounds.top));
-      media.style.transform = `translate3d(0, ${progress * -0.4}px, 0)`;
+      const hero = media.parentElement;
+      if (!hero) return;
+
+      // Reference-style parallax: image rises at 0.4x the hero's scroll
+      // progress, clamped to the extra image height so no white shows.
+      const scrolled = Math.max(0, -hero.getBoundingClientRect().top);
+      const maxOffset = Math.max(0, media.offsetHeight - hero.clientHeight);
+      const offset = Math.min(scrolled * 0.4, maxOffset);
+      media.style.transform = `translate3d(0, ${-offset}px, 0)`;
     };
 
     let frame = 0;
@@ -41,16 +45,19 @@ export default function CategoryHero({ image, title, subtitle }) {
   };
 
   return (
-    <section ref={heroRef} className="category-hero">
+    <section className="category-hero">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img ref={imageRef} src={image} alt={title} className="category-hero__image" />
       <div className="category-hero__shade" />
       <div className="category-hero__content">
         <h1 className="category-hero__title">{title}</h1>
         <h2 className="category-hero__subtitle">{subtitle}</h2>
-        <button type="button" className="category-hero__button" onClick={scrollToCategories}>
-          Shop Now
-        </button>
+        {description && <p className="category-hero__description">{description}</p>}
+        {ctaLink?.startsWith("#") ? (
+          <button type="button" className="category-hero__button" onClick={scrollToCategories}>{ctaText}</button>
+        ) : (
+          <a href={ctaLink || "#category-grid"} className="category-hero__button">{ctaText}</a>
+        )}
       </div>
     </section>
   );

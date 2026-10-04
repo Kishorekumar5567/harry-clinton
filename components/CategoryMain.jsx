@@ -36,23 +36,25 @@ export default async function CategoryMain({ category }) {
     return resolveUploadUrl(value);
   };
 
-  const heroImage = categoryMedia(getSetting(settingKey("hero_image"))) || main.heroImage;
-  const heroTitle = getSetting(settingKey("hero_title")) || main.heroTitle;
-  const heroSubtitle = getSetting(settingKey("hero_subtitle")) || main.heroSubtitle;
-  const marquee = parseWords(getSetting(settingKey("marquee_words"))) || main.marquee;
-
   const matchedCategory = (Array.isArray(cats) ? cats : []).find(
     (row) =>
       row.menu_category_slug?.toLowerCase() === category.toLowerCase() ||
       row.menu_category_name?.toLowerCase() === category.toLowerCase()
   );
 
+  const heroImage = categoryMedia(matchedCategory?.hero_image_url) || categoryMedia(getSetting(settingKey("hero_image"))) || main.heroImage;
+  const heroTitle = matchedCategory?.hero_title || getSetting(settingKey("hero_title")) || main.heroTitle;
+  const heroSubtitle = matchedCategory?.hero_subtitle || getSetting(settingKey("hero_subtitle")) || main.heroSubtitle;
+  const heroDescription = matchedCategory?.hero_description || getSetting(settingKey("hero_description")) || "";
+  const heroCtaText = matchedCategory?.hero_cta_text || getSetting(settingKey("hero_cta_text")) || "Shop Now";
+  const heroCtaLink = matchedCategory?.hero_cta_link || getSetting(settingKey("hero_cta_link")) || "#category-grid";
+  const marquee = parseWords(matchedCategory?.marquee_words) || parseWords(getSetting(settingKey("marquee_words"))) || main.marquee;
+
   let subcategories = main.subs;
   if (matchedCategory) {
     const apiSubcategories = (Array.isArray(subs) ? subs : [])
       .filter((row) => String(row.menu_category_id) === String(matchedCategory.menu_category_id))
       .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-      .slice(0, 5)
       .map((row, index) => {
         const fallback = main.subs[index] || {};
         const name = row.menu_subcategory_name || fallback.name || "";
@@ -67,16 +69,14 @@ export default async function CategoryMain({ category }) {
         };
       });
     if (apiSubcategories.length > 0) {
-      subcategories = [
-        ...apiSubcategories,
-        ...main.subs.slice(apiSubcategories.length),
-      ].slice(0, 5);
+      subcategories = apiSubcategories;
     }
   }
+  const displayedSubcategories = subcategories;
 
   return (
     <>
-      <CategoryHero image={heroImage} title={heroTitle} subtitle={heroSubtitle} />
+      <CategoryHero image={heroImage} title={heroTitle} subtitle={heroSubtitle} description={heroDescription} ctaText={heroCtaText} ctaLink={heroCtaLink} />
 
       <div className="category-marquee" aria-label={marquee.join(" ")}>
         <div className="category-marquee__track" aria-hidden="true">
@@ -92,13 +92,13 @@ export default async function CategoryMain({ category }) {
 
       <section id="category-grid" className="category-cards" aria-label={`${heroTitle} categories`}>
         <div className="category-cards__row category-cards__row--three">
-          {subcategories.slice(0, 3).map((item, index) => (
+          {displayedSubcategories.slice(0, 3).map((item, index) => (
             <CategoryCard key={`${item.name}-${index}`} item={item} />
           ))}
         </div>
-        {subcategories.length > 3 && (
+        {displayedSubcategories.length > 3 && (
           <div className="category-cards__row category-cards__row--two">
-            {subcategories.slice(3, 5).map((item, index) => (
+            {displayedSubcategories.slice(3).map((item, index) => (
               <CategoryCard key={`${item.name}-${index + 3}`} item={item} />
             ))}
           </div>

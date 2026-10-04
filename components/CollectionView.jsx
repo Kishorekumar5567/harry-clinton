@@ -51,8 +51,8 @@ export default function CollectionView({ meta, products, sizes = [], clothTypes 
           <span>{meta.eyebrow}</span>
           <h1>{meta.title}</h1>
           <p>{meta.description}</p>
-          <a href="#collection-products" className="collection-hero__action">
-            Explore collection <span aria-hidden>→</span>
+          <a href={meta.ctaLink || "#collection-products"} className="collection-hero__action">
+            {meta.ctaText || "Explore collection"} <span aria-hidden>→</span>
           </a>
         </div>
       </section>
