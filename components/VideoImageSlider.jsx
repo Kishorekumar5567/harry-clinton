@@ -376,6 +376,12 @@ export default function VideoImageSlider() {
         .slider-dot {
           width: 8px;
           height: 8px;
+          min-width: 8px;
+          min-height: 8px;
+          aspect-ratio: 1 / 1;
+          display: block;
+          appearance: none;
+          -webkit-appearance: none;
           border-radius: 50% !important;
           background-color: rgba(255, 255, 255, 0.45);
           border: none;
@@ -397,6 +403,8 @@ export default function VideoImageSlider() {
           .slider-dot {
             width: 6px;
             height: 6px;
+            min-width: 6px;
+            min-height: 6px;
           }
         }
 
