@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { inr } from "@/lib/api";
+import { generatedColor } from "@/lib/colors";
 import "./collection-view.css";
 
 // Collection catalog markup mirrors the reference CollectionPage template.
@@ -200,7 +201,8 @@ function colorDots(product) {
   const found = [];
   for (const source of sources) {
     const key = keys.find((name) => new RegExp(`\\b${name}\\b`, "i").test(String(source)));
-    if (key && !found.some((color) => color.name === COLOR_DOTS[key].name)) found.push(COLOR_DOTS[key]);
+    const color = key ? COLOR_DOTS[key] : (source.trim() ? generatedColor(source) : null);
+    if (color && !found.some((item) => item.name === color.name)) found.push(color);
   }
   return found.length > 0 ? found.slice(0, 4) : [{ name: "Original", hex: "#777777" }];
 }

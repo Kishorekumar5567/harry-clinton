@@ -6,6 +6,7 @@ import Image from "next/image";
 import { apiCached, resolveUploadUrl } from "@/lib/api";
 import ProductDetail from "./ProductDetail";
 import { PLACEHOLDER_IMAGE } from "./ProductCard";
+import { generatedColor } from "@/lib/colors";
 
 // Fallback renderer for product pages.
 //
@@ -243,7 +244,7 @@ export default function ProductDetailLoader({ id }) {
 
         const colorVariants = colorList.map((colName, cIdx) => {
           const key = colName.toLowerCase();
-          const meta = LUXURY_PALETTE[key] || { name: colName.charAt(0).toUpperCase() + colName.slice(1), hex: "#333333" };
+          const meta = LUXURY_PALETTE[key] || generatedColor(colName);
           const isCurrent = colName.toLowerCase() === selfColorName.toLowerCase();
           if (isCurrent) {
             return {
