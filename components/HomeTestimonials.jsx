@@ -296,8 +296,8 @@ export default function HomeTestimonials() {
                     type="button"
                     onClick={() => goToPage(idx, idx >= page ? 1 : -1)}
                     aria-label={`Go to review page ${idx + 1}`}
-                    className={`h-1.5 transition-all duration-200 cursor-pointer ${
-                      idx === page ? "w-6 bg-[#c6a15b]" : "w-2 bg-neutral-300 hover:bg-neutral-400"
+                    className={`h-2 w-2 rounded-full transition-all duration-200 cursor-pointer ${
+                      idx === page ? "bg-[#c6a15b]" : "bg-neutral-300 hover:bg-neutral-400"
                     }`}
                   />
                 ))}
