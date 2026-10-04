@@ -213,7 +213,7 @@ export default async function SlugPage({ params }) {
       title: def.title,
       eyebrow: def.eyebrow,
       description: def.description,
-      bannerImage: null,
+      bannerImage: def.bannerImage || null,
     };
     try {
       const [collections, media] = await Promise.all([
@@ -238,6 +238,7 @@ export default async function SlugPage({ params }) {
           bannerImage:
             resolveUploadUrl(matchedMedia?.media_url) ||
             resolveUploadUrl(matched.banner_image_url || matched.image_url) ||
+            def.bannerImage ||
             null,
         };
       }
