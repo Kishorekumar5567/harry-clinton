@@ -224,7 +224,7 @@ export default async function SlugPage({ params }) {
       const mediaList = Array.isArray(media) ? media : [];
       const matched = list.find(
         (sc) =>
-          (sc.style_collection_slug || sc.style_collection_name?.toLowerCase().replace(/\s+/g, "-")) ===
+          (sc.collection_slug || sc.style_collection_slug || sc.collection_name?.toLowerCase().replace(/\s+/g, "-")) ===
           def.category
       );
       if (matched) {
@@ -238,7 +238,6 @@ export default async function SlugPage({ params }) {
           bannerImage:
             resolveUploadUrl(matchedMedia?.media_url) ||
             resolveUploadUrl(matched.banner_image_url || matched.image_url) ||
-            def.bannerImage ||
             null,
         };
       }
