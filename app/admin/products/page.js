@@ -509,7 +509,28 @@ function ProductWorkspace({ product, onBack }) {
       setDetailsSaving(false);
     }
   };
+  const deleteDetails = async () => {
+    const ok = await confirm({ title: "Remove product details?", message: "The structured product details will be removed from the storefront.", confirmLabel: "Remove", danger: true });
+    if (!ok) return;
+    try {
+      await apiFetch("/Product-Details", { method: "DELETE", body: { product_id: pid } });
+      setDetails({ fabric_details: "", trims_used: "", special_detailing: "", lining_details: "", product_fit: "", model_fit: "", construction_type: "", sleeve_type: "", sleeve_pattern: "", wash_care: "", sleeve_length: "" });
+      setMsg("Product details removed.");
+      reload();
+    } catch (err) {
+      setMsg(friendlyError(err, "Could not remove product details."));
+    }
+  };
   const setDetail = (key) => (event) => setDetails((current) => ({ ...current, [key]: event.target.value }));
+  const updateMediaRole = async (mediaItem, role) => {
+    try {
+      await apiFetch("/Products-Media", { method: "PUT", body: { product_media_id: mediaItem.product_media_id, media_role: role, luu: "ADMIN_PORTAL" } });
+      setMsg("Media role updated.");
+      reload();
+    } catch (err) {
+      setMsg(friendlyError(err, "Could not update media role."));
+    }
+  };
   const updateSizeChart = (sizeId, field, value) => setSizeChart((rows) => {
     const existing = rows.find((row) => row.size_id === sizeId) || { size_id: sizeId };
     const next = { ...existing, [field]: value };
@@ -528,6 +549,17 @@ function ProductWorkspace({ product, onBack }) {
       setMsg(friendlyError(err, "Could not save size chart."));
     } finally {
       setSizeChartSaving(false);
+    }
+  };
+  const deleteSizeMeasurement = async (row) => {
+    const ok = await confirm({ title: "Remove this measurement?", message: `Remove the ${row.size_name || "selected size"} row from this product's size chart?`, confirmLabel: "Remove", danger: true });
+    if (!ok) return;
+    try {
+      await apiFetch("/Products-Size-Charts", { method: "DELETE", body: { product_id: pid, size_id: row.size_id } });
+      setMsg("Size measurement removed.");
+      reload();
+    } catch (err) {
+      setMsg(friendlyError(err, "Could not remove size measurement."));
     }
   };
   const sizeName = (id) => sizes.find((s) => s.size_id === id)?.size_name || id || "—";
@@ -899,9 +931,7 @@ function ProductWorkspace({ product, onBack }) {
             <input value={details.sleeve_length || ""} onChange={setDetail("sleeve_length")} placeholder="Example: 25 inches" className={`${input} mt-1`} />
           </label>
         </div>
-        <button type="submit" disabled={detailsSaving} className="mt-5 bg-neutral-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gold hover:text-neutral-950 disabled:opacity-50">
-          {detailsSaving ? "Saving..." : "Save Product Details"}
-        </button>
+        <div className="mt-5 flex flex-wrap gap-2"><button type="submit" disabled={detailsSaving} className="bg-neutral-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gold hover:text-neutral-950 disabled:opacity-50">{detailsSaving ? "Saving..." : "Save Product Details"}</button><button type="button" onClick={deleteDetails} className="border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50">Remove Details</button></div>
       </form>
 
       <form onSubmit={saveSizeChart} className="mt-6 border border-neutral-200 bg-white p-5 shadow-sm">
@@ -909,8 +939,8 @@ function ProductWorkspace({ product, onBack }) {
           <div><h2 className="flex items-center gap-2 text-lg font-bold text-neutral-900"><i className="bi bi-rulers text-gold-deep" /> Size Chart</h2><p className="mt-1 text-xs text-neutral-500">Measurements are product-specific and can be entered for every available size.</p></div>
           <select value={sizeUnit} onChange={(e) => setSizeUnit(e.target.value)} className={`${input} w-auto`}><option value="in">Inches</option><option value="cm">Centimetres</option></select>
         </div>
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[720px] text-left text-sm"><thead><tr className="border-b border-neutral-200 text-xs uppercase tracking-wide text-neutral-500"><th className="p-2">Size</th>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <th key={field} className="p-2">{field.replace("_", " ")}</th>)}</tr></thead><tbody>
-          {sizes.filter((s) => variants.some((v) => v.size_id === s.size_id)).map((s) => { const row = sizeChart.find((r) => r.size_id === s.size_id) || {}; return <tr key={s.size_id} className="border-b border-neutral-100"><td className="p-2 font-semibold">{s.size_name}</td>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <td key={field} className="p-2"><input type="number" step="0.01" min="0" value={row[field] ?? ""} onChange={(e) => updateSizeChart(s.size_id, field, e.target.value)} className={`${input} w-28`} /></td>)}</tr>; })}
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[800px] text-left text-sm"><thead><tr className="border-b border-neutral-200 text-xs uppercase tracking-wide text-neutral-500"><th className="p-2">Size</th>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <th key={field} className="p-2">{field.replace("_", " ")}</th>)}<th className="p-2">Actions</th></tr></thead><tbody>
+          {sizes.filter((s) => variants.some((v) => v.size_id === s.size_id)).map((s) => { const row = sizeChart.find((r) => r.size_id === s.size_id) || {}; return <tr key={s.size_id} className="border-b border-neutral-100"><td className="p-2 font-semibold">{s.size_name}</td>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <td key={field} className="p-2"><input type="number" step="0.01" min="0" value={row[field] ?? ""} onChange={(e) => updateSizeChart(s.size_id, field, e.target.value)} className={`${input} w-28`} /></td>)}<td className="p-2"><button type="button" disabled={!row.product_size_measurement_id} onClick={() => deleteSizeMeasurement(row)} className="text-xs font-semibold text-red-600 underline disabled:text-neutral-300">Remove</button></td></tr>; })}
         </tbody></table></div>
         {sizes.filter((s) => variants.some((v) => v.size_id === s.size_id)).length === 0 && <p className="mt-3 text-sm text-neutral-500">Add size variants first to build this chart.</p>}
         <button type="submit" disabled={sizeChartSaving} className="mt-5 bg-neutral-950 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{sizeChartSaving ? "Saving..." : "Save Size Chart"}</button>
@@ -1130,7 +1160,7 @@ function ProductWorkspace({ product, onBack }) {
                   e.currentTarget.style.padding = "12px";
                 }}
               />
-               <p className="mt-1 truncate text-xs">{m.alt_text || "—"}{m.media_role ? ` • ${m.media_role}` : ""}{m.isprimary ? " • Primary" : ""}</p>
+               <div className="mt-1 flex items-center gap-1"><select value={m.media_role || "front"} onChange={(e) => updateMediaRole(m, e.target.value)} className="max-w-[120px] border border-neutral-200 bg-white px-1 py-0.5 text-[10px] uppercase"><option value="front">Front</option><option value="side">Side</option><option value="back">Back</option><option value="close-up">Close-up</option><option value="detailing">Detailing</option><option value="video">Video</option></select>{m.isprimary ? <span className="text-[10px]">• Primary</span> : null}</div>
               <button type="button" onClick={() => deleteMedia(m)} className="mt-1 text-xs text-red-600 underline underline-offset-2 transition-colors hover:text-red-700">Delete</button>
             </div>
           ))}
