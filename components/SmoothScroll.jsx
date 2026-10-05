@@ -17,19 +17,14 @@ export default function SmoothScroll({ children }) {
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 1.8,
+      autoRaf: true,
+      anchors: true,
+      stopInertiaOnNavigate: true,
     });
 
     window.lenis = lenis;
 
-    let rafId;
-    function update(time) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(update);
-    }
-    rafId = requestAnimationFrame(update);
-
     return () => {
-      cancelAnimationFrame(rafId);
       lenis.destroy();
       delete window.lenis;
     };

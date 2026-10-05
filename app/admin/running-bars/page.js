@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { apiFetch, unwrap, revalidateSite, friendlyError } from "@/lib/api";
+import { apiFetch, unwrap, revalidateSite, friendlyError, homeKV, upsertHomeKV } from "@/lib/api";
 import ActiveToggle from "@/components/ActiveToggle";
 import HtmlEditor from "../HtmlEditor";
 import Pagination, { paginate } from "../Pagination";
@@ -24,8 +24,11 @@ const iconBtn =
 
 const stripTags = (s) => String(s || "").replace(/<[^>]*>/g, "").trim();
 const isHtml = (s) => /<[a-z][\s\S]*>/i.test(String(s || ""));
+const GLOBAL_LOOP_KEY = "running_bar_loop_seconds";
+const SPEED_MULTIPLIER = 1.5;
+const DEFAULT_LOOP_SECONDS = 10;
 
-// Running Bar & Items: group list (name, item count, total seconds,
+// Running Bar & Items: group list (name, item count, global loop duration,
 // toggle + delete icons) -> click a group to drill into its children on
 // the same page -> create items via popup -> drag-and-drop order + save.
 export default function AdminRunningBarsPage() {
@@ -40,8 +43,10 @@ export default function AdminRunningBarsPage() {
   const [openBarId, setOpenBarId] = useState(null);
   // null | { id?, name, isactive } — create/rename-group popup.
   const [barModal, setBarModal] = useState(null);
-  // null | { id?, itemsdata, duration_seconds, show_logo, isactive }.
+  // null | { id?, itemsdata, show_logo, isactive }.
   const [itemModal, setItemModal] = useState(null);
+  const [loopSeconds, setLoopSeconds] = useState(String(DEFAULT_LOOP_SECONDS));
+  const [savingLoop, setSavingLoop] = useState(false);
   // Open popup owns the scroll — page behind is frozen.
   useLockBody(!!barModal || !!itemModal);
   // false | array of item ids in manual order — reorder mode.
@@ -54,10 +59,12 @@ export default function AdminRunningBarsPage() {
     Promise.all([
       apiFetch("/Running-Bar", { params: { includeInactive: 1 } }).then(unwrap).catch(() => []),
       apiFetch("/Running-Bar-Items", { params: { includeInactive: 1 } }).then(unwrap).catch(() => []),
-    ]).then(([b, it]) => {
+      homeKV().catch(() => ({})),
+    ]).then(([b, it, settings]) => {
       if (!live) return;
       setBars(Array.isArray(b) ? b : []);
       setItems(Array.isArray(it) ? it : []);
+      if (settings[GLOBAL_LOOP_KEY]) setLoopSeconds(String(settings[GLOBAL_LOOP_KEY]));
     });
     return () => {
       live = false;
@@ -67,6 +74,26 @@ export default function AdminRunningBarsPage() {
   const reload = () => {
     setRefresh((n) => n + 1);
     revalidateSite();
+  };
+
+  const saveLoopSeconds = async (e) => {
+    e?.preventDefault();
+    const value = Number(loopSeconds);
+    if (!Number.isFinite(value) || value <= 0) {
+      setMsg("Please enter a full-loop duration greater than 0 seconds.");
+      return;
+    }
+    setSavingLoop(true);
+    try {
+      await upsertHomeKV({ [GLOBAL_LOOP_KEY]: Math.round(value) });
+      setLoopSeconds(String(Math.round(value)));
+      setMsg("Global running-bar duration saved.");
+      toast?.success("Global running-bar duration saved.");
+    } catch (err) {
+      fail(err, "Could not save global duration.");
+    } finally {
+      setSavingLoop(false);
+    }
   };
 
   const liveBars = useMemo(
@@ -96,9 +123,8 @@ export default function AdminRunningBarsPage() {
     for (const it of liveItems) {
       if (it.isactive !== 1 && it.isactive !== true) continue;
       const id = String(it.running_bar_id);
-      map[id] = map[id] || { count: 0, seconds: 0 };
+      map[id] = map[id] || { count: 0 };
       map[id].count += 1;
-      map[id].seconds += Number(it.duration_seconds) || 0;
     }
     return map;
   }, [liveItems]);
@@ -194,14 +220,13 @@ export default function AdminRunningBarsPage() {
 
   // ---- items ----
   const openCreateItem = () => {
-    setItemModal({ id: null, itemsdata: "", duration_seconds: 5, show_logo: true, isactive: true });
+    setItemModal({ id: null, itemsdata: "", show_logo: true, isactive: true });
   };
 
   const openEditItem = (it) => {
     setItemModal({
       id: it.running_bar_item_id,
       itemsdata: it.itemsdata || "",
-      duration_seconds: it.duration_seconds ?? 5,
       show_logo: it.show_logo === 0 || it.show_logo === false ? false : true,
       isactive: it.isactive === 1 || it.isactive === true,
     });
@@ -210,21 +235,15 @@ export default function AdminRunningBarsPage() {
   const saveItem = async (e) => {
     e?.preventDefault();
     const text = (itemModal?.itemsdata || "").trim();
-    const secs = Number(itemModal?.duration_seconds);
     // Rich editor emits <p></p> for empty — visible text is the real check.
     if (!stripTags(text)) {
       setMsg("Please enter the item text or HTML.");
-      return;
-    }
-    if (!Number.isFinite(secs) || secs <= 0) {
-      setMsg("Please enter duration in seconds (greater than 0).");
       return;
     }
     setBusy(true);
     try {
       const body = {
         itemsdata: text,
-        duration_seconds: Math.round(secs),
         show_logo: itemModal?.show_logo ? 1 : 0,
         isactive: itemModal?.isactive ? 1 : 0,
         luu: "ADMIN_PORTAL",
@@ -365,6 +384,25 @@ export default function AdminRunningBarsPage() {
           {msg}
         </p>
       )}
+      <form onSubmit={saveLoopSeconds} className="mt-4 flex flex-wrap items-end gap-3 border border-neutral-200 bg-white p-4 shadow-sm">
+        <label className="min-w-[220px] flex-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+          Full loop duration (seconds)
+          <input
+            type="number"
+            min={1}
+            step={1}
+            value={loopSeconds}
+            onChange={(e) => setLoopSeconds(e.target.value)}
+            className={`${inputCls} mt-1 font-normal normal-case tracking-normal`}
+          />
+        </label>
+        <div className="pb-2 text-xs text-neutral-500">
+          Speed: <strong className="text-neutral-800">1.5×</strong> • Effective frontend loop: <strong className="text-neutral-800">{Math.max(Number(loopSeconds) / SPEED_MULTIPLIER || 0, 5).toFixed(1)}s</strong>
+        </div>
+        <button type="submit" disabled={savingLoop} className={btnPrimary}>
+          {savingLoop ? "Saving..." : "Save global speed"}
+        </button>
+      </form>
 
       {!openBar ? (
         <>
@@ -386,7 +424,7 @@ export default function AdminRunningBarsPage() {
                 <tr className="bg-[#17161a] text-[11px] font-bold uppercase tracking-wider text-white">
                   <th className={thCls}>Group</th>
                   <th className={thCls}>Items</th>
-                  <th className={thCls}>Total duration</th>
+              <th className={thCls}>Global loop</th>
                   <th className="w-[110px] px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
@@ -416,7 +454,7 @@ export default function AdminRunningBarsPage() {
                           )}
                         </td>
                         <td className={tdCls}>{st.count} item(s)</td>
-                        <td className={tdCls}>{st.seconds}s total</td>
+                    <td className={tdCls}>{Math.max(Number(loopSeconds) / SPEED_MULTIPLIER, 5).toFixed(1)}s effective</td>
                         <td className="whitespace-nowrap px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                           <button type="button" onClick={() => setBarModal({ id: b.running_bar_id, name: b.running_bar_name, isactive: b.isactive === 1 || b.isactive === true })} title="Rename group" className={`${iconBtn} mr-1`}>
                             <i className="bi bi-pencil" />
@@ -488,7 +526,7 @@ export default function AdminRunningBarsPage() {
 
           <h2 className="mt-2 font-display text-xl font-bold text-neutral-900">{openBar.running_bar_name}</h2>
           <p className="mt-1 text-xs text-neutral-500">
-            {openItems.length} item(s) • {openItems.reduce((s, it) => s + (Number(it.duration_seconds) || 0), 0)}s total
+            {openItems.length} item(s) • Global loop: {Number(loopSeconds) || DEFAULT_LOOP_SECONDS}s → {Math.max((Number(loopSeconds) || DEFAULT_LOOP_SECONDS) / SPEED_MULTIPLIER, 5).toFixed(1)}s effective
             {orderMode ? " • drag rows by the grip to reorder, then Save order" : ""}
           </p>
 
@@ -499,7 +537,6 @@ export default function AdminRunningBarsPage() {
                   {orderMode && <th className="w-[44px] px-4 py-3" />}
                   <th className={thCls}>#</th>
                   <th className={thCls}>Text</th>
-                  <th className={thCls}>Secs</th>
                   <th className={thCls}>Logo</th>
                   <th className="w-[150px] px-4 py-3 text-right">Actions</th>
                 </tr>
@@ -507,7 +544,7 @@ export default function AdminRunningBarsPage() {
               <tbody>
                 {shownItems.length === 0 ? (
                   <tr>
-                <td colSpan={orderMode ? 6 : 5} className="p-5 text-center text-neutral-500">
+                <td colSpan={orderMode ? 5 : 4} className="p-5 text-center text-neutral-500">
                   No items yet — add the first one.
                 </td>
                   </tr>
@@ -537,7 +574,6 @@ export default function AdminRunningBarsPage() {
                             </span>
                           )}
                         </td>
-                        <td className={tdCls}>{Number(it.duration_seconds) || 0}s</td>
                         <td className={tdCls}>
                           {orderMode ? (
                             <span className="text-xs text-neutral-400">—</span>
@@ -650,16 +686,6 @@ export default function AdminRunningBarsPage() {
                 />
               </div>
             </div>
-            <label className="mt-4 block text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              Duration (seconds)
-              <input
-                type="number"
-                min={1}
-                value={itemModal.duration_seconds}
-                onChange={(e) => setItemModal({ ...itemModal, duration_seconds: e.target.value })}
-                className={`${inputCls} mt-1 font-normal`}
-              />
-            </label>
             <label className="mt-4 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-neutral-500">
               Logo after item
               <ActiveToggle

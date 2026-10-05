@@ -22,11 +22,12 @@
   position: absolute;
   inset: 0 0 auto;
   width: 100%;
-  /* 40% taller than the hero so the -0.4x parallax never runs past the
-     image's bottom edge and exposes the white background */
-  height: 140%;
+  /* Keep extra image below the hero while it moves upward. The additional
+     buffer prevents a white gap at the end of the parallax on all ratios. */
+  height: 150%;
   object-fit: cover;
   object-position: center top;
+  display: block;
   will-change: transform;
   opacity: 1;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiCached } from "@/lib/api";
+import { apiCached, homeKV } from "@/lib/api";
 import MarqueeTape from "./MarqueeTape";
 
 // Running bar — the white strip BELOW the hero slider.
@@ -12,8 +12,9 @@ import MarqueeTape from "./MarqueeTape";
 //   ordered by display_order ASC
 // - tape speed honors the DB: loop time = sum of duration_seconds
 const DEFAULT_SLIDES = [
-  { text: "Enjoy an Exclusive 50% Privilege on All Orders Today Only !", secs: 5, showLogo: true },
+  { text: "Enjoy an Exclusive 50% Privilege on All Orders Today Only !", showLogo: true },
 ];
+const DEFAULT_LOOP_SECONDS = 10;
 
 const isOn = (v) => v === 1 || v === true;
 const isOff = (v) => v === 1 || v === true;
@@ -21,15 +22,21 @@ const isOff = (v) => v === 1 || v === true;
 export default function OfferBar() {
   // slides: [{ text, secs, showLogo }] in queue order.
   const [slides, setSlides] = useState(DEFAULT_SLIDES);
+  const [loopSeconds, setLoopSeconds] = useState(DEFAULT_LOOP_SECONDS);
 
   useEffect(() => {
     let live = true;
     (async () => {
       try {
-        const [barsRaw, itemsRaw] = await Promise.all([
+        const [barsRaw, itemsRaw, settings] = await Promise.all([
           apiCached("/Running-Bar").catch(() => []),
           apiCached("/Running-Bar-Items").catch(() => []),
+          homeKV().catch(() => ({})),
         ]);
+        const configuredLoopSeconds = Number(settings.running_bar_loop_seconds);
+        if (Number.isFinite(configuredLoopSeconds) && configuredLoopSeconds > 0) {
+          setLoopSeconds(configuredLoopSeconds);
+        }
         const bars = (Array.isArray(barsRaw) ? barsRaw : []).filter(
           (b) => isOn(b.isactive) && !isOff(b.isdeleted)
         );
@@ -40,10 +47,8 @@ export default function OfferBar() {
         // display_order ASC.
         let queue = [];
         const toSlide = (it) => {
-          const secs = Number(it.duration_seconds);
           return {
             text: String(it.itemsdata).trim(),
-            secs: Number.isFinite(secs) && secs > 0 ? secs : 5,
             showLogo: it.show_logo === 0 || it.show_logo === false ? false : true,
           };
         };
@@ -74,5 +79,5 @@ export default function OfferBar() {
   // The reference site draws this strip white with dark text, and spaces the
   // separator mark with 15px of clear air on each side (no label padding).
   // MarqueeTape defaults to dark=true, so pass the light skin explicitly.
-  return <MarqueeTape slides={slides} dark={false} logoMarks={false} showLogoPerItem pad="" />;
+  return <MarqueeTape slides={slides} loopSeconds={loopSeconds} dark={false} logoMarks={false} showLogoPerItem pad="" />;
 }

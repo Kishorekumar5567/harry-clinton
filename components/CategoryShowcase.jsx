@@ -15,7 +15,8 @@ const FALLBACK_TILES = [
     href: "/suits",
     tagline: "For the Men Who Wear Royalty, Not Just Suits.",
     bgClass: "bg-gradient-to-br from-gray-900 via-neutral-900 to-black",
-    spanClass: "md:col-span-2 lg:col-span-2 lg:row-span-2 min-h-[400px] lg:min-h-[600px]",
+    // Equal mobile card height; the feature tile grows only at tablet/desktop.
+    spanClass: "min-h-[300px] md:col-span-2 md:min-h-[400px] lg:col-span-2 lg:row-span-2 lg:min-h-[600px]",
   },
   {
     key: "shirts",

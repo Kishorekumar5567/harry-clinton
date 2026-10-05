@@ -5,7 +5,7 @@ import { sanitizeHtml } from "@/lib/sanitize";
 // Shared flowing marquee tape for the two ticker strips.
 // Continuous right-to-left scroll, seamless -50% loop, pause on hover.
 // Props:
-// - slides: [{ text, secs }] in queue order (text may be plain or HTML)
+// - slides: [{ text }] in queue order (text may be plain or HTML)
 // - dark: black strip (notification bar) vs white strip (running bar)
 // - logoMarks: show brand logo separators between messages (running bar)
 const COPIES = 4;
@@ -42,16 +42,17 @@ function TapeText({ text, logoMarks, light, pad }) {
   );
 }
 
-export default function MarqueeTape({ slides, dark = true, logoMarks = false, showLogoPerItem = false, pad = "px-6" }) {
+export default function MarqueeTape({ slides, loopSeconds = null, dark = true, logoMarks = false, showLogoPerItem = false, pad = "px-6" }) {
   const list = Array.isArray(slides) ? slides.filter((s) => s.text) : [];
   // The queue repeats per half so the tape is always wider than the viewport
   // — no blank gap, no pop-in. Loop time is the DB duration total multiplied
   // by the visual copies, then reduced by the requested 1.5x speed multiplier.
   const tape = Array(COPIES).fill(list.length > 0 ? list : [{ text: "", secs: 5 }]).flat();
-  const loopSecs = Math.max(
-    (list.reduce((s, it) => s + (Number(it.secs) || 0), 0) * COPIES) / SPEED_MULTIPLIER,
-    5
-  );
+  const configuredLoopSecs = Number(loopSeconds);
+  const calculatedLoopSecs = (list.length || 1) * COPIES / SPEED_MULTIPLIER;
+  const loopSecs = Number.isFinite(configuredLoopSecs) && configuredLoopSecs > 0
+    ? Math.max(configuredLoopSecs / SPEED_MULTIPLIER, 5)
+    : Math.max(calculatedLoopSecs, 5);
   // Reference: the running bar is a plain white strip with no rules above or
   // below — the hero edge supplies the separation.
   const skin = dark

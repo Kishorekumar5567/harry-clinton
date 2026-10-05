@@ -14,7 +14,8 @@ export default function CategoryHero({ image, title, subtitle, description, ctaT
       if (!hero) return;
 
       // Reference-style parallax: image rises at 0.4x the hero's scroll
-      // progress, clamped to the extra image height so no white shows.
+       // progress, clamped to its available extra height so no background
+       // can appear inside the hero.
       const scrolled = Math.max(0, -hero.getBoundingClientRect().top);
       const maxOffset = Math.max(0, media.offsetHeight - hero.clientHeight);
       const offset = Math.min(scrolled * 0.4, maxOffset);
