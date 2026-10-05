@@ -109,8 +109,8 @@ export default function CollectionsEditorial() {
         <SectionHeading 
           eyebrow="SIGNATURE COLLECTIONS" 
           title="The Edits" 
-          eyebrowClassName="!text-[20px] sm:!text-[25px] md:!text-[30px] !leading-tight !font-display !font-bold"
-          titleClassName="!text-[20px] sm:!text-[25px] md:!text-[30px]"
+          eyebrowClassName="!text-[20px] sm:!text-[25px] md:!text-[30px] !leading-tight !font-display !font-bold !text-neutral-900"
+          titleClassName="!text-[20px] sm:!text-[25px] md:!text-[30px] !text-neutral-500"
         />
         
         <div className="mt-16 space-y-12">
