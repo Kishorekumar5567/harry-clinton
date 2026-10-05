@@ -38,7 +38,7 @@ export function useAuthForm() {
 export function saveSession(res) {
   const body = res?.data || res || {};
   const response = body.Response || body.response || {};
-  const user = response.user || body.user || null;
+  const user = response.user || body.user || (response.user_id || response.email_id ? response : null);
   const roles = response.roles || user?.roles || [];
   const primaryRole = roles[0] || {};
   const roleCode = primaryRole.role_code || "CUSTOMER";
