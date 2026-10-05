@@ -20,6 +20,7 @@
   font-size: 11px;
   cursor: pointer;
 }
+.wishlist-add.is-in-cart { border: 1px solid #a33f3f; background: #fff; color: #a33f3f; }
 
 .wishlist-remove {
   border: 1px solid #c7a0a0;

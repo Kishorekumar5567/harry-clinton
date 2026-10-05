@@ -75,6 +75,7 @@ export default function CartDrawer({ open, onClose }) {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-neutral-900">{it.name}</p>
+                      <p className="mt-1 text-xs text-neutral-500">Unit price: <strong className="text-neutral-700">{inr(Number(it.price) || 0)}</strong></p>
                       <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-neutral-500">
                         {it.size && <span>Size: <strong className="text-neutral-700">{it.size}</strong></span>}
                         {it.color && (
@@ -83,6 +84,7 @@ export default function CartDrawer({ open, onClose }) {
                             Color: <strong className="text-neutral-700">{it.color}</strong>
                           </span>
                         )}
+                        {it.product_variant_name && <span>Variant: <strong className="text-neutral-700">{it.product_variant_name}</strong></span>}
                       </div>
                       <div className="mt-2 flex items-center justify-between">
                         <div className="flex items-center border border-neutral-300">

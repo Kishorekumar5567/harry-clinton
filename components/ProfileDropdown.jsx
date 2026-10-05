@@ -83,6 +83,9 @@ export default function ProfileDropdown({ onClose }) {
       <div className="dropdown-item" onClick={() => go("/addresses")}>
         <i className="bi bi-geo-alt"></i> My Addresses
       </div>
+      <div className="dropdown-item" onClick={() => go("/measurements")}>
+        <i className="bi bi-rulers"></i> My Measurements
+      </div>
       <div className="dropdown-item" onClick={() => go("/book-appointment")}>
         <i className="bi bi-calendar-plus"></i> Book Appointment
       </div>

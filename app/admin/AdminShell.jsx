@@ -71,6 +71,7 @@ const NAV = [
   { href: "/admin/users", label: "Users", group: "users" },
   { href: "/admin/roles", label: "Roles", group: "users" },
   { href: "/admin/profiles", label: "Customer Profiles", group: "users" },
+  { href: "/admin/measurements", label: "Customer Measurements", group: "users" },
   { href: "/admin/products", label: "Products & Media", group: "catalog" },
   { href: "/admin/categories", label: "Categories & Subcategories", group: "catalog" },
   { href: "/admin/notification-bars", label: "Notification Bar", group: "marketing" },

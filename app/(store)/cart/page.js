@@ -64,6 +64,8 @@ export default function CartPage() {
                   <div>
                     <Link href={`/product/${i.slug || i.product_id || i.id}`} className="cart-page__item-name">{i.name}</Link>
                     {i.size && <p className="cart-page__meta">Size: {i.size}</p>}
+                    {i.color && <p className="cart-page__meta">Color: {i.color}</p>}
+                    {i.product_variant_name && <p className="cart-page__meta">Variant: {i.product_variant_name}</p>}
                   </div>
                   <p className="cart-page__line-total">₹{(Number(i.price) * (i.qty || 1)).toLocaleString("en-IN")}</p>
                 </div>

@@ -42,23 +42,27 @@ export default function WishlistPage() {
               <h5 className="font-medium"><Link href={`/product/${item.slug || item.product_id || item.id}`} className="wishlist-product-name">{item.name}</Link></h5>
               <p className="mt-1 text-sm font-bold">{inr(item.price)}</p>
                 <div className="wishlist-actions">
-                <button
-                  onClick={() =>
-                    cart.addToCart(
-                      {
-                        id: item.product_id || item.id,
-                        name: item.name,
-                        price: item.unit_price || item.price || 0,
-                        image: item.image,
-                        size: item.size_label,
-                      },
-                      1
-                    )
-                  }
-                  className="btn-primary wishlist-add"
-                >
-                  Add to Cart
-                </button>
+                {(() => {
+                  const productId = item.product_id || item.id;
+                  const cartLine = cart.items.find((line) => String(line.id) === String(productId));
+                  const cartProduct = {
+                    id: productId,
+                    name: item.name,
+                    price: item.unit_price || item.price || 0,
+                    image: item.image,
+                    slug: item.slug,
+                    size: item.size_label,
+                    color: item.color,
+                  };
+                  return (
+                    <button
+                      onClick={() => (cartLine ? cart.removeFromCart(cartLine.key || productId) : cart.addToCart(cartProduct, 1))}
+                      className={`btn-primary wishlist-add${cartLine ? " is-in-cart" : ""}`}
+                    >
+                      {cartLine ? "Remove from Cart" : "Add to Cart"}
+                    </button>
+                  );
+                })()}
                 <button
                   onClick={() => cart.toggleWishlist(item)}
                   className="wishlist-remove"
