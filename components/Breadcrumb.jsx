@@ -31,6 +31,42 @@ const PATH_LABELS = {
   tuxedo: "Tuxedo Collection", "extreme-poppins": "Extreme Poppins",
   "gurkha-trousers": "Gurkha Trousers", "linen-shirts-trousers": "Linen Collection",
   cigarettes: "Cigarette Collection",
+  collections: "Collections", services: "Services",
+  "hc-spotlight": "HC Spotlight", "style-by-hc": "Style by HC",
+  "new-arrivals": "New Arrivals", "forgot-password": "Forgot Password",
+  "reset-password": "Reset Password", "book-appointment": "Book Appointment",
+  appointments: "Appointments", checkout: "Checkout", orders: "Orders",
+  profile: "Profile", addresses: "Addresses", cart: "Cart",
+  wishlist: "Wishlist", search: "Search", "coming-soon": "Coming Soon",
+  "the-vision": "The Vision", auth: "Login",
+};
+
+const BREADCRUMB_PARENTS = {
+  wedding: { label: "Suits", href: "/suits" },
+  business: { label: "Suits", href: "/suits" },
+  designer: { label: "Suits", href: "/suits" },
+  travel: { label: "Suits", href: "/suits" },
+  "smart-casual": { label: "Suits", href: "/suits" },
+  "wedding-baby": { label: "Baby Suits", href: "/babysuits" },
+  "business-baby": { label: "Baby Suits", href: "/babysuits" },
+  "designer-baby": { label: "Baby Suits", href: "/babysuits" },
+  "travel-baby": { label: "Baby Suits", href: "/babysuits" },
+  "casual-baby": { label: "Baby Suits", href: "/babysuits" },
+  "indo-wedding": { label: "Indo Western", href: "/indowestern" },
+  "indo-business": { label: "Indo Western", href: "/indowestern" },
+  "indo-designer": { label: "Indo Western", href: "/indowestern" },
+  "indo-travel": { label: "Indo Western", href: "/indowestern" },
+  "indo-casual": { label: "Indo Western", href: "/indowestern" },
+  "wedding-shirts": { label: "Shirts", href: "/shirts" },
+  "business-shirts": { label: "Shirts", href: "/shirts" },
+  "designer-shirts": { label: "Shirts", href: "/shirts" },
+  "travel-shirts": { label: "Shirts", href: "/shirts" },
+  "casual-shirts": { label: "Shirts", href: "/shirts" },
+  "wedding-trouser": { label: "Trousers", href: "/trousers" },
+  "business-trouser": { label: "Trousers", href: "/trousers" },
+  "designer-trouser": { label: "Trousers", href: "/trousers" },
+  "travel-trouser": { label: "Trousers", href: "/trousers" },
+  "smart-casual-trouser": { label: "Trousers", href: "/trousers" },
 };
 
 function labelFor(segment) {
@@ -40,24 +76,31 @@ function labelFor(segment) {
 
 export default function Breadcrumb({ trail, dark = false }) {
   const pathname = usePathname();
-  const segments = (trail
+  if (!trail && pathname === "/") return null;
+  const pathSegments = pathname
+    .split("/")
+    .filter((x) => x && x.trim() && !["collection", "product"].includes(x));
+  const segments = trail
     ? trail.map((t) => ({ label: t.label, to: t.href }))
-    : pathname
-        .split("/")
-        .filter((x) => x && x.trim() && !["collection", "product"].includes(x))
-        .map((s) => ({ label: labelFor(decodeURIComponent(s)), to: `/${s}` })));
+    : pathSegments.map((segment, index) => ({
+        label: labelFor(decodeURIComponent(segment)),
+        to: `/${pathSegments.slice(0, index + 1).join("/")}`,
+      }));
+  if (!trail && pathSegments.length && BREADCRUMB_PARENTS[pathSegments[0]]) {
+    const parent = BREADCRUMB_PARENTS[pathSegments[0]];
+    segments.unshift({ label: parent.label, to: parent.href });
+  }
 
-  const dim = dark ? "text-neutral-400" : "text-neutral-500";
-  const strong = dark ? "text-white" : "text-neutral-900";
-  const linkCls = dark ? "breadcrumb-link hover:text-white" : "breadcrumb-link hover:text-neutral-900";
+  const strong = dark ? "breadcrumb-current breadcrumb-current-dark" : "breadcrumb-current";
+  const linkCls = dark ? "breadcrumb-link breadcrumb-link-dark" : "breadcrumb-link";
 
   return (
     <nav aria-label="breadcrumb" className="breadcrumb-wrap">
-      <ol className={`mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 pt-6 text-xs uppercase tracking-widest ${dim}`}>
+      <ol className="breadcrumb-list">
         <li className="breadcrumb-item">
           <Link href="/" className={linkCls}>
             <i className="bi bi-house-door-fill"></i>
-            <span className="ml-1">Home</span>
+            <span>Home</span>
           </Link>
         </li>
         {segments.map((s, i) => {
@@ -65,7 +108,6 @@ export default function Breadcrumb({ trail, dark = false }) {
           const to = s.to || `/${segments.slice(0, i + 1).map((x) => x.label).join("/")}`;
           return (
             <li key={i} className="breadcrumb-item flex items-center gap-2">
-              <span className="text-gold">/</span>
               {isLast ? (
                 <span className={`breadcrumb-current ${strong}`}>{s.label}</span>
               ) : (

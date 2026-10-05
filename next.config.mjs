@@ -3,6 +3,9 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 const nextConfig = {
   images: {
+    // Backend upload URLs can resolve to private infrastructure. Serve all
+    // image sources as-is instead of routing them through /_next/image.
+    unoptimized: true,
     qualities: [50, 75, 100],
     remotePatterns: [
       { protocol: "https", hostname: "git-pipeline.metatronhost.in", pathname: "/**" },

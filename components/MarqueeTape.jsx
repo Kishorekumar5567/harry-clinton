@@ -11,7 +11,7 @@ import { sanitizeHtml } from "@/lib/sanitize";
 const COPIES = 4;
 // Tape pace: HALF speed — loop time is doubled so the strip drifts slow and
 // readable. Logo separators fill the strip height (container unchanged).
-const SPEED_DIVISOR = 2;
+const SPEED_DIVISOR = 1;
 
 function TapeText({ text, logoMarks, light, pad }) {
   const inner = /<[a-z][\s\S]*>/i.test(text) ? (
@@ -49,7 +49,7 @@ export default function MarqueeTape({ slides, dark = true, logoMarks = false, sh
   const tape = Array(COPIES).fill(list.length > 0 ? list : [{ text: "", secs: 5 }]).flat();
   const loopSecs = Math.max(
     list.reduce((s, it) => s + (Number(it.secs) || 0), 0) * COPIES * SPEED_DIVISOR,
-    20
+    5
   );
   // Reference: the running bar is a plain white strip with no rules above or
   // below — the hero edge supplies the separation.

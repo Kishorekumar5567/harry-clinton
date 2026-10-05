@@ -83,6 +83,7 @@ const NAV = [
   { href: "/admin/spotlight", label: "Spotlight Media", group: "marketing" },
   { href: "/admin/style-collections", label: "Style Collections", group: "marketing" },
   { href: "/admin/menu-video", label: "Home Video", group: "marketing" },
+  { href: "/admin/subcategory-content", label: "Subcategory Content", group: "marketing" },
   { href: "/admin/orders", label: "Orders", group: "sales" },
   { href: "/admin/payments", label: "Payments", group: "sales" },
   { href: "/admin/invoices", label: "Invoices", group: "sales" },

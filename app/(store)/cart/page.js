@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { inr } from "@/lib/api";
 import { PLACEHOLDER_IMAGE } from "@/components/ProductCard";
+import "./cart-page.css";
 
 // Cart: same structure/texts as the previous UI —
 // "Shopping Bag", item cards, "Order Summary" with coupon + shipping rows.
@@ -41,68 +41,72 @@ export default function CartPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <h2 className="font-display text-4xl font-bold">Shopping Bag</h2>
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-6">
+    <main className="cart-page">
+      <div className="cart-page__header">
+        <p className="cart-page__eyebrow">Your Selection</p>
+        <h1>Shopping Bag</h1>
+        <p className="cart-page__count">{cart.count} {cart.count === 1 ? "item" : "items"}</p>
+      </div>
+      <div className="cart-page__layout">
+        <section className="cart-page__items" aria-label="Shopping bag items">
           {cart.items.map((i) => (
-            <div key={i.key || i.id} className="flex gap-4 border-b border-neutral-200 pb-6">
+            <article key={i.key || i.id} className="cart-page__item">
               <Link
                 href={`/product/${i.slug || i.product_id || i.id}`}
-                className="relative block h-36 w-28 shrink-0 bg-neutral-100"
+                className="cart-page__image"
                 aria-label={i.name}
               >
-                <Image src={i.image || PLACEHOLDER_IMAGE} alt={i.name} fill sizes="120px" className="object-cover" />
+                {/* Cart images come from backend uploads; bypass Next image optimization. */}
+                <img src={i.image || PLACEHOLDER_IMAGE} alt={i.name} />
               </Link>
-              <div className="flex-1">
-                <Link href={`/product/${i.slug || i.product_id || i.id}`} className="link-sweep font-medium">
-                  {i.name}
-                </Link>
-                {i.size && <p className="text-xs text-neutral-500">Size: {i.size}</p>}
-                <p className="mt-1 text-sm text-neutral-600">
-                  ₹{Number(i.price).toLocaleString("en-IN")} × {i.qty || 1} ={" "}
-                  <span className="font-bold text-neutral-900">
-                    ₹{(Number(i.price) * (i.qty || 1)).toLocaleString("en-IN")}
-                  </span>
-                </p>
-                <div className="mt-2 flex items-center gap-2 text-sm">
+              <div className="cart-page__item-details">
+                <div className="cart-page__item-heading">
+                  <div>
+                    <Link href={`/product/${i.slug || i.product_id || i.id}`} className="cart-page__item-name">{i.name}</Link>
+                    {i.size && <p className="cart-page__meta">Size: {i.size}</p>}
+                  </div>
+                  <p className="cart-page__line-total">₹{(Number(i.price) * (i.qty || 1)).toLocaleString("en-IN")}</p>
+                </div>
+                <p className="cart-page__unit-price">₹{Number(i.price).toLocaleString("en-IN")} per piece</p>
+                <div className="cart-page__item-footer">
+                  <div className="cart-page__quantity" aria-label="Quantity">
                   <button
                     onClick={() => cart.updateQty(i.key || i.id, (i.qty || 1) - 1)}
                     disabled={(i.qty || 1) <= 1}
                     aria-label="Decrease quantity"
-                    className="border border-neutral-300 px-2 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="cart-page__quantity-button disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     -
                   </button>
-                  <span>{i.qty || 1}</span>
-                  <button onClick={() => cart.updateQty(i.key || i.id, (i.qty || 1) + 1)} className="border border-neutral-300 px-2">+</button>
-                  <button onClick={() => setPendingRemove(i.key || i.id)} className="ml-3 text-xs underline text-neutral-500">Remove</button>
+                  <span className="cart-page__quantity-value">{i.qty || 1}</span>
+                  <button onClick={() => cart.updateQty(i.key || i.id, (i.qty || 1) + 1)} className="cart-page__quantity-button">+</button>
+                  </div>
+                  <button onClick={() => setPendingRemove(i.key || i.id)} className="cart-page__remove">Remove</button>
                 </div>
               </div>
-            </div>
+            </article>
           ))}
-        </div>
-        <aside className="sticky top-24 h-fit self-start border border-neutral-200 bg-white p-6">
-          <h4 className="font-semibold">Order Summary</h4>
-          <p className="mt-3 flex justify-between text-sm"><span>Subtotal</span><span>₹{cart.subtotal.toLocaleString("en-IN")}</span></p>
+        </section>
+        <aside className="cart-page__summary">
+          <p className="cart-page__summary-eyebrow">Order Summary</p>
+          <h2>Your order</h2>
+          <p className="cart-page__summary-row"><span>Subtotal</span><span>₹{cart.subtotal.toLocaleString("en-IN")}</span></p>
           {cart.coupon && (
-            <p className="mt-2 flex items-center justify-between text-sm">
+            <p className="cart-page__summary-row cart-page__discount">
               <span>Discount ({cart.coupon.coupon_code})</span>
               <button onClick={cart.removeCoupon} className="text-xs underline">Remove</button>
               <span>-{inr(cart.discount)}</span>
             </p>
           )}
-          <p className="mt-2 flex justify-between text-sm"><span>Shipping</span><span>Calculated at checkout</span></p>
-          <hr className="my-3" />
-          <p className="flex justify-between font-bold"><span>Total</span><span>{inr(cart.total)}</span></p>
-          <div className="mt-4 flex gap-2">
-            <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Coupon code" className="flex-1 border border-neutral-300 px-3 py-2 text-sm" />
-            <button onClick={applyCoupon} className="border border-neutral-900 px-4 text-sm font-semibold">Apply</button>
+          <p className="cart-page__summary-row"><span>Shipping</span><span>Calculated at checkout</span></p>
+          <hr />
+          <p className="cart-page__total"><span>Total</span><span>{inr(cart.total)}</span></p>
+          <div className="cart-page__coupon">
+            <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Coupon code" />
+            <button onClick={applyCoupon}>Apply</button>
           </div>
-          {couponError && <p className="mt-2 text-xs text-red-600">{couponError}</p>}
-          <Link href="/checkout" className="mt-5 block bg-neutral-950 py-3 text-center text-sm font-semibold text-white">
-            Proceed to Checkout
-          </Link>
+          {couponError && <p className="cart-page__error">{couponError}</p>}
+          <Link href="/checkout" className="cart-page__checkout">Proceed to Checkout <span>→</span></Link>
         </aside>
       </div>
 
@@ -140,6 +144,6 @@ export default function CartPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

@@ -1,0 +1,24 @@
+.search-page { max-width: 1280px; margin: 0 auto; padding: 64px clamp(20px, 5vw, 80px) 96px; font-family: "MAINLUX"; }
+.search-page__title { margin: 0; font-family: "MAINLUX"; font-size: clamp(32px, 5vw, 56px); font-weight: 400; }
+.search-page__form { display: flex; gap: 10px; margin-top: 32px; border-bottom: 1px solid #dedbd4; padding-bottom: 24px; }
+.search-page__form input { flex: 1; min-width: 0; border: 1px solid #cbc6bd; padding: 14px 16px; background: #fff; font-family: "MAINLUX"; font-size: 14px; outline: none; }
+.search-page__form input:focus { border-color: #b08a51; }
+.search-page__form button { border: 1px solid #171717; padding: 0 28px; color: #fff; background: #171717; font-family: "MAINLUX"; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .25s ease; }
+.search-page__form button:hover { border-color: #b08a51; background: #b08a51; }
+.search-page__layout { display: block; margin-top: 32px; }
+.search-page__layout--with-filters { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; align-items: start; }
+.search-page__filters { position: sticky; top: 110px; display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 22px; border: 1px solid #dedbd4; background: #fff; }
+.search-page__filters-label { margin-right: 4px; color: #837c74; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.search-page__filters select, .search-page__filters input { border: 1px solid #cbc6bd; padding: 10px 12px; color: #49443e; background: #fff; font-family: "MAINLUX"; font-size: 12px; }
+.search-page__filters label { display: flex; flex-direction: column; gap: 6px; color: #837c74; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.search-page__filters label select { text-transform: none; letter-spacing: 0; }
+.search-page__price-label { color: #837c74; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.search-page__filters input { width: 110px; }
+.search-page__filters button { border: 1px solid #171717; padding: 10px 15px; color: #fff; background: #171717; font-family: "MAINLUX"; font-size: 11px; text-transform: uppercase; cursor: pointer; }
+.search-page__filters button:hover { background: #b08a51; border-color: #b08a51; }
+.search-page__range { color: #837c74; font-size: 11px; line-height: 1.5; }
+.search-page__results > .mt-8 { margin-top: 0; }
+.search-page__empty { padding: 80px 20px; text-align: center; }
+.search-page__empty h4 { margin: 0; font-family: "MAINLUX"; font-size: 28px; font-weight: 400; }
+.search-page__empty p { margin-top: 12px; color: #837c74; font-size: 14px; }
+@media (max-width: 760px) { .search-page__layout { grid-template-columns: 1fr; } .search-page__filters { position: static; } }

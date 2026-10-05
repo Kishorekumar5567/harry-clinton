@@ -17,6 +17,7 @@ const COLLECTIONS = [
 ];
 
 const SERVICES = [
+  { label: "Services", to: "/services" },
   { label: "Embroidery", to: "/embroidery" },
   { label: "Alterations", to: "/alterations" },
   { label: "Personal Styling", to: "/personal-styling" },
@@ -125,7 +126,7 @@ export default function Hamburger({ categories, onActiveChange }) {
             <img src="/brand/vision_title.jpeg" alt="The Vision" className="Hdropdown-image" />
             <div className="Hdropdown-overlay">
               <h4>The Vision</h4>
-              <button onClick={() => go("/the-vision")}>Explore &rarr;</button>
+              <button onClick={() => go("/the-vision")}>Explore</button>
             </div>
           </div>
         </div>
@@ -136,8 +137,13 @@ export default function Hamburger({ categories, onActiveChange }) {
           height: 25px;
           position: relative;
           cursor: pointer;
+          border: 0;
+          outline: none;
+          background: transparent;
+          padding: 0;
           z-index: 1000;
         }
+        .hamburger:focus-visible { outline: none; }
         .hamburger span {
           position: absolute;
           height: 3px;
@@ -199,57 +205,58 @@ export default function Hamburger({ categories, onActiveChange }) {
         }
         .topmenu {
           position: absolute; top: 100%; left: 0; right: 0; background: #fff; z-index: 70;
-          max-height: 0; opacity: 0; transform: translateY(-14px); overflow: hidden;
-          transition: max-height 0.45s ease, opacity 0.3s ease, transform 0.35s ease;
-          box-shadow: 0 30px 40px -20px rgba(0,0,0,0.18);
-          border-top: 1px solid rgba(198, 161, 91, 0.2);
+          height: 0; opacity: 1; transform: none; overflow: hidden;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          transition: height 0.4s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .topmenu.show { max-height: calc(100vh - 100px); opacity: 1; transform: translateY(0); overflow-y: auto; }
-        .Hdropdown { 
-          display: grid; 
-          grid-template-columns: 1fr 1fr 1fr 1.6fr; 
-          gap: 2rem; 
-          padding: 2.25rem 3rem; 
-          max-width: 1300px;
-          margin: 0 auto;
+        .topmenu::-webkit-scrollbar { display: none; }
+        .topmenu.show { height: min(300px, calc(100vh - 80px)); overflow-y: auto; }
+        .Hdropdown {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 2.3fr;
+          gap: 20px;
+          padding: 25px 60px;
+          margin-left: 30px;
         }
         .Hdropdown strong { 
           font-family: var(--font-mainlux), 'MAINLUX', sans-serif;
-          font-size: 13px; 
+          font-size: 18px;
           font-weight: 700;
-          letter-spacing: 0.25em; 
-          color: #c6a15b;
+          letter-spacing: normal;
+          color: #111;
           display: block;
-          margin-bottom: 1rem;
+          margin-bottom: 10px;
           text-transform: uppercase;
         }
-        .Hdropdown ul { margin-top: 0; display: grid; gap: 0.65rem; list-style: none; padding: 0; }
+        .Hdropdown ul { margin: 0; list-style: none; padding: 0; }
+        .Hdropdown li { margin-bottom: 10px; }
         .Hdropdown button { 
           font-family: var(--font-mainlux), 'MAINLUX', sans-serif;
-          font-size: 15px; 
-          color: #1a1a1a;
+          font-size: 16px;
+          color: #111;
           background: none;
           border: none;
-          padding: 2px 0;
+          padding: 0;
           text-align: left;
           cursor: pointer;
           display: inline-block;
-          transition: color 0.25s ease, transform 0.25s ease;
+          text-decoration: none;
+          text-underline-offset: 3px;
+          transition: text-decoration-color 0.2s ease;
         }
         .Hdropdown button:hover { 
-          color: #c6a15b; 
-          transform: translateX(6px);
+          color: #1a1a1a;
+          text-decoration: underline;
+          text-decoration-color: currentColor;
         }
-        .topmenu.show li { animation: itemIn 0.35s ease backwards; }
-        .topmenu.show li:nth-child(2) { animation-delay: 0.05s; }
-        .topmenu.show li:nth-child(3) { animation-delay: 0.1s; }
-        .topmenu.show li:nth-child(4) { animation-delay: 0.15s; }
-        .topmenu.show li:nth-child(5) { animation-delay: 0.2s; }
-        .topmenu.show li:nth-child(6) { animation-delay: 0.25s; }
-        @keyframes itemIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
         .Hdropdown-image-box { 
           position: relative; 
-          min-height: 220px; 
+          width: 100%;
+          height: 290px;
+          bottom: 20px;
+          left: 70px;
           background: #101010; 
           color: #fff; 
           display: flex; 
@@ -269,43 +276,69 @@ export default function Hamburger({ categories, onActiveChange }) {
           transform: scale(1.06);
           opacity: 0.9;
         }
-        .Hdropdown-overlay { 
-          position: relative;
+        .Hdropdown-overlay {
+          position: absolute;
+          bottom: 15px;
+          left: 15px;
+          right: 15px;
           z-index: 2;
-          padding: 1.5rem; 
-          width: 100%;
-          background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+          padding: 12px;
+          text-align: center;
         }
         .Hdropdown-overlay h4 { 
           font-family: var(--font-mainlux), 'MAINLUX', sans-serif; 
-          font-size: 22px; 
-          font-weight: 700;
+          font-size: 16px;
+          font-weight: 600;
           color: #ffffff;
-          margin-bottom: 0.4rem;
+          margin: 0 0 8px;
         }
         .Hdropdown-overlay button { 
           font-family: var(--font-mainlux), 'MAINLUX', sans-serif;
-          margin-top: 0.35rem; 
-          font-size: 12px; 
-          letter-spacing: 0.2em; 
-          text-transform: uppercase; 
+          margin: 0;
+          font-size: 14px;
+          letter-spacing: normal;
+          text-transform: none;
           font-weight: 700;
-          color: #c6a15b;
-          background: none;
+          color: #111;
+          background: #fff;
           border: none;
-          border-bottom: 1.5px solid #c6a15b; 
-          padding: 0 0 2px 0; 
+          padding: 7px 16px;
           cursor: pointer;
-          transition: all 0.25s ease;
+          transition: background-color 0.2s ease;
         }
         .Hdropdown-overlay button:hover {
-          color: #ffffff;
-          border-bottom-color: #ffffff;
-          transform: translateX(4px);
+          color: #111;
+          background: #ddd;
+          text-decoration: none;
         }
-        @media (max-width: 860px) { 
-          .Hdropdown { grid-template-columns: 1fr 1fr; gap: 1.5rem; padding: 1.5rem; } 
-          .Hdropdown-image-box { grid-column: 1 / -1; }
+        @media (max-width: 768px) {
+          .topmenu {
+            position: fixed;
+            top: 0;
+            left: -50%;
+            right: auto;
+            width: 50%;
+            height: 100vh;
+            z-index: 90;
+            transition: left 0.3s ease;
+          }
+          .topmenu.show { left: 0; height: 100vh; }
+          .Hdropdown {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 15px 12px;
+            margin: 0;
+          }
+          .Hdropdown-image-box {
+            width: 100%;
+            height: 130px;
+            left: 0;
+            bottom: 0;
+          }
+          .Hdropdown-overlay { bottom: 8px; left: 8px; right: 8px; }
+        }
+        @media (max-width: 480px) {
+          .topmenu { top: 80px; }
         }
       `}</style>
     </>

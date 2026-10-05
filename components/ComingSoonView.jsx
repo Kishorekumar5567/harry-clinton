@@ -1,38 +1,34 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import "./coming-soon.css";
 
-// Coming Soon: same structure/texts as the previous UI.
-export default function ComingSoonView() {
+export default function ComingSoonView({ title = "Coming Soon", message }) {
   const [dots, setDots] = useState(".");
 
   useEffect(() => {
-    let n = 1;
-    const t = setInterval(() => {
-      n = (n % 3) + 1;
-      setDots(".".repeat(n));
-    }, 500);
-    return () => clearInterval(t);
+    const interval = setInterval(() => {
+      setDots((previous) => (previous.length >= 3 ? "." : `${previous}.`));
+    }, 700);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-      <Image src="/brand/logo-black.png" alt="Harry Clinton" width={180} height={48} className="mx-auto" />
-      <h1 className="mt-8 font-display text-5xl font-bold md:text-6xl">Coming Soon</h1>
-      <p className="mx-auto mt-4 max-w-xl text-neutral-500">
-        We are crafting something extraordinary for you. Stay tuned for the reveal{dots}
-      </p>
-      <Link href="/" className="btn-primary mt-8">
-        Back to Home
-      </Link>
-      <div className="mt-12 overflow-hidden border-y border-neutral-200">
-        <div className="animate-marquee py-3">
-          {Array(4).fill(["HARRY CLINTON", "·", "COMING SOON", "·", "CRAFTED FOR YOU", "·"]).flat().map((word, idx) => (
-            <span key={idx} className={`mx-4 font-bold uppercase ${word === "·" ? "text-gold" : ""}`}>
-              {word}
-            </span>
+    <div className="coming-soon-page">
+      <div className="coming-soon-content">
+        <img src="/brand/hc-black-contact.png" alt="Harry Clinton" className="coming-soon-logo" />
+        <h1 className="coming-soon-title">{title}</h1>
+        <p className="coming-soon-message">
+          {message || "We are crafting something extraordinary for you. Stay tuned for the reveal."}
+          <span className="coming-soon-dots">{dots}</span>
+        </p>
+        <Link href="/" className="coming-soon-btn">Back to Home</Link>
+      </div>
+      <div className="coming-soon-marquee">
+        <div className="coming-soon-track">
+          {Array(4).fill(["HARRY CLINTON", "·", "COMING SOON", "·", "CRAFTED FOR YOU", "·"]).flat().map((word, index) => (
+            <span key={index} className={word === "·" ? "coming-soon-dot" : "coming-soon-word"}>{word}</span>
           ))}
         </div>
       </div>

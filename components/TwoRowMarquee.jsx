@@ -102,7 +102,7 @@ export default function TwoRowMarquee({ cards = [], title, href = "/", eyebrow =
                   className="h-64 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 md:h-80"
                 />
                 {c.caption && (
-                  <p className="truncate px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+                    <p className="truncate px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
                     {c.caption}
                   </p>
                 )}
@@ -116,11 +116,12 @@ export default function TwoRowMarquee({ cards = [], title, href = "/", eyebrow =
 
   return (
     <section ref={sectionRef} className="overflow-hidden bg-white py-16">
+      dgfhjkl
       <div className="mx-auto mb-8 flex max-w-7xl items-end justify-between px-4 sm:px-6 lg:px-8">
         <div>
           <p className="eyebrow text-gold-deep">{eyebrow}</p>
-          <h2 className="mt-1 font-display text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
-            {title}
+           <h2 className="mt-1 font-display text-[18px] font-bold tracking-tight text-neutral-900 md:text-[22px]">
+            {title}fghjkl
           </h2>
         </div>
         <Link

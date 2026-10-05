@@ -1,31 +1,39 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import "./reference-page-typography.css";
+import "./policies.css";
 
 // Policies: tabbed Shipping/Exchange/Return/Refund/Cancellation — verbatim.
 const TABS = ["Shipping", "Exchange", "Return", "Refund", "Cancellation"];
 
 export default function PoliciesView() {
-  const [tab, setTab] = useState("Shipping");
+  const searchParams = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const [tab, setTab] = useState(() => (TABS.includes(requestedTab) ? requestedTab : "Shipping"));
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-14">
-      <h1 className="text-center font-display text-5xl font-bold">Our Policies</h1>
-      <div className="mt-8 flex flex-wrap justify-center gap-2">
+    <div className="hc-reference-page policies-page">
+      <div className="policies-container">
+      <h1>Our Policies</h1>
+      </div>
+      <div className="policies-tabs" role="tablist" aria-label="Policy sections">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`border px-5 py-2 text-sm font-semibold transition ${
-              tab === t ? "border-neutral-950 bg-neutral-950 text-white" : "border-neutral-300 hover:border-neutral-950"
-            }`}
+            className={tab === t ? "policies-tab policies-tab--active" : "policies-tab"}
+            role="tab"
+            aria-selected={tab === t}
           >
             {t}
           </button>
         ))}
       </div>
 
-      <div className="mt-8 border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
+      <div className="policies-container policies-content">
+      <div key={tab} className="policies-content__card">
         {tab === "Shipping" && (
           <div>
             <h2 className="font-display text-2xl font-bold">Shipping Policy</h2>
@@ -98,6 +106,7 @@ export default function PoliciesView() {
             </p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

@@ -1,0 +1,158 @@
+﻿.services-hub,
+.services-hub * { font-family: "MAINLUX"; }
+.services-hub { min-height: 100vh; padding-top: 1px; color: #f0ebe3; background: #0f0d0b; }
+.services-hub__overview { min-height: 620px; padding: 96px 40px 120px; color: #f0ebe3; background: #0f0d0b; text-align: center; }
+.services-hub__overview-eyebrow { margin: 0 0 10px; color: #c9a96e; font-family: "MAINLUX"; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; }
+.services-hub__overview h1 { margin: 0; color: #f0ebe3; font-family: "MAINLUX"; font-size: clamp(3rem,6vw,5.5rem); font-weight: 700; line-height: 1; }
+.services-hub__overview-intro { margin: 18px auto 56px; color: #9a9088; font-family: "MAINLUX"; font-size: 16px; font-weight: 300; }
+.services-hub__overview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; text-align: left; }
+.services-hub__overview-card { padding: 36px; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; color: inherit; background: rgba(255,255,255,.03); text-decoration: none; transition: all .25s ease; }
+.services-hub__overview-card:hover { border-color: #c9a96e; background: rgba(201,169,110,.08); transform: translateY(-4px); }
+.services-hub__overview-card h2 { margin: 0 0 10px; color: #c9a96e; font-family: "MAINLUX"; font-size: 30px; font-weight: 600; }
+.services-hub__overview-card p { margin: 0; color: #9a9088; font-family: "MAINLUX"; font-size: 14px; font-weight: 300; }
+.services-hub__overview-card span { display: inline-block; margin-top: 24px; color: #c9a96e; font-family: "MAINLUX"; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.services-hub__overview-card b { font-size: 16px; }
+.services-hub__nav { position: sticky; top: 60px; z-index: 70; background: rgba(26,23,20,.96); border-bottom: 1px solid rgba(255,255,255,.07); }
+.services-hub__nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px; padding: 0 40px; }
+.services-hub__brand { display: flex; align-items: center; width: 100px; height: 100px; color: #c9a96e; font-family: "MAINLUX"; text-decoration: none; }
+.services-hub__brand img { width: 100px; height: 100px; object-fit: contain; border-radius: 50%; }
+.services-hub__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.services-hub__links a { padding: 8px 16px; border: 1px solid transparent; border-radius: 8px; color: #9a9088; background: transparent; font-family: "MAINLUX"; font-size: 13px; text-decoration: none; transition: all .2s ease; }
+.services-hub__links a:hover, .services-hub__links a.is-active { color: #c9a96e; background: rgba(201,169,110,.15); border-color: rgba(201,169,110,.4); }
+.services-hub__book, .services-hub__cta a { padding: 10px 22px; border-radius: 8px; color: #1a1714; background: #c9a96e; font-family: "MAINLUX"; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-decoration: none; white-space: nowrap; }
+.services-hub__hero { position: relative; overflow: hidden; padding: 100px 60px 80px; background: linear-gradient(135deg,#1a1410 0%,#0f0d0b 60%,#1a1208 100%); }
+.services-hub__thread-lines { position: absolute; inset: 0; opacity: .12; background: repeating-linear-gradient(78deg, transparent 0 78px, #c9a96e 79px, transparent 80px 160px); }
+.services-hub__hero-inner { position: relative; max-width: 760px; }
+.services-hub__eyebrow { display: inline-flex; margin: 0 0 32px; padding: 6px 16px; border: 1px solid rgba(201,169,110,.3); border-radius: 4px; color: #c9a96e; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+.services-hub__hero h1 { margin: 0 0 24px; color: #f0ebe3; font-family: "MAINLUX"; font-size: clamp(3rem,6vw,5.5rem); font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+.services-hub__hero h1 em { color: #c9a96e; font-weight: 300; }
+.services-hub__hero-copy { max-width: 520px; margin: 0 0 48px; color: #7a7068; font-family: "MAINLUX"; font-size: 16px; font-weight: 300; line-height: 1.9; }
+.services-hub__tags { display: flex; flex-wrap: wrap; gap: 24px; color: #9a9088; font-family: "MAINLUX"; font-size: 13px; }
+.services-hub__tags span::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 8px 2px 0; border-radius: 50%; background: #c9a96e; }
+.services-hub__techniques, .services-hub__samples { padding: 64px 60px; }
+.services-hub__techniques { background: #13110e; }
+.services-hub__samples { background: #0f0d0b; }
+.services-hub__section-label { margin: 0 0 32px; color: #5a5248; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+.services-hub__technique-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+.services-hub__technique-tabs button { padding: 10px 20px; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; color: #7a7068; background: rgba(255,255,255,.04); font-family: "MAINLUX"; font-size: 13px; cursor: pointer; }
+.services-hub__technique-tabs button.is-active { border-color: transparent; color: #1a1714; background: #c9a96e; font-weight: 600; }
+.services-hub__technique-card { max-width: 600px; padding: 36px; border: 1px solid rgba(255,255,255,.07); border-radius: 16px; background: rgba(255,255,255,.03); }
+.services-hub__technique-card p { margin: 0 0 12px; color: #5a5248; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.services-hub__technique-card h2 { margin: 0 0 16px; color: #c9a96e; font-family: "MAINLUX"; font-size: 28px; font-weight: 600; }
+.services-hub__technique-card span { color: #9a9088; font-family: "MAINLUX"; font-size: 15px; font-weight: 300; line-height: 1.8; }
+.services-hub__sample-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+.services-hub__sample { position: relative; display: flex; height: 200px; align-items: flex-end; overflow: hidden; padding: 20px; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; cursor: pointer; transition: transform .25s ease, border-color .25s ease; }
+.services-hub__sample.is-hovered { transform: translateY(-4px); }
+.services-hub__sample > span:last-child { position: relative; font-family: "MAINLUX"; font-size: 12px; font-weight: 500; letter-spacing: .08em; }
+.services-hub__sample-mark { position: absolute; top: 16px; right: 16px; width: 48px; height: 48px; opacity: .3; transition: opacity .25s ease; }
+.services-hub__sample.is-hovered .services-hub__sample-mark { opacity: .6; }
+.services-hub__cta { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 48px max(24px, calc((100% - 1200px) / 2)); background: #c9a96e; }
+.services-hub__cta h2 { margin: 0 0 6px; color: #1a1714; font-family: "MAINLUX"; font-size: 28px; font-weight: 600; }
+.services-hub__cta p { margin: 0; color: #4a3e2e; font-family: "MAINLUX"; font-size: 14px; font-weight: 300; }
+.services-hub__cta a { padding: 16px 36px; color: #c9a96e; background: #1a1714; }
+.services-hub__cta a:hover { background: #2d2926; }
+.services-hub__alterations { color: #1a1714; background: #f7f4ef; }
+.services-hub__alterations-hero { position: relative; overflow: hidden; padding: 80px 60px 60px; background: #f7f4ef; }
+.services-hub__alterations-hero-inner { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1000px; }
+.services-hub__alterations-line { position: absolute; right: 0; left: 0; height: 1px; background: rgba(0,0,0,.04); }
+.services-hub__alterations-eyebrow { display: inline-block; margin: 0 0 32px; padding-left: 16px; border-left: 3px solid #2d2926; color: #8b8078; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+.services-hub__alterations-hero h1 { margin: 0 0 24px; color: #1a1714; font-family: "MAINLUX"; font-size: clamp(2.8rem,5vw,4.5rem); font-weight: 700; line-height: 1.05; }
+.services-hub__alterations-hero h1 em { color: #8b7355; font-weight: 300; }
+.services-hub__alterations-hero > div:first-child > p:not(.services-hub__alterations-eyebrow) { max-width: 520px; margin: 0 0 36px; color: #6b6057; font-family: "MAINLUX"; font-size: 15px; font-weight: 300; line-height: 1.85; }
+.services-hub__alterations-stats { display: flex; gap: 32px; }
+.services-hub__alterations-stats span { color: #6b6057; font-family: "MAINLUX"; font-size: 12px; }
+.services-hub__alterations-stats strong { display: block; margin-bottom: 4px; color: #1a1714; font-size: 28px; font-weight: 700; }
+.services-hub__alterations-mark { display: flex; height: 340px; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #ddd8d0; border-radius: 20px; background: #ede9e2; }
+.services-hub__offers { padding: 64px 60px; background: #fff; }
+.services-hub__offer-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 16px; }
+.services-hub__offer-card { padding: 28px 24px; border: 1px solid #e8e4de; border-radius: 16px; background: #faf8f5; cursor: pointer; transition: all .25s ease; }
+.services-hub__offer-card:hover { border-color: #2d2926; background: #2d2926; transform: translateY(-3px); }
+.services-hub__offer-icon { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; margin-bottom: 16px; border-radius: 10px; color: #2d2926; background: #f0ece6; font-family: "MAINLUX"; font-size: 18px; transition: all .25s ease; }
+.services-hub__offer-card:hover .services-hub__offer-icon { color: #c9a96e; background: rgba(201,169,110,.2); }
+.services-hub__offer-card h2 { margin: 0 0 10px; color: #1a1714; font-family: "MAINLUX"; font-size: 18px; font-weight: 600; transition: color .25s ease; }
+.services-hub__offer-card:hover h2 { color: #f0ebe3; }
+.services-hub__offer-card p { margin: 0 0 16px; color: #6b6057; font-family: "MAINLUX"; font-size: 13px; line-height: 1.7; transition: color .25s ease; }
+.services-hub__offer-card:hover p { color: #9a9088; }
+.services-hub__offer-card strong { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 6px; color: #8b7355; background: #ede9e2; font-family: "MAINLUX"; font-size: 11px; font-weight: 400; letter-spacing: .06em; }
+.services-hub__offer-card strong i { width: 4px; height: 4px; border-radius: 50%; background: #8b7355; }
+.services-hub__offer-card:hover strong { color: #c9a96e; background: rgba(201,169,110,.15); }
+.services-hub__offer-card:hover strong i { background: #c9a96e; }
+.services-hub__secondary { min-height: 500px; color: #f0ebe3; background: #0e0c10; }
+.services-hub__secondary--styling { background-color: #0e0c10; }
+.services-hub__secondary--tailoring { color: #1a1714; background: #f9f6f0; }
+.services-hub__secondary-hero { padding: 100px 60px 80px; background: linear-gradient(135deg,#0e0c10 0%,#130f18 50%,#0e0c10 100%); }
+.services-hub__secondary--styling .services-hub__secondary-hero { background-color: #0e0c10; }
+.services-hub__secondary--tailoring .services-hub__secondary-hero { color: #1a1714; background: #f9f6f0; border-bottom: 1px solid #e8e2d8; }
+.services-hub__secondary-hero > p { margin: 0 0 32px; color: #b87ab8; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+.services-hub__secondary--tailoring .services-hub__secondary-hero > p { color: #8b7355; }
+.services-hub__secondary-hero h1 { max-width: 680px; margin: 0 0 24px; font-family: "MAINLUX"; font-size: clamp(3rem,6vw,5rem); font-weight: 700; line-height: 1.05; }
+.services-hub__secondary-hero h1 em { color: #b87ab8; font-weight: 300; }
+.services-hub__secondary--tailoring .services-hub__secondary-hero h1 em { color: #8b7355; }
+.services-hub__secondary-hero > span { display: block; max-width: 520px; color: #6a6270; font-family: "MAINLUX"; font-size: 16px; font-weight: 300; line-height: 1.9; }
+.services-hub__moods { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 48px; }
+.services-hub__moods span { padding: 8px 18px; border: 1px solid rgba(255,255,255,.1); border-radius: 100px; color: #9a9098; background: rgba(255,255,255,.05); font-family: "MAINLUX"; font-size: 12px; letter-spacing: .06em; }
+.services-hub__styling-packages { padding: 64px 60px; background: #13111a; }
+.services-hub__package-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.services-hub__package { position: relative; overflow: hidden; padding: 32px 28px; border: 1px solid rgba(255,255,255,.07); border-radius: 20px; background: rgba(255,255,255,.03); cursor: pointer; transition: all .25s ease; }
+.services-hub__package:hover { transform: translateY(-4px); }
+.services-hub__package.is-featured { border-color: rgba(184,122,184,.4); background: rgba(184,122,184,.1); }
+.services-hub__package-badge { position: absolute; top: 16px; right: 16px; padding: 4px 12px; border-radius: 4px; color: #fff; background: #b87ab8; font-family: "MAINLUX"; font-size: 9px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.services-hub__package-duration { margin: 0 0 16px; color: var(--package-accent); font-family: "MAINLUX"; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.services-hub__package h2 { margin: 0 0 8px; color: #f0ebe3; font-family: "MAINLUX"; font-size: 24px; font-weight: 600; }
+.services-hub__package-price { display: block; margin-bottom: 28px; color: var(--package-accent); font-family: "MAINLUX"; font-size: 32px; font-weight: 700; }
+.services-hub__package ul { display: flex; flex-direction: column; gap: 10px; margin: 0 0 28px; padding: 0; list-style: none; color: #7a7278; font-family: "MAINLUX"; font-size: 13px; font-weight: 300; line-height: 1.5; }
+.services-hub__package li { display: flex; gap: 9px; align-items: flex-start; }
+.services-hub__package li span { color: var(--package-accent); font-weight: 600; }
+.services-hub__package-button { display: block; width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--package-accent); border-radius: 10px; color: var(--package-accent); background: transparent; font-family: "MAINLUX"; font-size: 13px; font-weight: 500; letter-spacing: .04em; text-align: center; text-decoration: none; transition: all .2s ease; }
+.services-hub__package.is-featured .services-hub__package-button { color: #fff; background: #b87ab8; }
+.services-hub__package-button:hover { color: #fff; background: var(--package-accent); }
+.services-hub__package.is-featured .services-hub__package-button:hover { color: #fff; background: #b87ab8; }
+.services-hub__styling-process { padding: 64px 60px; background: #0e0c10; }
+.services-hub__process-steps { position: relative; display: flex; gap: 0; }
+.services-hub__process-steps::before { content: ""; position: absolute; top: 20px; right: 20px; left: 20px; height: 1px; background: rgba(255,255,255,.08); }
+.services-hub__process-steps > div { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; align-items: center; gap: 16px; }
+.services-hub__process-steps span { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border: 1px solid rgba(184,122,184,.4); border-radius: 50%; color: #b87ab8; background: #13111a; font-family: "MAINLUX"; font-size: 16px; font-weight: 600; }
+.services-hub__process-steps p { margin: 0; color: #6a6270; font-family: "MAINLUX"; font-size: 12px; text-align: center; }
+.services-hub__secondary--tailoring .services-hub__secondary-hero > span { color: #6b6057; }
+.services-hub__secondary-content { padding: 64px 60px; background: #13111a; }
+.services-hub__secondary--styling .services-hub__secondary-content { background-color: #13111a; }
+.services-hub__secondary--tailoring .services-hub__secondary-content { color: #1a1714; background: #f9f6f0; }
+.services-hub__secondary-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.services-hub__secondary-grid article { padding: 24px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; background: rgba(255,255,255,.03); }
+.services-hub__secondary--tailoring .services-hub__secondary-grid article { border-color: #e8e2d8; background: #fff; }
+.services-hub__secondary-grid h2 { margin: 0 0 12px; color: #c9a96e; font-family: "MAINLUX"; font-size: 22px; font-weight: 600; }
+.services-hub__secondary-grid p { margin: 0; color: #9a9098; font-family: "MAINLUX"; font-size: 14px; line-height: 1.7; }
+.services-hub__secondary--tailoring .services-hub__secondary-grid p { color: #6b6057; }
+.services-hub__tailoring { color: #1a1714; background: #f9f6f0; }
+.services-hub__tailoring-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; padding: 80px 60px 60px; border-bottom: 1px solid #e8e2d8; }
+.services-hub__tailoring-copy { max-width: 500px; }
+.services-hub__tailoring-eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 32px; color: #8b7355; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+.services-hub__tailoring-eyebrow::before { content: ""; width: 32px; height: 1px; background: #8b7355; }
+.services-hub__tailoring h1 { margin: 0 0 24px; color: #1a1714; font-family: "MAINLUX"; font-size: clamp(2.8rem,5vw,4.5rem); font-weight: 700; line-height: 1.05; }
+.services-hub__tailoring h1 em { color: #8b7355; font-weight: 300; }
+.services-hub__tailoring-copy > p:not(.services-hub__tailoring-eyebrow):not(.services-hub__tailoring-select-label) { max-width: 420px; margin: 0 0 40px; color: #6b6057; font-family: "MAINLUX"; font-size: 15px; font-weight: 300; line-height: 1.85; }
+.services-hub__tailoring-select-label { margin: 0 0 14px; color: #a89f96; font-family: "MAINLUX"; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.services-hub__garments { display: flex; flex-wrap: wrap; gap: 8px; }
+.services-hub__garments button { padding: 8px 16px; border: 1px solid #ddd8d0; border-radius: 8px; color: #6b6057; background: transparent; font-family: "MAINLUX"; font-size: 12px; font-weight: 300; letter-spacing: .04em; cursor: pointer; transition: all .2s ease; }
+.services-hub__garments button.is-active { border-color: #2d2926; color: #f0ebe3; background: #2d2926; font-weight: 500; }
+.services-hub__tailoring-price { display: inline-flex; align-items: center; gap: 16px; margin-top: 32px; padding: 20px 24px; border: 1px solid #e0dbd0; border-radius: 12px; background: #f0ece4; }
+.services-hub__tailoring-price > span { display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 50%; color: #1a1714; background: #c9a96e; font-size: 16px; }
+.services-hub__tailoring-price strong, .services-hub__tailoring-price small { display: block; font-family: "MAINLUX"; }
+.services-hub__tailoring-price strong { margin-bottom: 2px; color: #1a1714; font-size: 16px; font-weight: 600; }
+.services-hub__tailoring-price small { color: #8b8078; font-size: 11px; }
+.services-hub__fabric-art { position: relative; height: 380px; overflow: hidden; border: 1px solid #ddd8d0; border-radius: 20px; background: #ede9e0; }
+.services-hub__fabric-art i { position: absolute; width: 100px; height: 130px; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
+.services-hub__fabric-art i::after { content: ""; display: block; height: 100%; background: repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 2px,transparent 2px 8px); }
+.services-hub__fabric-art > div { position: absolute; right: 24px; bottom: 24px; left: 24px; padding: 14px 18px; border-radius: 10px; background: rgba(26,23,20,.85); backdrop-filter: blur(8px); }
+.services-hub__fabric-art strong, .services-hub__fabric-art span { display: block; font-family: "MAINLUX"; }
+.services-hub__fabric-art strong { margin-bottom: 4px; color: #c9a96e; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.services-hub__fabric-art span { color: #f0ebe3; font-size: 15px; }
+.services-hub__tailoring-process { padding: 64px 60px; background: #fff; }
+.services-hub__tailoring-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.services-hub__tailoring-steps article { display: flex; gap: 20px; }
+.services-hub__tailoring-steps article > span { display: flex; width: 48px; height: 48px; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 12px; color: #8b7355; background: #f0ece6; font-family: "MAINLUX"; font-size: 14px; font-weight: 700; }
+.services-hub__tailoring-steps h2 { margin: 0 0 8px; color: #1a1714; font-family: "MAINLUX"; font-size: 18px; font-weight: 600; }
+.services-hub__tailoring-steps p { margin: 0; color: #6b6057; font-family: "MAINLUX"; font-size: 13px; font-weight: 300; line-height: 1.75; }
+@media (max-width: 900px) { .services-hub__nav-inner { flex-wrap: wrap; padding: 16px 24px; } .services-hub__links { order: 3; width: 100%; } .services-hub__hero, .services-hub__techniques, .services-hub__samples, .services-hub__alterations-hero, .services-hub__offers, .services-hub__secondary-hero, .services-hub__secondary-content, .services-hub__styling-packages, .services-hub__styling-process, .services-hub__tailoring-hero, .services-hub__tailoring-process { padding-right: 24px; padding-left: 24px; } .services-hub__alterations-hero-inner, .services-hub__tailoring-hero { grid-template-columns: 1fr; } .services-hub__sample-grid, .services-hub__offer-grid, .services-hub__secondary-grid, .services-hub__package-grid, .services-hub__tailoring-steps, .services-hub__overview-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 620px) { .services-hub__brand { font-size: 18px; } .services-hub__links a { padding: 7px 8px; font-size: 11px; } .services-hub__hero h1 { font-size: 3.4rem; } .services-hub__tags { flex-direction: column; gap: 10px; } .services-hub__sample-grid { grid-template-columns: 1fr 1fr; } .services-hub__cta { align-items: flex-start; flex-direction: column; } }
+

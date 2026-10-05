@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch, unwrap, currentUserId } from "@/lib/api";
+import "../account-pages.css";
 
 const emptyAddress = {
   full_name: "",
@@ -66,20 +67,20 @@ export default function AddressesPage() {
       if (editingId) {
         await apiFetch("/Addresses", {
           method: "PUT",
-          body: { address_id: editingId, ...form, user_id: uid, isdefault: form.isdefault ? 1 : 0, luu: "website" },
+          body: { address_id: editingId, ...form, emailid: form.emailid.trim(), user_id: uid, isdefault: form.isdefault ? 1 : 0, luu: "website" },
         });
         setMessage({ text: "Address updated", isError: false });
       } else {
         await apiFetch("/Addresses", {
           method: "POST",
-          body: { ...form, user_id: uid, isdefault: form.isdefault ? 1 : 0, rcu: "website" },
+          body: { ...form, emailid: form.emailid.trim(), user_id: uid, isdefault: form.isdefault ? 1 : 0, rcu: "website" },
         });
         setMessage({ text: "Address added", isError: false });
       }
       resetForm();
       if (uid) await load(uid);
-    } catch {
-      setMessage({ text: "Failed to save address", isError: true });
+    } catch (error) {
+      setMessage({ text: error.message || "Failed to save address", isError: true });
     } finally {
       setSaving(false);
     }
@@ -89,7 +90,7 @@ export default function AddressesPage() {
     setForm({
       full_name: a.full_name || "",
       mobile_number: a.mobile_number || "",
-      emailid: a.emailid || "",
+      emailid: a.emailid || a.email_id || a.email || "",
       house_street: a.house_street || "",
       city: a.city || "",
       state: a.state || "",
@@ -126,65 +127,65 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <h2 className="mb-4 font-display text-4xl font-bold">My Addresses</h2>
+    <div className="account-page addresses-page">
+      <h2>My Addresses</h2>
       {message.text && (
-        <div className={`mb-4 p-3 text-sm ${message.isError ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
+        <div className={`account-alert ${message.isError ? "account-alert-error" : "account-alert-success"}`}>
           {message.text}
         </div>
       )}
-      <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
-        <div className="h-fit border border-neutral-200 bg-white p-5 shadow-sm">
-          <h5 className="font-semibold">{editingId ? "Edit Address" : "Add Address"}</h5>
-          <form onSubmit={submit} className="mt-4 space-y-3">
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Full Name</span>
+      <div className="account-grid">
+        <div className="account-card account-card-body">
+          <h5>{editingId ? "Edit Address" : "Add Address"}</h5>
+          <form onSubmit={submit} className="account-form">
+            <label className="field">
+              <span>Full Name</span>
               <input type="text" value={form.full_name} onChange={set("full_name")} required className={inputCls} />
             </label>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium">Mobile</span>
+            <div className="two-column">
+              <label className="field">
+                <span>Mobile</span>
                 <input type="tel" value={form.mobile_number} onChange={set("mobile_number")} required className={inputCls} />
               </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium">Email</span>
+              <label className="field">
+                <span>Email</span>
                 <input type="email" value={form.emailid} onChange={set("emailid")} className={inputCls} />
               </label>
             </div>
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">House / Street</span>
+            <label className="field">
+              <span>House / Street</span>
               <input type="text" value={form.house_street} onChange={set("house_street")} required className={inputCls} />
             </label>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium">City</span>
+            <div className="two-column">
+              <label className="field">
+                <span>City</span>
                 <input type="text" value={form.city} onChange={set("city")} required className={inputCls} />
               </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium">State</span>
+              <label className="field">
+                <span>State</span>
                 <input type="text" value={form.state} onChange={set("state")} required className={inputCls} />
               </label>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium">Pincode</span>
+            <div className="two-column">
+              <label className="field">
+                <span>Pincode</span>
                 <input type="text" value={form.pincode} onChange={set("pincode")} required className={inputCls} />
               </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium">Landmark</span>
+              <label className="field">
+                <span>Landmark</span>
                 <input type="text" value={form.landmark} onChange={set("landmark")} className={inputCls} />
               </label>
             </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.isdefault} onChange={set("isdefault")} />
-              Set as default address
-            </label>
-            <div className="flex gap-2">
-              <button disabled={saving} className="bg-neutral-950 px-6 py-2 text-sm font-semibold text-white disabled:opacity-50">
+            <div className="form-check mb-3">
+              <input className="form-check-input" type="checkbox" checked={form.isdefault} onChange={set("isdefault")} id="defaultAddress" />
+              <label className="form-check-label" htmlFor="defaultAddress">Set as default address</label>
+            </div>
+            <div className="account-list-actions">
+              <button className="btn btn-dark" disabled={saving}>
                 {saving ? "Saving..." : editingId ? "Update Address" : "Add Address"}
               </button>
               {editingId && (
-                <button type="button" onClick={resetForm} className="border border-neutral-400 px-4 py-2 text-sm">
+                <button type="button" onClick={resetForm} className="btn btn-outline-secondary">
                   Cancel
                 </button>
               )}
@@ -197,25 +198,25 @@ export default function AddressesPage() {
           ) : (
             <div className="space-y-4">
               {addresses.map((a) => (
-                <div key={a.address_id} className="border border-neutral-200 bg-white p-5 shadow-sm">
-                  <div className="flex items-start justify-between gap-3">
+                <div key={a.address_id} className="account-list-card">
+                  <div className="account-list-head">
                     <div>
-                      <h5 className="font-semibold">
+                      <h5>
                         {a.full_name}
                         {(a.isdefault === 1 || a.isdefault === true) && (
-                          <span className="ml-2 bg-neutral-200 px-2 py-0.5 text-xs font-semibold">Default</span>
+                          <span className="default-badge">Default</span>
                         )}
                       </h5>
-                      <p className="mt-1 text-sm">{a.house_street}</p>
-                      <p className="text-sm">{a.city}, {a.state} {a.pincode}</p>
-                      <p className="text-sm">{a.mobile_number}</p>
-                      {a.emailid && <p className="text-sm">{a.emailid}</p>}
+                      <p>{a.house_street}</p>
+                      <p>{a.city}, {a.state} {a.pincode}</p>
+                      <p>{a.mobile_number}</p>
+                      {a.emailid && <p>{a.emailid}</p>}
                     </div>
-                    <div className="flex shrink-0 gap-2">
-                      <button onClick={() => handleEdit(a)} className="border border-neutral-900 px-3 py-1 text-xs font-semibold">
+                    <div className="account-list-actions">
+                      <button onClick={() => handleEdit(a)} className="btn btn-sm btn-outline-dark">
                         Edit
                       </button>
-                      <button onClick={() => handleDelete(a.address_id)} className="border border-red-600 px-3 py-1 text-xs font-semibold text-red-600">
+                      <button onClick={() => handleDelete(a.address_id)} className="btn btn-sm btn-outline-danger">
                         Delete
                       </button>
                     </div>

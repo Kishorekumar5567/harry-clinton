@@ -8,28 +8,69 @@ export default function LoginPopup({ onSkip }) {
 
   return (
     <div
-      className="fixed inset-0 z-[105] flex items-center justify-center bg-black/55 p-4"
-      onClick={onSkip}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/55"
     >
       <div
-        className="w-full max-w-md bg-white p-8 text-center shadow-xl"
-        style={{ borderRadius:"0" }}
-        onClick={(e) => e.stopPropagation()}
+        className="login-popup-card w-[90%] max-w-[380px] bg-white text-center shadow-xl"
       >
-        <h2 className="font-display text-3xl font-bold">Welcome to Harry Clinton</h2>
-        <p className="mt-3 text-sm text-neutral-500">
+        <h2 className="login-popup-title">Welcome to Harry Clinton</h2>
+        <p className="login-popup-subtitle">
           Login to enjoy a personalised experience, save addresses, and track your orders.
         </p>
         <button
           onClick={() => router.push("/login")}
-          className="btn-primary mt-6 w-full"
+          className="login-popup-login"
         >
           Login / Register
         </button>
-        <button onClick={onSkip} className="mt-3 text-sm text-neutral-500 underline">
+        <button onClick={onSkip} className="login-popup-guest">
           Continue as Guest
         </button>
       </div>
+      <style jsx>{`
+        .login-popup-card {
+          padding: 36px 28px;
+          border-radius: 12px !important;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+        .login-popup-title {
+          margin: 0 0 12px;
+          color: #111;
+          font-family: "MAINLUX", Arial, sans-serif;
+          font-size: 22px !important;
+          font-weight: 700;
+        }
+        .login-popup-subtitle {
+          margin: 0 0 24px;
+          color: #555;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+        .login-popup-card button {
+          display: block;
+          width: 100%;
+          cursor: pointer;
+          font-family: "MAINLUX", Arial, sans-serif;
+        }
+        .login-popup-login {
+          margin: 0 0 12px;
+          padding: 13px;
+          border: 0;
+          border-radius: 8px !important;
+          background: #111;
+          color: #fff;
+          font-size: 15px;
+          font-weight: 600;
+        }
+        .login-popup-guest {
+          padding: 11px;
+          border: 1px solid #ccc;
+          border-radius: 8px !important;
+          background: transparent;
+          color: #555;
+          font-size: 14px;
+        }
+      `}</style>
     </div>
   );
 }

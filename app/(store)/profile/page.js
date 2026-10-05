@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch, unwrap, API_BASE_URL, currentUserId } from "@/lib/api";
+import { apiFetch, unwrap, API_BASE_URL, currentUserId, resolveUploadUrl } from "@/lib/api";
+import "../account-pages.css";
 
 // Profile: same structure/texts/flows as the previous UI —
 // editable form with photo upload, save states, messages.
@@ -32,6 +33,18 @@ export default function ProfilePage() {
       router.replace("/login");
       return;
     }
+    let storedUser = {};
+    try {
+      storedUser = JSON.parse(localStorage.getItem("hc_user") || "{}");
+    } catch {
+      storedUser = {};
+    }
+    const savedUser = {
+      fullname: storedUser.fullname || storedUser.full_name || storedUser.name || "",
+      emailid: storedUser.emailid || storedUser.email_id || storedUser.email || "",
+      mobile_number: storedUser.mobile_number || storedUser.phone_number || storedUser.mobile || "",
+    };
+    setForm((current) => ({ ...current, ...savedUser }));
     setUserId(uid);
     let live = true;
     apiFetch("/Profiles")
@@ -42,18 +55,20 @@ export default function ProfilePage() {
         // NEVER fall back to another row: a missing profile means a fresh
         // form for this user, not someone else's data.
         const p = arr.find((x) => x.user_id === uid) || null;
-        if (p) {
-          setProfileId(p.profile_id || null);
-          setForm({
-            fullname: p.fullname || p.full_name || "",
-            emailid: p.emailid || p.email_id || "",
-            mobile_number: p.mobile_number || p.phone_number || "",
-            gender: p.gender || "",
-            dateofbirth: (p.dateofbirth || "").split("T")[0],
-            profile_url: p.profile_url || p.profile_picture_url || "",
-            isactive: p.isactive !== false && p.isactive !== 0,
-          });
-        }
+         if (p) {
+           setProfileId(p.profile_id || null);
+           setForm({
+             fullname: p.fullname || p.full_name || savedUser.fullname,
+             emailid: p.emailid || p.email_id || savedUser.emailid,
+             mobile_number: p.mobile_number || p.phone_number || savedUser.mobile_number,
+             gender: p.gender || "",
+             dateofbirth: (p.dateofbirth || "").split("T")[0],
+             profile_url: p.profile_url || p.profile_picture_url || "",
+             isactive: p.isactive !== false && p.isactive !== 0,
+           });
+         } else {
+           setForm((current) => ({ ...current, ...savedUser }));
+         }
       })
       .catch(() => {
         if (live) setMessage({ text: "Failed to load profile", isError: true });
@@ -131,13 +146,6 @@ export default function ProfilePage() {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("hc_token");
-    localStorage.removeItem("hc_user");
-    localStorage.removeItem("hc_role");
-    router.push("/login");
-  };
-
   if (loading) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-14 text-center">
@@ -152,30 +160,33 @@ export default function ProfilePage() {
   const inputCls = "w-full border border-neutral-300 px-3 py-2 text-sm focus:border-gold focus:outline-none";
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h2 className="mb-4 font-display text-4xl font-bold">My Profile</h2>
+    <div className="account-page">
+      <h2>My Profile</h2>
       {message.text && (
-        <div className={`mb-4 p-3 text-sm ${message.isError ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
+        <div className={`account-alert ${message.isError ? "account-alert-error" : "account-alert-success"}`}>
           {message.text}
         </div>
       )}
-      <div className="border border-neutral-200 bg-white p-5 shadow-sm">
-        <form onSubmit={submit} className="space-y-4">
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">Full Name</span>
+      <div className="account-card">
+        <div className="account-card-body">
+        <form onSubmit={submit} className="account-form">
+          <div className="two-column">
+          <label className="field">
+            <span>Full Name</span>
             <input type="text" value={form.fullname} onChange={set("fullname")} required className={inputCls} />
           </label>
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">Email</span>
+          <label className="field">
+            <span>Email</span>
             <input type="email" value={form.emailid} onChange={set("emailid")} required className={inputCls} />
           </label>
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">Mobile Number</span>
+          </div>
+          <div className="two-column">
+          <label className="field">
+            <span>Mobile Number</span>
             <input type="tel" value={form.mobile_number} onChange={set("mobile_number")} required className={inputCls} />
           </label>
-          <div className="grid grid-cols-2 gap-4">
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Gender</span>
+            <label className="field">
+              <span>Gender</span>
               <select value={form.gender} onChange={set("gender")} className={inputCls}>
                 <option value="">Select</option>
                 <option value="Male">Male</option>
@@ -183,39 +194,37 @@ export default function ProfilePage() {
                 <option value="Other">Other</option>
               </select>
             </label>
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Date of Birth</span>
+          </div>
+          <div className="two-column">
+            <label className="field">
+              <span>Date of Birth</span>
               <input type="date" value={form.dateofbirth} onChange={set("dateofbirth")} className={inputCls} />
             </label>
-          </div>
-          <div className="text-sm">
-            <span className="mb-1 block font-medium">Profile Photo</span>
-            <input type="file" accept="image/*" onChange={handlePhoto} disabled={uploading} className="w-full text-sm" />
-            <input
-              type="url"
-              value={form.profile_url.startsWith("blob:") ? "" : form.profile_url}
-              onChange={set("profile_url")}
-              placeholder="Or enter image URL"
-              className={`${inputCls} mt-2`}
-            />
+            <div className="field">
+            <span>Profile Photo</span>
+            <input type="file" accept="image/*" onChange={handlePhoto} disabled={uploading} className="profile-file-input" />
             {uploading && <div className="mt-1 text-xs text-neutral-500">Uploading photo...</div>}
             {form.profile_url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img alt="Profile preview" src={form.profile_url} style={{ width: 80, height: 80, objectFit: "cover", marginTop: 8 }} />
+               <img
+                 alt="Profile preview"
+                 src={resolveUploadUrl(form.profile_url)}
+                 style={{ width: 80, height: 80, objectFit: "cover", marginTop: 8 }}
+                 onError={(e) => { e.currentTarget.style.display = "none"; }}
+               />
             )}
           </div>
-          <label className="flex items-center gap-2 text-sm">
+            </div>
+          <label className="check-field">
             <input type="checkbox" id="profileIsActive" checked={form.isactive} onChange={set("isactive")} />
             <span>Active profile</span>
           </label>
-          <button disabled={saving} className="bg-neutral-950 px-6 py-2 text-sm font-semibold text-white disabled:opacity-50">
+          <button disabled={saving}>
             {saving ? "Saving..." : "Save Changes"}
           </button>
         </form>
+        </div>
       </div>
-      <button onClick={logout} className="mt-6 border border-neutral-900 px-6 py-2 text-sm font-semibold">
-        Log Out
-      </button>
       <SpinnerStyle />
     </div>
   );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { saveSession, isAdminRole, throwIfAuthFailed } from "../auth";
+import "../auth-pages.css";
 
 // Login: same structure/texts as the previous UI —
 // OTP block, "or" divider, password block with eye toggle.
@@ -111,56 +112,57 @@ export default function LoginPage() {
     }
   };
 
-  const inputCls = "w-full border border-neutral-300 px-4 py-3 text-sm focus:border-gold focus:outline-none";
+  const inputCls = "auth-input";
 
   return (
-    <div className="mx-auto max-w-md px-4 py-14">
-      <h2 className="text-center font-display text-4xl font-bold">Login</h2>
-      {error && <p className="mt-4 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+    <div className="auth-login-page">
+      <div className="auth-card">
+      <h2>Login</h2>
+      {error && <p className="auth-error">{error}</p>}
 
-      <div className="mt-8 space-y-4">
-        <label className="block text-sm">
-          <span className="mb-1 block font-medium">Email or Mobile</span>
+      <div>
+        <label>
+          <span>Email or Mobile</span>
           <input value={emailOrMobile} onChange={(e) => setEmailOrMobile(e.target.value)} placeholder="Enter email or mobile number" className={inputCls} />
         </label>
         {otpSent ? (
           <>
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Enter OTP</span>
+            <label>
+              <span>Enter OTP</span>
               <input value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="Enter OTP from email" className={inputCls} />
             </label>
-            <button onClick={verifyOtp} disabled={verifying} className="w-full bg-neutral-950 py-3 text-sm font-semibold text-white disabled:opacity-50">
+            <button onClick={verifyOtp} disabled={verifying} className="auth-submit">
               {verifying ? "Verifying..." : "Verify OTP & Login"}
             </button>
-            <p className="text-center text-sm">
+            <p className="auth-register-prompt">
               Didn&apos;t receive?{" "}
-              <button onClick={sendOtp} disabled={sendingOtp} className="underline">
+              <button onClick={sendOtp} disabled={sendingOtp} className="auth-link">
                 Resend OTP
               </button>
             </p>
           </>
         ) : (
-          <button onClick={sendOtp} disabled={sendingOtp} className="w-full border border-neutral-900 py-3 text-sm font-semibold disabled:opacity-50">
+          <button onClick={sendOtp} disabled={sendingOtp} className="auth-submit">
             {sendingOtp ? "Sending..." : "Send OTP"}
           </button>
         )}
-        {otpMessage && <p className="text-center text-sm text-neutral-600">{otpMessage}</p>}
+        {otpMessage && <p className={`auth-message ${otpMessage.includes("sent") ? "is-success" : "is-error"}`}>{otpMessage}</p>}
       </div>
 
-      <div className="my-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-neutral-300" />
-        <span className="text-sm text-neutral-500">or</span>
-        <span className="h-px flex-1 bg-neutral-300" />
+      <div className="auth-divider">
+        <span className="auth-divider-line" />
+        <span className="auth-divider-label">or</span>
+        <span className="auth-divider-line" />
       </div>
 
-      <form onSubmit={passwordLogin} className="space-y-4">
-        <label className="block text-sm">
-          <span className="mb-1 block font-medium">Email ID</span>
+      <form onSubmit={passwordLogin}>
+        <label>
+          <span>Email ID</span>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" className={inputCls} />
         </label>
-        <label className="block text-sm">
-          <span className="mb-1 block font-medium">Password</span>
-          <div className="relative">
+        <label>
+          <span>Password</span>
+          <div className="auth-password-wrap">
             <input
               type={showPassword ? "text" : "password"}
               value={password}
@@ -172,24 +174,25 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500"
+              className="auth-eye"
             >
               <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"} />
             </button>
           </div>
         </label>
-        <p className="text-right text-sm">
-          <Link href="/forgot-password" className="underline">Forgot password?</Link>
+        <p className="auth-forgot">
+          <Link href="/forgot-password" className="auth-link">Forgot password?</Link>
         </p>
-        <button disabled={busy} className="w-full bg-neutral-950 py-3 text-sm font-semibold text-white disabled:opacity-50">
+        <button disabled={busy} className="auth-submit">
           {busy ? "Logging in..." : "Login with Password"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm">
+      <p className="auth-register-prompt">
         Not a user?{" "}
-        <Link href="/register" className="underline">Register</Link>
+        <Link href="/register" className="auth-link">Register</Link>
       </p>
+      </div>
     </div>
   );
 }

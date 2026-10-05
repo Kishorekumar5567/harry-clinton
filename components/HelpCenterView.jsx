@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { apiGet, unwrap } from "@/lib/api";
+import { sanitizeHtml } from "@/lib/sanitize";
+import "./reference-page-typography.css";
+import "./help-center.css";
 
 const TOPICS = [
-  { title: "Shipping", desc: "Learn about dispatch timelines, delivery options, tracking your order, and express delivery within Chennai.", href: "/Policies" },
-  { title: "Returns & Exchanges", desc: "Find out how to return or exchange an item, our 5-day window policy, and refund timelines.", href: "/Policies" },
-  { title: "Cancellation", desc: "Understand how to cancel an order before shipping, cancellation for bespoke orders, and our right to cancel orders.", href: "/Policies" },
-  { title: "Sizing & Custom Orders", desc: "How to choose the right size, book a bespoke consultation, and what to expect from a custom garment.", href: "/FAQs" },
-  { title: "Privacy & Security", desc: "How we collect, use, and protect your personal information and payment details.", href: "/privacy-policy" },
-  { title: "Terms & Conditions", desc: "Everything about using our website, eligibility, payments, bespoke orders, and intellectual property.", href: "/terms-and-conditions" },
+  { icon: "bi-truck", title: "Shipping", desc: "Learn about dispatch timelines, delivery options, tracking your order, and express delivery within Chennai.", href: "/Policies" },
+  { icon: "bi-arrow-return-left", title: "Returns & Exchanges", desc: "Find out how to return or exchange an item, our 5-day window policy, and refund timelines.", href: "/Policies" },
+  { icon: "bi-x-circle", title: "Cancellation", desc: "Understand how to cancel an order before shipping, cancellation for bespoke orders, and our right to cancel orders.", href: "/Policies" },
+  { icon: "bi-rulers", title: "Sizing & Custom Orders", desc: "How to choose the right size, book a bespoke consultation, and what to expect from a custom garment.", href: "/FAQs" },
+  { icon: "bi-shield-check", title: "Privacy & Security", desc: "How we collect, use, and protect your personal information and payment details.", href: "/privacy-policy" },
+  { icon: "bi-file-text", title: "Terms & Conditions", desc: "Everything about using our website, eligibility, payments, bespoke orders, and intellectual property.", href: "/terms-and-conditions" },
 ];
 
 const DEFAULT_GUIDES = [
@@ -27,49 +30,50 @@ export default async function HelpCenterView() {
     : DEFAULT_GUIDES);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] pb-16">
-      <section className="bg-[#212529] py-14 text-center text-white">
-        <h1 className="font-display text-5xl font-bold">Help Center</h1>
-        <p className="mx-auto mt-3 max-w-xl text-neutral-300">
+    <div className="hc-reference-page help-center-page">
+      <section className="help-center-hero">
+        <h1>Help Center</h1>
+        <p>
           Find answers, manage orders, and learn more about Harry Clinton.
         </p>
       </section>
 
-      <div className="mx-auto max-w-5xl px-4 py-14">
-      <h2 className="mt-12 font-display text-3xl font-bold">Browse by Topic</h2>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="help-center-container">
+      <h2>Browse by Topic</h2>
+      <div className="help-topics-grid">
         {TOPICS.map((t) => (
-          <Link key={t.title} href={t.href} className="border border-neutral-200 bg-white p-6 transition-colors hover:border-gold">
-            <p className="font-display text-xl font-bold">{t.title}</p>
-            <p className="mt-2 text-sm text-neutral-600">{t.desc}</p>
+          <Link key={t.title} href={t.href} className="help-topic-card">
+            <i className={`bi ${t.icon}`} aria-hidden="true" />
+            <h3>{t.title}</h3>
+            <p>{t.desc}</p>
           </Link>
         ))}
       </div>
 
-      <h2 className="mt-12 font-display text-3xl font-bold">Quick Guides</h2>
-      <div className="mt-6 space-y-3">
+      <h2>Quick Guides</h2>
+      <div className="help-accordion">
         {guides.map((g, i) => (
-          <details key={i} className="border border-neutral-200 bg-white">
-            <summary className="cursor-pointer p-4 font-medium">{g.question}</summary>
-            <p className="px-4 pb-4 text-sm text-neutral-600">{g.answer}</p>
+          <details key={i}>
+            <summary>{g.question}</summary>
+            <div className="help-accordion__body" dangerouslySetInnerHTML={{ __html: sanitizeHtml(g.answer || "") }} />
           </details>
         ))}
       </div>
 
-      <div className="mt-12 bg-[#212529] p-8 text-center text-white md:p-12">
-        <h2 className="font-display text-3xl font-bold">Still need help?</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-neutral-300">
+      <div className="help-center-cta">
+        <h3>Still need help?</h3>
+        <p>
           Our support team is available Monday to Saturday, 10am–7pm IST.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <a href="mailto:connect@harryclinton.com" className="border border-white px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-black">
-            Email Us
+        <div className="help-center-cta__buttons">
+          <a href="mailto:connect@harryclinton.com">
+            <i className="bi bi-envelope" />Email Us
           </a>
-          <a href="tel:+917094094194" className="border border-white px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-black">
-            Call Us
+          <a href="tel:+917094094194">
+            <i className="bi bi-telephone" />Call Us
           </a>
-          <Link href="/contact-us" className="bg-gold px-6 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-white">
-            Contact Page
+          <Link href="/contact-us">
+            <i className="bi bi-chat-dots" />Contact Page
           </Link>
         </div>
       </div>

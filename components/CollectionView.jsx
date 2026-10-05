@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { inr } from "@/lib/api";
 import { generatedColor } from "@/lib/colors";
+import WishlistHeart from "./WishlistHeart";
+import { useCart } from "./CartProvider";
 import "./collection-view.css";
 
 // Collection catalog markup mirrors the reference CollectionPage template.
@@ -133,35 +134,40 @@ export default function CollectionView({ meta, products, sizes = [], clothTypes 
   );
 }
 
-function CollectionCard({ product }) {
+export function CollectionCard({ product, showView = true }) {
+  const cart = useCart();
+  const wished = cart?.wishlist.some((item) => item.id === product.id);
   const subtitle = product.subtitle || product.slug?.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ") || "";
-  const salePrice = Number(product.price) || 0;
-  // The live product schema currently exposes only base_price. Keep the
-  // reference sale treatment visible until compare-at prices are added to the
-  // catalog API; an API-provided originalPrice always takes precedence.
-  const originalPrice = Number(product.originalPrice) || Math.round(salePrice * 1.2);
-  const colors = colorDots(product);
   return (
-    <Link href={`/product/${product.slug || product.id}`} className="collection-card">
-      <div className="collection-card__image-wrap">
-        {product.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.image} alt={product.name} className="collection-card__image" loading="lazy" />
-        ) : <div className="collection-card__image collection-card__image--empty" />}
-        <span className="collection-card__view">View piece <span aria-hidden>→</span></span>
-      </div>
-      <div className="collection-card__body">
-        <span className="collection-card__subtitle">{subtitle}</span>
-        <h3>{product.name}</h3>
-        <div className="collection-card__price">
-          <span>{inr(salePrice)}</span>
-          <del>{inr(originalPrice)}</del>
+    <div className="collection-card-shell">
+      <Link href={`/product/${product.slug || product.id}`} className="collection-card">
+        <div className="collection-card__image-wrap">
+          {product.video ? (
+            <video
+              src={product.video}
+              className="collection-card__image"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              aria-label={product.name}
+            />
+          ) : product.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={product.image} alt={product.name} className="collection-card__image" loading="lazy" />
+          ) : <div className="collection-card__image collection-card__image--empty" />}
+          <div className="collection-card__overlay">
+            <span className="collection-card__subtitle">{subtitle}</span>
+          </div>
+          {showView && <span className="collection-card__view">View piece <span aria-hidden>→</span></span>}
         </div>
-        <div className="collection-card__swatches">
-          {colors.map((color) => <span key={color.name} title={color.name} style={{ backgroundColor: color.hex, borderColor: color.border || "#b8b8b8" }} />)}
-        </div>
-      </div>
-    </Link>
+      </Link>
+      <WishlistHeart
+        product={product}
+        className={`collection-card__heart${wished ? " collection-card__heart--saved" : ""}`}
+      />
+    </div>
   );
 }
 

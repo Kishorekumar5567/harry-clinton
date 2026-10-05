@@ -1,5 +1,7 @@
 import { apiGet, unwrap } from "@/lib/api";
 import { sanitizeHtml } from "@/lib/sanitize";
+import "./reference-page-typography.css";
+import "./legal-reference.css";
 
 // Fallback content verbatim from the previous UI.
 const FALLBACKS = {
@@ -189,19 +191,22 @@ export default async function LegalView({ doc }) {
   }
 
   return (
-    <div className="bg-neutral-100 py-10">
-      <div className="mx-auto max-w-4xl px-4">
-        <div className="border-0 bg-white p-6 shadow-sm">
-          <h1 className="mb-4 font-display text-4xl font-bold">{content.title}</h1>
-          <p>
-            <strong>Effective Date:</strong> <span className="text-neutral-500">{content.effectiveDate}</span>
+    <div className="hc-reference-page legal-reference-page">
+      <div className="legal-reference-page__container">
+        <div className="legal-reference-page__card">
+          <h1>{content.title}</h1>
+          <p className="effective-date">
+            <strong>Effective Date:</strong> <span>{content.effectiveDate}</span>
           </p>
-          <p className="mt-2 text-neutral-600">{content.intro}</p>
+          <p
+            className="intro"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.intro) }}
+          />
           {error && <div className="mt-3 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
           {content.sections.map((section, index) => (
             <div key={index}>
-              <h5 className="mt-6 font-semibold">{section.section_title}</h5>
-              <div className="legal-body mt-1 text-sm text-neutral-700" dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }} />
+              <h5>{section.section_title}</h5>
+              <div className="legal-body" dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }} />
             </div>
           ))}
         </div>

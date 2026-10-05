@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiCached, homeKV, precacheMedia, resolveUploadUrl } from "@/lib/api";
-import ProductCard from "@/components/ProductCard";
+import { CollectionCard } from "@/components/CollectionView";
 import SectionHeading from "@/components/SectionHeading";
 import Reveal from "@/components/Reveal";
 
@@ -56,7 +56,10 @@ export default function FeaturedProducts() {
             id: p.product_id,
             slug: p.product_slug || p.product_id,
             name: p.product_name,
+            subtitle: p.short_description || "",
             price: Number(p.base_price) || 0,
+            originalPrice: p.original_price,
+            colors: p.colors || [],
             image: resolveUploadUrl(primaryMedia?.media_url),
           };
         });
@@ -106,7 +109,7 @@ export default function FeaturedProducts() {
         <div className={`grid grid-cols-2 gap-4 md:gap-6 mt-10 ${COLS_CLS[cfg.cols] || "md:grid-cols-4"}`}>
           {products.map((product, index) => (
             <Reveal key={product.id} delay={index * 0.1}>
-              <ProductCard product={product} />
+              <CollectionCard product={product} />
             </Reveal>
           ))}
         </div>

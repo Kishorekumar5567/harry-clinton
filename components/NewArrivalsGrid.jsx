@@ -1,26 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useCart } from "./CartProvider";
-import { PLACEHOLDER_IMAGE } from "./ProductCard";
-import WishlistHeart from "./WishlistHeart";
+import { CollectionCard } from "./CollectionView";
+import "./collection-view.css";
 
-// New Arrivals grid: count, Newest First sort, New badge,
-// Quick Add / Added to Bag, Price on request — as before.
+// New Arrivals uses the same product-card treatment as collection pages:
+// shared image ratio, hover view panel, pricing, swatches, and wishlist heart.
 export default function NewArrivalsGrid({ products }) {
-  const cart = useCart();
-  const [addedId, setAddedId] = useState(null);
-
-  const quickAdd = (p) => {
-    cart?.addToCart(
-      { id: p.id, slug: p.slug, name: p.name, price: Number(p.price) || 0, image: p.image },
-      1
-    );
-    setAddedId(p.id);
-    setTimeout(() => setAddedId((cur) => (cur === p.id ? null : cur)), 2000);
-  };
-
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
@@ -40,50 +26,13 @@ export default function NewArrivalsGrid({ products }) {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
-          {products.map((p) => {
-            const wished = cart?.wishlist.some((i) => i.id === p.id);
-            return (
-            <div key={p.id} className="group relative bg-white shadow-sm">
-              <span className="absolute left-3 top-3 z-10 bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-neutral-950">
-                New
-              </span>
-              <WishlistHeart
-                product={p}
-                className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center  shadow transition-all duration-300 ${
-                  wished
-                    ? "bg-gold text-neutral-950"
-                    : "bg-white/90 text-neutral-800 hover:bg-gold lg:translate-y-1 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
-                }`}
-              />
-              <Link href={`/product/${p.slug || p.id}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={p.image || PLACEHOLDER_IMAGE}
-                  alt={p.name}
-                  loading="lazy"
-                  style={{ height: "300px", width: "100%", objectFit: "cover" }}
-                />
-              </Link>
-              <div className="p-4 text-center">
-                <Link href={`/product/${p.slug || p.id}`} className="font-medium hover:underline">
-                  {p.name}
-                </Link>
-                <p className="mt-1 text-sm font-bold">
-                  {p.price ? `₹${Number(p.price).toLocaleString("en-IN")}` : "Price on request"}
-                </p>
-                <button
-                  onClick={() => quickAdd(p)}
-                  className={`mt-3 w-full py-2 text-xs font-semibold uppercase tracking-widest text-white transition ${
-                    addedId === p.id ? "bg-green-700" : "bg-neutral-950 hover:bg-gold hover:text-neutral-950"
-                  }`}
-                >
-                  {addedId === p.id ? "Added to Bag ✓" : "Quick Add"}
-                </button>
-              </div>
+        <div className="collection-grid collection-grid--four">
+          {products.map((product) => (
+            <div key={product.id} className="new-arrivals-card">
+              <span className="new-arrivals-card__badge">New</span>
+              <CollectionCard product={product} />
             </div>
-            );
-          })}
+          ))}
         </div>
       )}
     </>

@@ -13,8 +13,6 @@ import { sanitizeHtml } from "@/lib/sanitize";
 // - dark: black strip (notification bar) vs white strip (running bar)
 // - arrows: show prev/next buttons (default true)
 // - flankLeft / flankRight: static nodes pinned at the strip edges
-const ENTER_MS = 850;
-const EXIT_MS = 850;
 const ENTER_EASE = "cubic-bezier(0.16, 0.8, 0.24, 1)";
 const EXIT_EASE = "cubic-bezier(0.55, 0.06, 0.75, 0.4)";
 
@@ -34,7 +32,7 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
   const animRef = useRef(null);
 
   const holdMs = list[currentIndex]?.ms || TRAIN_DEFAULT_MS;
-  const rideMs = holdMs + ENTER_MS + EXIT_MS;
+  const rideMs = holdMs;
 
   // The ride: fast entry from the correct side, eased center stop, exact DB
   // hold, slow-start exit left. Fresh animation object per slide.
@@ -46,12 +44,14 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
     const travel = vp.clientWidth / 2 + el.offsetWidth / 2 + 24;
     const dir = fromLeft ? -1 : 1;
-    const total = (list[currentIndex]?.ms || TRAIN_DEFAULT_MS) + ENTER_MS + EXIT_MS;
+    const total = list[currentIndex]?.ms || TRAIN_DEFAULT_MS;
+    const enterMs = total * 0.2;
+    const exitStartMs = total * 0.8;
     const anim = el.animate(
       [
         { opacity: "0", transform: `translateX(${dir * travel}px)`, easing: ENTER_EASE, offset: 0 },
-        { opacity: "1", transform: "translateX(0px)", offset: ENTER_MS / total },
-        { opacity: "1", transform: "translateX(0px)", easing: EXIT_EASE, offset: (ENTER_MS + (list[currentIndex]?.ms || TRAIN_DEFAULT_MS)) / total },
+        { opacity: "1", transform: "translateX(0px)", offset: enterMs / total },
+        { opacity: "1", transform: "translateX(0px)", easing: EXIT_EASE, offset: exitStartMs / total },
         { opacity: "0", transform: `translateX(${-travel}px)`, offset: 1 },
       ],
       { duration: total, fill: "both" }
@@ -137,7 +137,7 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
   const raw = list[currentIndex]?.text || "";
   const html = /<[a-z][\s\S]*>/i.test(raw) ? sanitizeHtml(raw) : null;
   const skin = dark
-    ? "bg-neutral-950 text-white"
+    ? "bg-[#080003] text-white"
     : "border-y border-neutral-200 bg-white text-neutral-900";
   const btnCls = dark
     ? "ticker-nav-btn text-white/70 hover:text-[#c6a15b] hover:bg-white/10"
@@ -147,14 +147,14 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
     <span
       key={currentIndex}
       ref={textRef}
-      className="rb-anim whitespace-nowrap text-[12px] md:text-[13px] font-medium leading-[20px] tracking-[0.4px]"
+      className="rb-anim whitespace-nowrap text-[12px] md:text-[14px] font-normal leading-[20px] tracking-[0.3px]"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   ) : (
     <span
       key={currentIndex}
       ref={textRef}
-      className="rb-anim whitespace-nowrap text-[12px] md:text-[13px] font-medium leading-[20px] tracking-[0.4px]"
+      className="rb-anim whitespace-nowrap text-[12px] md:text-[14px] font-normal leading-[20px] tracking-[0.3px]"
     >
       {raw}
     </span>
@@ -162,19 +162,19 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
 
   return (
     <div
-      className={`hc-bar-font relative flex h-[28px] md:h-[30px] items-center justify-center overflow-hidden px-8 select-none ${skin}`}
+      className={`hc-bar-font relative flex h-[25px] md:h-[20px] items-center justify-center overflow-hidden px-8 select-none ${skin}`}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
       {flankLeft}
-      {arrows && list.length > 1 && (
+      {arrows && (
         <button
           type="button"
           onClick={showPrev}
           aria-label="Previous announcement"
           className={`${btnCls} ticker-prev`}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="ticker-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -182,14 +182,14 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
       <div ref={viewportRef} className="w-full max-w-4xl overflow-hidden text-center px-4">
         {textNode}
       </div>
-      {arrows && list.length > 1 && (
+      {arrows && (
         <button
           type="button"
           onClick={showNext}
           aria-label="Next announcement"
           className={`${btnCls} ticker-next`}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="ticker-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
@@ -201,16 +201,20 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
           top: 50%;
           transform: translateY(-50%);
           z-index: 10;
-          width: 22px;
-          height: 22px;
+          width: 38px;
+          height: 28px;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 0;
+          padding: 5px 10px;
           margin: 0;
-          background: transparent !important;
-          background-color: transparent !important;
+          color: #fff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          background: rgba(255, 255, 255, 0.12) !important;
+          background-color: rgba(255, 255, 255, 0.12) !important;
           border: none !important;
+          border-radius: 50% !important;
           outline: none !important;
           box-shadow: none !important;
           cursor: pointer;
@@ -218,19 +222,30 @@ export default function TrainTicker({ slides, dark = true, arrows = true, flankL
         }
         .ticker-nav-btn:hover {
           color: #c6a15b !important;
+          background: rgba(198, 161, 91, 0.18) !important;
+          background-color: rgba(198, 161, 91, 0.18) !important;
         }
         .ticker-prev {
-          left: 12px;
+          left: 10px;
         }
         .ticker-next {
-          right: 12px;
+          right: 10px;
         }
         @media (max-width: 768px) {
+          .ticker-nav-btn {
+            width: 30px;
+            height: 22px;
+            padding: 4px 8px;
+          }
+          .ticker-arrow-icon {
+            width: 14px;
+            height: 14px;
+          }
           .ticker-prev {
-            left: 6px;
+            left: 8px;
           }
           .ticker-next {
-            right: 6px;
+            right: 8px;
           }
         }
       `}</style>

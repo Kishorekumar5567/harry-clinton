@@ -45,7 +45,11 @@ export default async function CategoryMain({ category }) {
   const heroImage = categoryMedia(matchedCategory?.hero_image_url) || categoryMedia(getSetting(settingKey("hero_image"))) || main.heroImage;
   const heroTitle = matchedCategory?.hero_title || getSetting(settingKey("hero_title")) || main.heroTitle;
   const heroSubtitle = matchedCategory?.hero_subtitle || getSetting(settingKey("hero_subtitle")) || main.heroSubtitle;
-  const heroDescription = matchedCategory?.hero_description || getSetting(settingKey("hero_description")) || "";
+  const rawHeroDescription = matchedCategory?.hero_description || getSetting(settingKey("hero_description")) || "";
+  // The reference hero uses the subtitle as its single supporting line. Do
+  // not render a duplicate admin description, while preserving any distinct
+  // description entered later through the backend.
+  const heroDescription = rawHeroDescription.trim() === String(heroSubtitle || "").trim() ? "" : rawHeroDescription;
   const heroCtaText = matchedCategory?.hero_cta_text || getSetting(settingKey("hero_cta_text")) || "Shop Now";
   const heroCtaLink = matchedCategory?.hero_cta_link || getSetting(settingKey("hero_cta_link")) || "#category-grid";
   const marquee = parseWords(matchedCategory?.marquee_words) || parseWords(getSetting(settingKey("marquee_words"))) || main.marquee;

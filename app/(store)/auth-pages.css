@@ -1,0 +1,177 @@
+.auth-login-page,
+.auth-register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #f8f9fa;
+  font-family: "MAINLUX", Arial, sans-serif;
+}
+
+.auth-card {
+  width: 90%;
+  max-width: 400px;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h2,
+.auth-card h3 {
+  margin: 0 0 20px;
+  color: #212529;
+  text-align: center;
+  font-family: "MAINLUX", Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.auth-card label {
+  display: block;
+  color: #212529;
+  font-size: 14px;
+}
+
+.auth-card label > span {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.auth-card input:not([type="checkbox"]) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #212529;
+  font: 400 16px "MAINLUX", Arial, sans-serif;
+}
+
+.auth-card input:not([type="checkbox"]):focus {
+  border-color: #777;
+  outline: none;
+  box-shadow: none;
+}
+
+.auth-submit {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  font: 400 16px "MAINLUX", Arial, sans-serif;
+  cursor: pointer;
+}
+
+.auth-submit:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.auth-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  padding: 0;
+  border: 0;
+  transform: translateY(-50%);
+  background: none;
+  color: #555;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.auth-password-wrap {
+  position: relative;
+}
+
+.auth-password-wrap > input:not([type="checkbox"]) {
+  display: block;
+  margin-bottom: 0 !important;
+}
+
+.auth-password-wrap .auth-eye {
+  top: 50%;
+}
+
+.auth-login-page .auth-password-wrap {
+  margin-bottom: 15px;
+}
+
+.auth-error {
+  margin: 0 0 12px;
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-message { margin-top: 6px; font-size: 13px; }
+.auth-message.is-success { color: green; }
+.auth-message.is-error { color: red; }
+.auth-alert { margin-bottom: 16px; padding: 8px; text-align: center; font-size: 14px; }
+.auth-alert-success { background: #d1e7dd; color: #0f5132; }
+.auth-alert-error { background: #f8d7da; color: #842029; }
+.auth-password-field { margin-bottom: 16px; }
+.auth-password-field-last { margin-bottom: 24px; }
+
+.auth-divider { display: flex; align-items: center; margin: 20px 0; }
+.auth-divider-line { flex: 1; height: 1px; background: #ccc; }
+.auth-divider-label { margin: 0 10px; color: #777; font-size: 14px; }
+
+.auth-link { color: #000; cursor: pointer; font-weight: 700; text-decoration: none; }
+.auth-link:hover { text-decoration: underline; }
+.auth-forgot { margin: 0 0 15px; text-align: right; font-size: 13px; }
+.auth-register-prompt { margin: 15px 0 0; text-align: center; font-size: 14px; }
+
+.auth-policy { display: flex !important; align-items: flex-start; gap: 8px; margin-bottom: 16px; font-size: 14px; }
+.auth-policy input { flex: 0 0 auto; margin-top: 3px; }
+.auth-policy span { display: inline !important; margin: 0 !important; }
+.auth-policy a { color: #000; text-decoration: underline; }
+
+.auth-home-link { position: fixed; top: 20px; left: 20px; color: #000; font-size: 24px; text-decoration: none; }
+
+/* Register follows the reference Bootstrap card/form measurements. */
+.auth-register-page .auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.auth-register-page .auth-card h3 {
+  margin-bottom: 24px;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.auth-register-page .auth-card label:not(.auth-policy) > span {
+  margin-bottom: 8px;
+}
+
+.auth-register-page .auth-card input:not([type="checkbox"]) {
+  padding: 6px 12px;
+  margin-bottom: 16px;
+  border-color: #212529;
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.auth-register-page .auth-password-wrap {
+  margin-bottom: 16px;
+}
+
+.auth-register-page .auth-submit {
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+@media (max-width: 480px) {
+  .auth-card { width: 100%; padding: 22px; }
+  .auth-home-link { top: 16px; left: 16px; }
+}

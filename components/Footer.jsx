@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { apiCached, homeKV, subscribeNewsletter } from "@/lib/api";
 import { sanitizeHtml } from "@/lib/sanitize";
 
-// Footer: admin-driven bottom content (tbl_settings footer_*/brand_description
-// + newsletter_*) with the previous UI as fallback. Contact email/phone stay
-// on Support Contacts; newsletter subscribe flow untouched.
+// Footer copy, links, and brand marks mirror the reference. Contact details
+// remain data-driven, and newsletter subscription keeps the existing API flow.
 const DEFAULT_QUICK = [
   { label: "About Us", link: "/aboutUs" },
+  { label: "Contact Us", action: "contact" },
   { label: "Privacy Policy", link: "/privacy-policy" },
   { label: "Terms & Conditions", link: "/terms-and-conditions" },
 ];
@@ -18,22 +18,9 @@ const DEFAULT_QUICK = [
 const DEFAULT_SUPPORT = [
   { label: "Help Center", link: "/help-center" },
   { label: "FAQs", link: "/FAQs" },
-  { label: "Shipping, Returns & Cancellation", link: "/Policies" },
-  { label: "Track Order", link: "/orders" },
+  { label: "Shipping, Returns & Cancellation", link: "/Policies?tab=Cancellation" },
+  { label: "Track Order", link: "/track-order" },
 ];
-
-function parseLinks(json, fallback) {
-  try {
-    const arr = JSON.parse(json || "[]");
-    const clean = (Array.isArray(arr) ? arr : [])
-      .map((l) => ({ label: String(l.label || "").trim(), link: String(l.link || "").trim() }))
-      .filter((l) => l.label && l.link);
-    if (clean.length > 0) return clean;
-  } catch {
-    /* fall through */
-  }
-  return fallback;
-}
 
 export default function Footer() {
   const [showModal, setShowModal] = useState(false);
@@ -69,15 +56,14 @@ export default function Footer() {
   const primaryPhone =
     supportContacts.find((c) => c.contact_type === "phone" || c.contact_type === "Phone")?.contact_value || "";
 
-  const blurb = cfg.brand_description || "Empowering innovation with quality and trust. Join us in our journey towards excellence.";
+  const blurb = "Empowering innovation with quality and trust. Join us in our journey towards excellence.";
   const facebookUrl = cfg.footer_facebook_url || "https://www.facebook.com/harry.clinton.829484";
   const instagramUrl = cfg.footer_instagram_url || "https://www.instagram.com/harryclinton_official/";
   const youtubeUrl = cfg.footer_youtube_url || "https://www.youtube.com/@HarryClintonHC";
-  const quickLinks = parseLinks(cfg.footer_quick_links_json, DEFAULT_QUICK);
-  const supportLinks = parseLinks(cfg.footer_support_links_json, DEFAULT_SUPPORT);
-  const hasContact = quickLinks.some((l) => l.label.toLowerCase().includes("contact"));
-  const newsletterTitle = cfg.newsletter_title || "Stay Updated";
-  const newsletterDesc = cfg.newsletter_description || "Subscribe to our newsletter for the latest updates and promotions.";
+  const quickLinks = DEFAULT_QUICK;
+  const supportLinks = DEFAULT_SUPPORT;
+  const newsletterTitle = "Stay Updated";
+  const newsletterDesc = "Subscribe to our newsletter for the latest updates and promotions.";
   const copyrightLine = cfg.footer_copyright_text || `© ${new Date().getFullYear()} Harry Clinton`;
 
   const handleChange = (e) => {
@@ -145,29 +131,29 @@ export default function Footer() {
     }
   };
 
-  const inputCls = "w-full border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-gold focus:outline-none";
+  const inputCls = "footer-input w-full border border-neutral-300 px-3 py-[6px] text-base leading-6 text-neutral-900 focus:border-gold focus:outline-none";
 
   const footerLinkCls =
-    "footer-link text-white hover:text-[#c6a15b] hover:bg-transparent focus:text-[#c6a15b] focus:bg-transparent transition-colors duration-200 no-underline cursor-pointer bg-transparent border-0 p-0 m-0 text-left text-sm inline-block";
+    "footer-link text-white hover:text-[#c6a15b] hover:bg-transparent focus:text-[#c6a15b] focus:bg-transparent transition-colors duration-200 no-underline cursor-pointer bg-transparent border-0 p-0 m-0 text-left inline-block";
 
   return (
     <>
-      <footer id="site-footer" className="flex h-[100svh] flex-col justify-between overflow-hidden bg-black py-6 text-white">
-        <div className="mx-auto w-full max-w-7xl shrink-0 px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 md:grid-cols-12">
-            <div className="md:col-span-4">
-              <h4 className="font-bold">
-                <Image src="/brand/logo-white.png" alt="HC" width={120} height={40} />
+      <footer id="site-footer" className="site-footer bg-black text-white">
+        <div className="footer-container">
+          <div className="footer-row">
+            <div className="footer-col footer-col-brand">
+              <h4 className="footer-brand-heading">
+                <Image src="/brand/hc-white.png" alt="HC" width={40} height={40} />
               </h4>
               {/<[a-z][\s\S]*>/i.test(blurb) ? (
-                <span className="mt-3 block text-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(blurb) }} />
+                <span className="footer-small footer-brand-copy" dangerouslySetInnerHTML={{ __html: sanitizeHtml(blurb) }} />
               ) : (
-                <p className="mt-3 text-sm">
+                <p className="footer-small footer-brand-copy">
                   {blurb}
                 </p>
               )}
               {primaryEmail && (
-                <p className="mb-1 mt-2 text-sm">
+                <p className="footer-small mb-1">
                   <strong>Email:</strong>{" "}
                   <a href={`mailto:${primaryEmail}`} className={footerLinkCls}>
                     {primaryEmail}
@@ -175,14 +161,14 @@ export default function Footer() {
                 </p>
               )}
               {primaryPhone && (
-                <p className="mb-1 text-sm">
+                <p className="footer-small mb-1">
                   <strong>Phone:</strong>{" "}
                   <a href={`tel:${primaryPhone}`} className={footerLinkCls}>
                     {primaryPhone}
                   </a>
                 </p>
               )}
-              <p className="mb-1 mt-3 text-sm">Follow us on:</p>
+              <p className="footer-small mb-1">Follow us on:</p>
               <div className="flex gap-4">
                 <a href={facebookUrl} className="text-white hover:text-[#c6a15b] transition-colors duration-200" target="_blank" rel="noreferrer" aria-label="Facebook">
                   <i className="bi bi-facebook fs-5"></i>
@@ -196,31 +182,26 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="md:col-span-2">
-              <h6 className="text-sm font-bold uppercase tracking-wider text-white">Quick Links</h6>
-              <ul className="mt-3 space-y-2 text-sm">
+            <div className="footer-col footer-col-links">
+              <h6 className="footer-section-title">Quick Links</h6>
+              <ul className="footer-link-list">
                 {quickLinks.map((l) => (
-                  <li key={`${l.label}-${l.link}`}>
-                    <Link href={l.link} className={footerLinkCls}>{l.label}</Link>
+                  <li key={`${l.label}-${l.link || l.action}`}>
+                    {l.action === "contact" ? (
+                      <button type="button" className={footerLinkCls} onClick={() => setShowModal(true)}>
+                        {l.label}
+                      </button>
+                    ) : (
+                      <Link href={l.link} className={footerLinkCls}>{l.label}</Link>
+                    )}
                   </li>
                 ))}
-                {!hasContact && (
-                  <li>
-                    <button
-                      type="button"
-                      className={footerLinkCls}
-                      onClick={() => setShowModal(true)}
-                    >
-                      Contact Us
-                    </button>
-                  </li>
-                )}
               </ul>
             </div>
 
-            <div className="md:col-span-2">
-              <h6 className="text-sm font-bold uppercase tracking-wider text-white">Support</h6>
-              <ul className="mt-3 space-y-2 text-sm">
+            <div className="footer-col footer-col-support">
+              <h6 className="footer-section-title">Support</h6>
+              <ul className="footer-link-list">
                 {supportLinks.map((l) => (
                   <li key={`${l.label}-${l.link}`}>
                     <Link href={l.link} className={footerLinkCls}>{l.label}</Link>
@@ -229,36 +210,36 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="md:col-span-4">
-              <h6 className="text-sm font-bold uppercase">{newsletterTitle}</h6>
-              <p className="mt-3 text-sm">
+            <div className="footer-col footer-col-newsletter">
+              <h6 className="footer-section-title">{newsletterTitle}</h6>
+              <p className="footer-small footer-newsletter-copy">
                 {newsletterDesc}
               </p>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:gap-0">
+              <div className="footer-newsletter-form">
                 <input
                   type="email"
                   placeholder="Your email"
                   value={newsletterEmail}
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleNewsletterSubscribe()}
-                  className="flex-1 border border-white bg-transparent px-3 py-2 text-sm text-white placeholder:text-neutral-400 focus:outline-none"
+                  className="footer-input min-w-0 flex-1 border border-[#f8f9fa] bg-transparent px-3 py-[6px] text-base leading-6 text-white placeholder:text-[#6c757d] focus:outline-none"
                 />
-                <button onClick={handleNewsletterSubscribe} className="border border-white px-4 py-2 text-sm text-white transition hover:bg-white hover:text-black">
+                <button onClick={handleNewsletterSubscribe} className="footer-subscribe border border-[#f8f9fa] px-3 py-[6px] text-base text-white transition hover:bg-white hover:text-black">
                   Subscribe
                 </button>
               </div>
               {newsletterStatus.message && (
-                <div className={`mt-2 text-sm ${newsletterStatus.isError ? "text-red-400" : "text-green-400"}`}>
+                <div className={`footer-small mt-2 ${newsletterStatus.isError ? "text-red-400" : "text-green-400"}`}>
                   {newsletterStatus.message}
                 </div>
               )}
             </div>
           </div>
 
-          <hr className="my-6 border-neutral-800" />
+          <hr className="footer-divider" />
         </div>
 
-        <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-4 text-center">
+        <div className="footer-container footer-bottom flex flex-col items-center text-center">
           <div className="flex w-full items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -275,13 +256,13 @@ export default function Footer() {
 
       {showModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 p-4" onMouseDown={closeModal}>
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto bg-white shadow-xl" onMouseDown={(e) => e.stopPropagation()}>
+          <div className="contact-modal max-h-[90vh] w-full max-w-2xl overflow-y-auto bg-white shadow-xl" onMouseDown={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between border-0 p-5 pb-0">
               <div>
                 <h5 className="font-bold">Contact Us</h5>
                 <p className="mb-0 text-sm text-neutral-500">We will get back to you within 24 hours.</p>
               </div>
-              <button type="button" aria-label="Close" onClick={closeModal} className="text-2xl leading-none text-neutral-500 hover:text-black">×</button>
+              <button type="button" aria-label="Close" onClick={closeModal} className="contact-modal-close">✕</button>
             </div>
             <div className="p-5 pt-3">
               {submitted ? (
@@ -335,6 +316,122 @@ export default function Footer() {
         </div>
       )}
       <style jsx>{`
+        .contact-modal h5 { font-size: 20px; }
+        .contact-modal-close {
+          flex: 0 0 auto;
+          margin: 0 0 0 1rem;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          background: transparent;
+          border: 1px solid #171411;
+          border-radius: 50%;
+          opacity: 1;
+          cursor: pointer;
+          font-size: 1rem;
+          line-height: 1;
+          color: #171411;
+          transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+        }
+        .contact-modal-close:hover {
+          background-color: #171411;
+          color: #f6f1e8;
+          transform: rotate(90deg);
+        }
+        .contact-modal p,
+        .contact-modal label,
+        .contact-modal input,
+        .contact-modal select,
+        .contact-modal textarea,
+        .contact-modal button,
+        .contact-modal .contact-modal-message { font-size: 16px; }
+        .site-footer {
+          padding: 48px 0;
+        }
+        :global(.site-footer),
+        :global(.site-footer *:not(.bi):not([class^="bi-"]):not([class*=" bi-"])) {
+          font-family: "MAINLUX", Arial, sans-serif;
+        }
+        .footer-container {
+          width: 100%;
+          max-width: 100%;
+          margin: 0 auto;
+          padding: 0 12px;
+        }
+        .footer-row {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          margin: 0 -12px;
+        }
+        .footer-col {
+          min-width: 0;
+          padding: 0 12px;
+          margin-bottom: 24px;
+        }
+        .footer-brand-heading {
+          margin: 0 0 8px;
+          font-size: 24px !important;
+          line-height: 1.2 !important;
+          font-weight: 700 !important;
+        }
+        .footer-brand-copy {
+          display: block;
+          margin: 0 0 16px;
+        }
+        .footer-small {
+          font-size: 14px !important;
+          line-height: 1.5 !important;
+        }
+        .footer-section-title {
+          margin: 0 0 8px;
+          color: #fff;
+          font-size: 16px !important;
+          line-height: 1.2 !important;
+          font-weight: 700 !important;
+          text-transform: uppercase;
+        }
+        .footer-link-list {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          font-size: 16px;
+          line-height: 1.5;
+        }
+        .footer-link-list li { margin: 0; padding: 0; }
+        .footer-newsletter-copy {
+          margin: 0 0 16px;
+        }
+        .footer-newsletter-form {
+          display: flex;
+          width: 100%;
+        }
+        :global(.site-footer .footer-input) {
+          min-height: 38px;
+          background: #000 !important;
+          background-color: #000 !important;
+          border-color: #f8f9fa !important;
+          border-radius: 0.375rem 0 0 0.375rem !important;
+          font-size: 16px !important;
+          line-height: 24px !important;
+        }
+        :global(.site-footer .footer-subscribe) {
+          flex: none;
+          margin-left: -1px;
+          border-color: #f8f9fa !important;
+          border-radius: 0 0.375rem 0.375rem 0 !important;
+          font-size: 16px !important;
+          line-height: 24px !important;
+        }
+        .footer-divider {
+          height: 1px;
+          margin: 24px 0;
+          border: 0;
+          background: rgba(255, 255, 255, 0.25);
+        }
+        .footer-bottom { text-align: center; }
         .fs-5 { font-size: 1.25rem; }
         .footer-logo {
           width: 750px;
@@ -345,12 +442,12 @@ export default function Footer() {
         }
         @media (max-width: 768px) {
           .footer-logo {
-            width: 240px;
+            width: 180px;
           }
         }
         @media (max-width: 480px) {
           .footer-logo {
-            width: 180px;
+            width: 150px;
           }
         }
         :global(.footer-link) {
@@ -365,18 +462,41 @@ export default function Footer() {
           text-align: left;
           padding: 0;
           margin: 0;
-          font-size: 14px;
+          font-size: 16px;
+          line-height: 1.5 !important;
           cursor: pointer;
           transition: color 0.2s ease;
         }
         :global(.footer-link:hover),
         :global(.footer-link:focus),
         :global(.footer-link:active) {
-          color: #c6a15b !important;
+          color: #ffffff !important;
           background: transparent !important;
           background-color: transparent !important;
           text-decoration: none !important;
           box-shadow: none !important;
+        }
+        @media (min-width: 576px) {
+          .footer-container { max-width: 540px; }
+        }
+        @media (min-width: 768px) {
+          .footer-container { max-width: 720px; }
+          .footer-row { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+          .footer-col-brand, .footer-col-newsletter { grid-column: span 4; }
+          .footer-col-links, .footer-col-support { grid-column: span 2; }
+        }
+        @media (min-width: 992px) {
+          .footer-container { max-width: 960px; }
+        }
+        @media (min-width: 1200px) {
+          .footer-container { max-width: 1140px; }
+        }
+        @media (min-width: 1400px) {
+          .footer-container { max-width: 1320px; }
+        }
+        @media (max-width: 575px) {
+          :global(.site-footer .footer-input) { border-radius: 0.375rem 0 0 0.375rem !important; }
+          :global(.footer-subscribe) { padding-left: 10px; padding-right: 10px; }
         }
       `}</style>
     </>

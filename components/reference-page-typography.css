@@ -1,0 +1,49 @@
+/* Reference-page typography: MAINLUX only, with explicit weights so body copy
+   cannot inherit a heading/button weight from a utility class. */
+.hc-reference-page {
+  font-family: "MAINLUX", Arial, sans-serif;
+  font-weight: 400;
+}
+
+.hc-reference-page h1,
+.hc-reference-page h2,
+.hc-reference-page h3,
+.hc-reference-page h4,
+.hc-reference-page h5,
+.hc-reference-page h6 {
+  font-family: "MAINLUX", Arial, sans-serif;
+  font-weight: 700;
+}
+
+.hc-reference-page p,
+.hc-reference-page li,
+.hc-reference-page label,
+.hc-reference-page input,
+.hc-reference-page select,
+.hc-reference-page textarea,
+.hc-reference-page summary,
+.hc-reference-page .legal-body,
+.hc-reference-page .legal-body p,
+.hc-reference-page .legal-body li {
+  font-family: "MAINLUX", Arial, sans-serif;
+  font-weight: 400;
+}
+
+.hc-reference-page .font-medium,
+.hc-reference-page .font-semibold {
+  font-weight: 600;
+}
+
+.hc-reference-page .font-bold {
+  font-weight: 700;
+}
+
+.hc-reference-page strong {
+  font-family: "MAINLUX", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.hc-reference-page button,
+.hc-reference-page a {
+  font-family: "MAINLUX", Arial, sans-serif;
+}

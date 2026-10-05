@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCart } from "@/components/CartProvider";
 import { PLACEHOLDER_IMAGE } from "@/components/ProductCard";
 import { inr } from "@/lib/api";
+import "./wishlist-page.css";
 
 // Wishlist: same structure/texts as the previous UI.
 export default function WishlistPage() {
@@ -28,17 +29,19 @@ export default function WishlistPage() {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {cart.wishlist.map((item) => (
           <div key={item.wishlist_item_id || item.id} className="border-0 bg-white shadow-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.image || PLACEHOLDER_IMAGE}
-              alt={item.name}
-              loading="lazy"
-              style={{ height: "280px", width: "100%", objectFit: "cover" }}
-            />
+            <Link href={`/product/${item.slug || item.product_id || item.id}`} className="wishlist-product-link">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.image || PLACEHOLDER_IMAGE}
+                alt={item.name}
+                loading="lazy"
+                style={{ height: "280px", width: "100%", objectFit: "cover" }}
+              />
+            </Link>
             <div className="p-4 text-center">
-              <h5 className="font-medium">{item.name}</h5>
+              <h5 className="font-medium"><Link href={`/product/${item.slug || item.product_id || item.id}`} className="wishlist-product-name">{item.name}</Link></h5>
               <p className="mt-1 text-sm font-bold">{inr(item.price)}</p>
-              <div className="mt-3 flex gap-2">
+                <div className="wishlist-actions">
                 <button
                   onClick={() =>
                     cart.addToCart(
@@ -52,13 +55,13 @@ export default function WishlistPage() {
                       1
                     )
                   }
-                  className="flex-1 bg-neutral-950 py-2 text-xs font-semibold text-white"
+                  className="btn-primary wishlist-add"
                 >
                   Add to Cart
                 </button>
                 <button
                   onClick={() => cart.toggleWishlist(item)}
-                  className="border border-red-600 px-3 py-2 text-xs font-semibold text-red-600"
+                  className="wishlist-remove"
                 >
                   Remove
                 </button>

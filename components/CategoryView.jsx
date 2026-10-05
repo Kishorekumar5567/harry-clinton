@@ -2,14 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import ProductCard from "./ProductCard";
+import { CollectionCard } from "./CollectionView";
 import EmptyState from "./EmptyState";
+import "./collection-view.css";
 
 // Filter sidebar + grid: same labels/options/flow as the previous UI
 // (Filters/Reset, Size, Fabric, Color, Price Range Min–Max, Range footer).
 // Receives server-fetched products as props (SEO-friendly SSR).
 // showToolbar=false hides the count/sort row (occasion storytelling pages).
-export default function CategoryView({ products, sizes = [], clothTypes = [], colors = [], showToolbar = true, showSort = true, emptyTitle = "No pieces yet" }) {
+export default function CategoryView({ products, sizes = [], clothTypes = [], colors = [], showFilters = true, columns = 3, showToolbar = true, showSort = true, emptyTitle = "No pieces yet", compact = false }) {
   const [size, setSize] = useState("");
   const [clothType, setClothType] = useState("");
   const [color, setColor] = useState("");
@@ -52,8 +53,8 @@ export default function CategoryView({ products, sizes = [], clothTypes = [], co
   const selectCls = "mt-2 w-full border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-gold focus:outline-none";
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
-      <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+    <div className={`${showFilters ? "grid gap-8 lg:grid-cols-[240px_1fr]" : "block"} category-view${compact ? " category-view--compact" : ""}`}>
+      {showFilters && <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
         <div className="flex items-center justify-between">
           <h5 className="mb-0 font-semibold">Filters</h5>
           <button onClick={reset} className="text-sm text-neutral-500 underline hover:text-neutral-900">
@@ -105,7 +106,7 @@ export default function CategoryView({ products, sizes = [], clothTypes = [], co
             Range: ₹{priceRange.min.toLocaleString("en-IN")} - ₹{priceRange.max.toLocaleString("en-IN")}
           </p>
         )}
-      </aside>
+      </aside>}
 
       <div>
         {showToolbar && (
@@ -129,11 +130,11 @@ export default function CategoryView({ products, sizes = [], clothTypes = [], co
             text="Our stylists are curating this collection. Please check back soon."
           />
         ) : (
-          <motion.div layout className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3">
+          <motion.div layout className={`collection-grid${columns === 4 ? " collection-grid--four" : ""}`}>
             <AnimatePresence mode="popLayout">
-              {filtered.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
+                {filtered.map((p, i) => (
+                  <CollectionCard key={p.id} product={p} index={i} showView={false} />
+                ))}
             </AnimatePresence>
           </motion.div>
         )}

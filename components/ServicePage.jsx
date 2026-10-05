@@ -1,5 +1,94 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { apiGet, unwrap } from "@/lib/api";
+
+const COMMON_SERVICE_GALLERY = [
+  "/service-media/Wedding.jpeg",
+  "/service-media/TravelNew.jpeg",
+  "/service-media/SmartCasual.jpeg",
+  "/service-media/LabelNew.jpeg",
+  "/service-media/Business.jpeg",
+  "/service-media/Designer.jpeg",
+];
+
+const SERVICE_MEDIA = {
+  embroidery: {
+    hero: "/service-media/vision1.jpeg",
+    about: "/service-media/vision_title.jpeg",
+    services: ["/service-media/LabelNew2.jpeg", "/service-media/WeddingNew.jpeg"],
+    cta: "/service-media/DesignerNew.jpeg",
+    gallery: COMMON_SERVICE_GALLERY,
+  },
+  alterations: {
+    hero: "/service-media/vision1.jpeg",
+    about: "/service-media/vision_title.jpeg",
+    services: ["/service-media/LabelNew2.jpeg", "/service-media/WeddingNew.jpeg"],
+    cta: "/service-media/DesignerNew.jpeg",
+    gallery: COMMON_SERVICE_GALLERY,
+  },
+  "personal-styling": {
+    hero: "/service-media/vision1.jpeg",
+    about: "/service-media/vision_title.jpeg",
+    services: ["/service-media/SmartCasualNew.jpeg", "/service-media/TravelNew.jpeg"],
+    cta: "/service-media/DesignerNew.jpeg",
+    gallery: COMMON_SERVICE_GALLERY,
+  },
+  "custom-tailoring": {
+    hero: "/service-media/vision1.jpeg",
+    about: "/service-media/vision_title.jpeg",
+    services: ["/service-media/Wedding.jpeg", "/service-media/DesignerNew.jpeg"],
+    cta: "/service-media/DesignerNew.jpeg",
+    gallery: COMMON_SERVICE_GALLERY,
+  },
+};
+
+function EmbroideryPage({ hero, about, experience, services, why, gallery, process, testimonials, cta, media }) {
+  return (
+    <div className="embroidery-page">
+      <section className="ep-hero-landing">
+        <img src={hero.image || media.hero} alt={hero.title} className="ep-hero-landing__bg" />
+        <div className="ep-hero-landing__overlay" />
+        <div className="ep-hero-landing__content">
+          <p className="ep-hero-landing__eyebrow">{hero.eyebrow}</p>
+          <h1 className="ep-hero-landing__title">{hero.title}</h1>
+          <p className="ep-hero-landing__subtitle">{hero.subtitle}</p>
+          <p className="ep-hero-landing__body">{hero.body}</p>
+          <Link href="/book-appointment" className="ep-hero-landing__btn">{hero.cta}</Link>
+        </div>
+      </section>
+
+      <section className="ep-about-split">
+        <div className="ep-about-split__img-wrap"><img src={about.image || media.about} alt={about.title} className="ep-about-split__img" /></div>
+        <div className="ep-about-split__body">
+          <p className="ep-section__label">{about.label}</p>
+          <h2 className="ep-section__title">{about.title}</h2>
+          <div className="ep-about-divider" />
+          <p className="ep-about-split__desc">{about.desc}</p>
+        </div>
+      </section>
+
+      <section className="ep-experience">
+        <p className="ep-section__label">{experience.label}</p>
+        <h2 className="ep-section__title" style={{ color: "#fff" }}>{experience.title}</h2>
+        <div className="ep-experience__grid">{experience.cards.map((c) => <div className="ep-experience__card" key={c.label}><span className="ep-experience__icon">{c.icon}</span><p className="ep-experience__stat">{c.stat}</p><p className="ep-experience__label">{c.label}</p></div>)}</div>
+      </section>
+
+      <section className="ep-section" style={{ paddingBottom: "1rem" }}><p className="ep-section__label">{services.label}</p><h2 className="ep-section__title">{services.title}</h2></section>
+      <section className="ep-services">{services.items.map((service, i) => <div className="ep-service-card" key={service.title}><img src={service.img || media.services[i]} alt={service.title} className="ep-service-card__img" /><div className="ep-service-card__overlay" /><div className="ep-service-card__content"><p className="ep-service-card__label">{service.label}</p><h3 className="ep-service-card__title">{service.title}</h3><ul className="ep-service-card__list">{service.points.map((point) => <li key={point}>{point}</li>)}</ul><Link href="/book-appointment" className="ep-service-card__btn">{service.cta}</Link></div></div>)}</section>
+
+      <section className="ep-why"><p className="ep-section__label">{why.label}</p><h2 className="ep-section__title">{why.title}</h2><div className="ep-why__grid">{why.cards.map((card) => <div className="ep-why__card" key={card.title}><span className="ep-why__icon">{card.icon}</span><p className="ep-why__title">{card.title}</p><p className="ep-why__desc">{card.desc}</p></div>)}</div></section>
+
+      <section className="ep-section" style={{ paddingBottom: "1rem" }}><p className="ep-section__label">{gallery.label}</p><h2 className="ep-section__title">{gallery.title}</h2></section>
+      <section className="ep-gallery">{gallery.items.map((item, i) => <div className={`ep-gallery__item${item.wide ? " ep-gallery__item--wide" : ""}${item.tall ? " ep-gallery__item--tall" : ""}`} key={item.caption}><img src={item.img || media.gallery[i]} alt={item.caption} className="ep-gallery__img" /><div className="ep-gallery__overlay"><p className="ep-gallery__caption">{item.caption}</p></div></div>)}</section>
+
+      <section className="ep-process"><p className="ep-section__label">{process.label}</p><h2 className="ep-section__title">{process.title}</h2><div className="ep-process__timeline">{process.steps.map((step, i) => <Fragment key={step.label}><div className="ep-process__step"><div className="ep-process__circle">{step.no}</div><p className="ep-process__label">{step.label}</p></div>{i < process.steps.length - 1 && <span className="ep-process__arrow">↓</span>}</Fragment>)}</div></section>
+
+      <section className="ep-testimonials"><p className="ep-section__label">{testimonials.label}</p><h2 className="ep-section__title">{testimonials.title}</h2><div className="ep-testimonials__grid">{testimonials.items.map((item) => <div className="ep-testimonial" key={item.name}><p className="ep-testimonial__quote">&quot;{item.quote}&quot;</p><div className="ep-testimonial__author"><img src={item.avatar || "/service-media/HC-Logo-Golden.PNG"} alt={item.name} className="ep-testimonial__avatar" /><div><p className="ep-testimonial__name">{item.name}</p><p className="ep-testimonial__role">{item.role}</p></div></div></div>)}</div></section>
+
+      <section className="ep-cta-banner"><img src={cta.image || media.cta} alt={hero.title} className="ep-cta-banner__bg" /><div className="ep-cta-banner__overlay" /><div className="ep-cta-banner__content"><h2 className="ep-cta-banner__title">{cta.title}</h2><p className="ep-cta-banner__sub">{cta.sub}</p><Link href="/book-appointment" className="ep-hero-landing__btn">{cta.button}</Link></div></section>
+    </div>
+  );
+}
 
 // Service editorial page: same section order/content as the previous UI —
 // hero, about, experience, services, why, gallery, process, testimonials, CTA.
@@ -36,6 +125,7 @@ export default async function ServicePage({ config }) {
   };
 
   const hero = {
+    image: s("hero_image") || defs.hero.image,
     eyebrow: s("hero_eyebrow") || sec("Hero Eyebrow") || defs.hero.eyebrow,
     title: s("hero_title") || sec("Hero Title") || defs.hero.title,
     subtitle: s("hero_subtitle") || sec("Hero Subtitle") || defs.hero.subtitle,
@@ -43,6 +133,7 @@ export default async function ServicePage({ config }) {
     cta: s("hero_cta") || sec("Hero CTA") || defs.hero.cta,
   };
   const about = {
+    image: s("about_image") || defs.about.image,
     label: s("about_label") || sec("About Label") || defs.about.label,
     title: s("about_title") || sec("About Title") || defs.about.title,
     desc: s("about_desc") || sec("About Description") || defs.about.desc,
@@ -78,15 +169,24 @@ export default async function ServicePage({ config }) {
     items: parsed("testimonials", defs.testimonials.items),
   };
   const cta = {
+    image: s("cta_image") || defs.cta.image,
+    label: s("cta_label") || sec("CTA Label") || defs.cta.label || "",
     title: s("cta_title") || sec("CTA Title") || defs.cta.title,
     sub: s("cta_sub") || sec("CTA Subtitle") || defs.cta.sub,
     button: s("cta_button") || sec("CTA Button") || defs.cta.button,
   };
 
+  if (SERVICE_MEDIA[key]) {
+    return <EmbroideryPage hero={hero} about={about} experience={experience} services={services} why={why} gallery={gallery} process={process} testimonials={testimonials} cta={cta} media={SERVICE_MEDIA[key]} />;
+  }
+
   return (
-    <>
-      <section className="bg-neutral-950 py-20 text-white md:py-28">
-        <div className="mx-auto max-w-4xl px-4 text-center">
+    <div className={`service-editorial-page service-editorial-page--${key}`}>
+      <section
+        className="service-editorial-page__hero bg-neutral-950 text-white"
+        style={key === "embroidery" ? { backgroundImage: "linear-gradient(90deg, rgba(10,8,7,.88), rgba(10,8,7,.48)), url('/brand/atelier-portrait.jpg')" } : undefined}
+      >
+        <div className="service-editorial-page__hero-inner mx-auto max-w-4xl px-4 text-center">
           <p className="eyebrow text-gold">{hero.eyebrow}</p>
           <h1 className="mt-2 font-display text-5xl font-bold md:text-6xl">{hero.title}</h1>
           <p className="mt-3 font-display text-xl italic text-neutral-300">{hero.subtitle}</p>
@@ -99,8 +199,11 @@ export default async function ServicePage({ config }) {
 
       <section className="mx-auto max-w-5xl px-4 py-16 md:py-24">
         <div className="grid items-center gap-10 md:grid-cols-2">
-          <div className="flex min-h-72 items-center justify-center bg-cream p-10 text-center">
-            <p className="font-display text-3xl italic text-neutral-400">Harry Clinton</p>
+            <div
+              className="service-editorial-page__heritage-image flex min-h-72 items-center justify-center bg-cream p-10 text-center"
+              style={galleryImages[0] ? { backgroundImage: `url(${galleryImages[0]})` } : undefined}
+            >
+            <p className="font-display text-3xl italic text-white">Harry Clinton</p>
           </div>
           <div>
             <p className="eyebrow text-gold">{about.label}</p>
@@ -170,7 +273,7 @@ export default async function ServicePage({ config }) {
         <h2 className="mt-2 text-center font-display text-4xl font-bold">{gallery.title}</h2>
         <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {gallery.items.map((g, i) => (
-            <div key={i} className={`flex min-h-56 flex-col justify-end bg-neutral-950 p-6 text-white ${g.wide ? "sm:col-span-2" : ""}`}>
+            <div key={i} className={`service-editorial-page__gallery-item flex min-h-56 flex-col justify-end bg-neutral-950 p-6 text-white ${g.wide ? "sm:col-span-2" : ""} ${g.tall ? "lg:row-span-2" : ""}`} style={galleryImages[i] ? { backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.72), rgba(0,0,0,.08)), url(${galleryImages[i]})` } : undefined}>
               <p className="font-display text-xl">{g.caption}</p>
             </div>
           ))}
@@ -213,6 +316,7 @@ export default async function ServicePage({ config }) {
 
       <section className="mx-auto max-w-7xl px-4 pb-16 md:pb-24">
         <div className="bg-ink px-6 py-14 text-center text-white md:py-20">
+          {cta.label && <p className="eyebrow text-gold">{cta.label}</p>}
           <h2 className="font-display text-4xl font-bold md:text-5xl">{cta.title}</h2>
           <p className="mx-auto mt-3 max-w-xl text-neutral-300">{cta.sub}</p>
           <Link href="/book-appointment" className="btn-primary mt-8 !bg-gold !text-neutral-950 hover:!bg-white">
@@ -220,6 +324,6 @@ export default async function ServicePage({ config }) {
           </Link>
         </div>
       </section>
-    </>
+    </div>
   );
 }

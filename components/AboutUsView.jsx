@@ -1,154 +1,109 @@
 import Link from "next/link";
+import "./about-us.css";
 
-// About Us: full content verbatim from the previous UI.
+const A = "/about-us/";
+
+const stats = [
+  ["12+", "Years of Craft"],
+  ["2400+", "Bespoke Pieces"],
+  ["98%", "Client Satisfaction"],
+  ["6", "Design Awards"],
+];
+
+const values = [
+  ["bi-scissors", "Craftsmanship", "Every stitch is placed with intention. We never compromise on construction quality."],
+  ["bi-gem", "Excellence", "Award-winning garments recognised across top fashion publications and editorials."],
+  ["bi-person-heart", "Personal Touch", "Each piece is tailored to the individual — your fit, your story, your statement."],
+  ["bi-award", "Integrity", "Transparent pricing, honest timelines, and a brand you can genuinely trust."],
+];
+
+const team = [
+  ["avatar1.jpeg", "Rajkumar", "Head Designer"],
+  ["avatar2.jpeg", "Mounika", "Operations Lead"],
+  ["avatar3.jpg", "Sabarish", "Master Tailor"],
+  ["avatar4.jpg", "Suganthi", "Client Relations"],
+];
+
+const logos = ["logo1.png", "logo2.png", "logo3.png", "logo4.png", "logo5.png", "logo6.png"];
+
 export default function AboutUsView() {
   return (
-    <div>
-      <section className="bg-white py-20 text-center text-[#101010] md:py-28">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-deep">Est. in Pursuit of Perfection</p>
-        <h1 className="mx-auto mt-2 max-w-4xl font-display text-5xl font-bold leading-tight md:text-7xl">
-          Where Bespoke<br />Meets Soul.
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-[#101010]/70">
-          Harry Clinton is not a label. It is a declaration of men&apos;s bold craftsmanship, timeless design, and personal touch.
-        </p>
-        <Link href="/about-designer" className="btn-primary mt-8 !bg-gold !text-neutral-950 hover:!bg-white">
-          Discover the Story
-        </Link>
-      </section>
-
-      <section className="bg-[#111111] py-10 text-center text-white">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 md:grid-cols-4">
-          <Stat value="12+" label="Years of Craft" />
-          <Stat value="2400+" label="Bespoke Pieces" />
-          <Stat value="98%" label="Client Satisfaction" />
-          <Stat value="6" label="Design Awards" />
+    <div className="about-us-page">
+      <section className="about-us-hero" style={{ backgroundImage: `url(${A}about-hero.jpeg)` }}>
+        <div className="about-us-hero__content">
+          <p className="about-us-eyebrow">Est. in Pursuit of Perfection</p>
+          <h1>Where Bespoke<br />Meets Soul.</h1>
+          <p className="about-us-hero__sub">Harry Clinton is not a label. It is a declaration of men&apos;s bold craftsmanship, timeless design, and personal touch.</p>
+          <Link href="/about-designer" className="about-us-cta">Discover the Story</Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 py-14 text-center">
-        <p className="eyebrow text-neutral-500">The Man Behind the Brand</p>
-        <h2 className="mt-2 font-display text-4xl font-bold">Harry Clinton</h2>
-        <p className="mx-auto mt-4 max-w-3xl text-neutral-600">
-          A timeless menswear designer focused on refined craftsmanship. My work blends modern silhouettes with rich Italian tailoring traditions, delivering elegance with a bold personal touch. Every collection begins with a conversation and ends with a garment that defines the person who wears it.
-        </p>
-        <p className="mt-4 font-display text-xl italic">&ldquo;Design isn&apos;t just what I do — it&apos;s who I am.&rdquo;</p>
-        <Link href="/about-designer" className="link-sweep mt-6 inline-block text-sm font-semibold">
-          Full Story →
-        </Link>
-      </section>
-
-      <section className="bg-white py-16 md:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 md:grid-cols-2">
-          <div className="flex min-h-72 items-center justify-center bg-[#f4f4f4] p-10 text-center text-[#101010]">
-            <div>
-              <p className="eyebrow text-gold-deep">The Atelier</p>
-              <p className="mt-2 font-display text-2xl">Where It All Happens</p>
-            </div>
+      <section className="about-us-stats">
+        {stats.map(([value, label], index) => (
+          <div className="about-us-stat-wrap" key={label}>
+            <div className="about-us-stat"><strong>{value}</strong><span>{label}</span></div>
+            {index < stats.length - 1 && <i />}
           </div>
-          <div>
-            <h2 className="font-display text-4xl font-bold">Our Studio</h2>
-            <p className="mt-4 text-neutral-600">
-              Step inside the atelier — a space where fabric meets form. Our studio in Chennai is the beating heart of Harry Clinton, where every measurement, every cut, and every drape is handled with obsessive precision by our master tailors. From hand-stitched lapels to custom lining choices, the atelier experience is personal, unhurried, and utterly unique.
-            </p>
-          </div>
-        </div>
-        <div className="mx-auto mt-12 grid max-w-7xl items-center gap-10 px-4 md:grid-cols-2">
-          <div className="md:order-2">
-            <div className="flex min-h-72 items-center justify-center bg-[#f4f4f4] p-10 text-center text-[#101010]">
-              <div>
-                <p className="eyebrow text-gold-deep">The Craft</p>
-                <p className="mt-2 font-display text-2xl">Our Process</p>
-              </div>
-            </div>
-          </div>
-          <div className="md:order-1">
-            <h2 className="font-display text-4xl font-bold">Craft & Detail</h2>
-            <p className="mt-4 text-neutral-600">
-              We source only the finest fabrics — Italian wools, Irish linens, and artisan silks — before a single cut is made. Each garment goes through a minimum of three fittings to ensure a silhouette that moves with you, not against you. The result is a piece that lasts decades, not seasons.
-            </p>
-          </div>
+        ))}
+      </section>
+
+      <section className="about-us-designer">
+        <div className="about-us-designer__image"><img src={`${A}about1.jpeg`} alt="Harry Clinton" /></div>
+        <div className="about-us-designer__copy">
+          <p className="about-us-eyebrow">The Man Behind the Brand</p>
+          <h2>Harry Clinton</h2>
+          <p>A timeless menswear designer focused on refined craftsmanship. My work blends modern silhouettes with rich Italian tailoring traditions, delivering elegance with a bold personal touch. Every collection begins with a conversation and ends with a garment that defines the person who wears it.</p>
+          <blockquote>&ldquo;Design isn&apos;t just what I do — it&apos;s who I am.&rdquo;</blockquote>
+          <Link href="/about-designer" className="about-us-link">Full Story →</Link>
         </div>
       </section>
 
-      <section className="bg-[#111111] py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-4">
-          <p className="eyebrow text-center text-[#c9a96e]">What We Stand For</p>
-          <h2 className="mt-2 text-center font-display text-4xl font-bold text-white">Our Values</h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ValueCard title="Craftsmanship" desc="Every stitch is placed with intention. We never compromise on construction quality." />
-          <ValueCard title="Excellence" desc="Award-winning garments recognised across top fashion publications and editorials." />
-          <ValueCard title="Personal Touch" desc="Each piece is tailored to the individual — your fit, your story, your statement." />
-          <ValueCard title="Integrity" desc="Transparent pricing, honest timelines, and a brand you can genuinely trust." />
-        </div>
-        </div>
+      <Split
+        image="atelier.jpeg"
+        label="The Atelier"
+        eyebrow="Where It All Happens"
+        title="Our Studio"
+        paragraphs={[
+          "Step inside the atelier — a space where fabric meets form. Our studio in Chennai is the beating heart of Harry Clinton, where every measurement, every cut, and every drape is handled with obsessive precision by our master tailors.",
+          "From hand-stitched lapels to custom lining choices, the atelier experience is personal, unhurried, and utterly unique.",
+        ]}
+      />
+      <Split
+        reverse
+        image="craft.jpeg"
+        label="The Craft"
+        eyebrow="Our Process"
+        title="Craft & Detail"
+        paragraphs={[
+          "We source only the finest fabrics — Italian wools, Irish linens, and artisan silks — before a single cut is made. Each garment goes through a minimum of three fittings to ensure a silhouette that moves with you, not against you.",
+          "The result is a piece that lasts decades, not seasons.",
+        ]}
+      />
+
+      <section className="about-us-values">
+        <p className="about-us-eyebrow">What We Stand For</p><h2>Our Values</h2>
+        <div className="about-us-values__grid">{values.map(([icon, title, desc]) => <article key={title}><i className={`bi ${icon}`} aria-hidden="true" /><h3>{title}</h3><p>{desc}</p></article>)}</div>
       </section>
 
-      <section className="overflow-hidden border-y border-neutral-200 bg-white">
-        <p className="pt-4 text-center text-xs uppercase tracking-[0.3em] text-neutral-500">As seen in & worn by</p>
-        <div className="animate-marquee py-4">
-          {Array(4).fill(["GQ", "·", "VOGUE", "·", "ESQUIRE", "·", "HARRY CLINTON", "·"]).flat().map((w, i) => (
-            <span key={i} className="mx-6 font-display text-2xl text-neutral-300">{w}</span>
-          ))}
-        </div>
+      <section className="about-us-brands">
+        <p>As seen in &amp; worn by</p>
+        <div>{[...logos, ...logos].map((logo, i) => <img key={`${logo}-${i}`} src={`${A}${logo}`} alt="Brand" />)}</div>
       </section>
 
-      <section className="bg-white py-16 text-center text-[#101010] md:py-24">
-        <h2 className="font-display text-4xl font-bold md:text-5xl">Heritage. Craft. Identity.</h2>
-        <p className="mx-auto mt-3 max-w-xl text-[#101010]/70">Committed to timeless tailoring since the very first stitch.</p>
-        <Link href="/about-designer" className="btn-primary mt-8 !bg-gold !text-neutral-950 hover:!bg-white">
-          Meet the Designer
-        </Link>
+      <section className="about-us-banner" style={{ backgroundImage: `url(${A}about-banner.jpeg)` }}>
+        <div><h2>Heritage. Craft. Identity.</h2><p>Committed to timeless tailoring since the very first stitch.</p><Link href="/about-designer" className="about-us-cta">Meet the Designer</Link></div>
       </section>
 
-      <section className="bg-[#fafafa] py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-4">
-        <p className="eyebrow text-center text-neutral-500">The People</p>
-        <h2 className="mt-2 text-center font-display text-4xl font-bold">Our Team</h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <TeamCard name="Rajkumar" role="Head Designer" />
-          <TeamCard name="Mounika" role="Operations Lead" />
-          <TeamCard name="Sabarish" role="Master Tailor" />
-          <TeamCard name="Suganthi" role="Client Relations" />
-        </div>
-        </div>
-      </section>
+      <section className="about-us-team"><p className="about-us-eyebrow">The People</p><h2>Our Team</h2><div>{team.map(([image, name, role]) => <article key={name}><img src={`${A}${image}`} alt={name} /><strong>{name}</strong><span>{role}</span></article>)}</div></section>
 
-      <section className="mx-auto max-w-3xl px-4 pb-16 text-center md:pb-24">
-        <h2 className="font-display text-4xl font-bold">Our Story</h2>
-        <p className="mt-3 text-neutral-500">Dedicated to craftsmanship and timeless elegance since day one.</p>
-        <button className="btn-ghost mt-6">Read Our Story</button>
-      </section>
+      <section className="about-us-story" style={{ backgroundImage: `url(${A}story.jpeg)` }}><div><h2>Our Story</h2><p>Dedicated to craftsmanship and timeless elegance since day one.</p><button type="button">Read Our Story</button></div></section>
     </div>
   );
 }
 
-function Stat({ value, label }) {
-  return (
-    <div className="border border-white/15 p-6">
-      <p className="font-display text-4xl font-bold text-[#c9a96e]">{value}</p>
-      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-neutral-300">{label}</p>
-    </div>
-  );
-}
-
-function ValueCard({ title, desc }) {
-  return (
-    <div className="border border-white/10 bg-white/[0.04] p-8">
-      <p className="font-display text-xl font-bold text-white">{title}</p>
-      <p className="mt-2 text-sm text-neutral-300">{desc}</p>
-    </div>
-  );
-}
-
-function TeamCard({ name, role }) {
-  return (
-    <div className="border border-neutral-200 p-8 text-center">
-      <div className="mx-auto flex h-20 w-20 items-center justify-center  bg-neutral-100 font-display text-2xl">
-        {name.charAt(0)}
-      </div>
-      <p className="mt-3 font-semibold">{name}</p>
-      <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">{role}</p>
-    </div>
-  );
+function Split({ image, label, eyebrow, title, reverse = false, children, paragraphs }) {
+  return <section className={`about-us-split ${reverse ? "about-us-split--reverse" : ""}`}>
+    <div className="about-us-split__image" style={{ backgroundImage: `url(${A}${image})` }}><span>{label}</span></div>
+    <div className="about-us-split__copy"><p className="about-us-eyebrow">{eyebrow}</p><h2>{title}</h2>{(paragraphs || [children]).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
+  </section>;
 }

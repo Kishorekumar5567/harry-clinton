@@ -2,6 +2,7 @@ import NotificationBar from "@/components/NotificationBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LoginNudge from "@/components/LoginNudge";
+import Breadcrumb from "@/components/Breadcrumb";
 
 // Storefront shell: ticker + header + footer around every shop page,
 // plus the guest login nudge (same flow as before).
@@ -10,6 +11,7 @@ export default function StoreLayout({ children }) {
     <>
       <NotificationBar />
       <Header />
+      <Breadcrumb />
       <main>{children}</main>
       <Footer />
       <LoginNudge />

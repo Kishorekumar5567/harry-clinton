@@ -47,7 +47,7 @@ function VideoScreen({ row, index, total, screenRef, onNav }) {
         ref={ref}
         src={row.src}
         poster={row.poster || undefined}
-        className="responsive-video w-full h-auto block object-cover aspect-video md:aspect-auto md:max-h-[85vh] cursor-pointer"
+        className="responsive-video w-full h-auto block object-cover cursor-pointer"
         autoPlay={row.autoplay}
         muted={!row.muteOff}
         loop={row.loop}

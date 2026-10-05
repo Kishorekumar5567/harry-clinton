@@ -12,7 +12,10 @@ import useLockBody from "../useLockBody";
 import useUploader from "../useUploader";
 import { useConfirm } from "../ConfirmProvider";
 
-const empty = { product_name: "", product_slug: "", short_description: "", description: "", base_price: "", currency_code: "INR", isactive: true };
+const empty = {
+  product_name: "", product_slug: "", style_collection_id: "", collection_display_order: "",
+  short_description: "", description: "", base_price: "", original_price: "", currency_code: "INR", isactive: true,
+};
 const TABS = ["Products", "Sizes", "Cloth Types", "Care Instructions", "Attributes"];
 const TAB_MODULES = {
   Sizes: "sizes",
@@ -32,6 +35,7 @@ export default function AdminProductsPage() {
   const confirm = useConfirm();
   const [tab, setTab] = useState("Products");
   const [products, setProducts] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all"); // all | active | inactive
   const [form, setForm] = useState(empty);
@@ -44,6 +48,8 @@ export default function AdminProductsPage() {
   const [workspace, setWorkspace] = useState(false);
   // Create/update ALWAYS live in the popup — never inline.
   const [showForm, setShowForm] = useState(false);
+  const [prodPage, setProdPage] = useState(1);
+  const [prodPageSize, setProdPageSize] = useState(10);
   useLockBody(showForm);
   const closeForm = () => {
     setShowForm(false);
@@ -67,6 +73,13 @@ export default function AdminProductsPage() {
     };
   }, [refresh]);
 
+  useEffect(() => {
+    apiFetch("/Style-Collections")
+      .then(unwrap)
+      .then((list) => setCollections(Array.isArray(list) ? list : []))
+      .catch(() => setCollections([]));
+  }, []);
+
   const reload = () => {
     setRefresh((n) => n + 1);
     revalidateSite();
@@ -82,7 +95,13 @@ export default function AdminProductsPage() {
       if (editing) {
         await apiFetch("/Products", {
           method: "PUT",
-          body: { product_id: editing, ...form, base_price: Number(form.base_price) || 0, luu: "ADMIN_PORTAL" },
+          body: {
+            product_id: editing, ...form,
+            base_price: Number(form.base_price) || 0,
+            original_price: form.original_price === "" ? null : Number(form.original_price) || 0,
+            collection_display_order: Number(form.collection_display_order) || 0,
+            luu: "ADMIN_PORTAL",
+          },
         });
         setMsg("Product updated.");
         setToast({ type: "ok", text: "Product updated." });
@@ -93,7 +112,13 @@ export default function AdminProductsPage() {
       } else {
         const res = await apiFetch("/Products", {
           method: "POST",
-          body: { ...form, base_price: Number(form.base_price) || 0, rcu: "ADMIN_PORTAL" },
+          body: {
+            ...form,
+            base_price: Number(form.base_price) || 0,
+            original_price: form.original_price === "" ? null : Number(form.original_price) || 0,
+            collection_display_order: Number(form.collection_display_order) || 0,
+            rcu: "ADMIN_PORTAL",
+          },
         });
         const created = res?.data || res;
         const newProduct = created?.product_id ? created : (Array.isArray(created) ? created[0] : created?.data || created);
@@ -127,8 +152,9 @@ export default function AdminProductsPage() {
     setEditing(p.product_id);
     setForm({
       product_name: p.product_name || "", product_slug: p.product_slug || "",
+      style_collection_id: p.style_collection_id || "", collection_display_order: p.collection_display_order || "",
       short_description: p.short_description || "", description: p.description || "",
-      base_price: p.base_price || "", currency_code: p.currency_code || "INR",
+      base_price: p.base_price || "", original_price: p.original_price || "", currency_code: p.currency_code || "INR",
       isactive: p.isactive !== false,
     });
     setShowForm(true);
@@ -173,8 +199,6 @@ export default function AdminProductsPage() {
     const hay = `${p.product_name || ""} ${p.product_slug || ""} ${p.short_description || ""} ${p.description || ""} ${p.base_price || ""}`.toLowerCase();
     return hay.includes(needle);
   });
-  const [prodPage, setProdPage] = useState(1);
-  const [prodPageSize, setProdPageSize] = useState(10);
   const shownProducts = paginate(visible, prodPage, prodPageSize);
 
   return (
@@ -227,12 +251,21 @@ export default function AdminProductsPage() {
                 </h3>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   <input value={form.product_name} onChange={set("product_name")} required placeholder="Product name" className={input} />
-                  <input value={form.product_slug} onChange={set("product_slug")} required placeholder="slug-like-this" className={input} />
-                  <input value={form.short_description} onChange={set("short_description")} placeholder="Short description" className={input} />
+                   <input value={form.product_slug} onChange={set("product_slug")} required placeholder="slug-like-this" className={input} />
+                   <select value={form.style_collection_id} onChange={set("style_collection_id")} className={input}>
+                     <option value="">No collection</option>
+                     {collections.map((collection) => <option key={collection.style_collection_id} value={collection.style_collection_id}>{collection.collection_name}</option>)}
+                   </select>
+                   <input value={form.collection_display_order} onChange={set("collection_display_order")} inputMode="numeric" placeholder="Collection order" className={input} />
+                   <input value={form.short_description} onChange={set("short_description")} placeholder="Short description" className={input} />
                   <div className="relative">
                     <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-500">₹</span>
-                    <input value={form.base_price} onChange={set("base_price")} inputMode="decimal" required placeholder="Price (INR)" className={`${input} pl-7`} />
-                  </div>
+                     <input value={form.base_price} onChange={set("base_price")} inputMode="decimal" required placeholder="Price (INR)" className={`${input} pl-7`} />
+                   </div>
+                   <div className="relative">
+                     <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-500">₹</span>
+                     <input value={form.original_price} onChange={set("original_price")} inputMode="decimal" placeholder="Original price (INR)" className={`${input} pl-7`} />
+                   </div>
                   <textarea value={form.description} onChange={set("description")} placeholder="Full description" rows={2} className={`${input} md:col-span-2`} />
                   <label className="flex items-center gap-2 text-sm">
                     <input type="checkbox" checked={form.isactive} onChange={set("isactive")} className="h-4 w-4  border-neutral-300 text-neutral-950 focus:ring-gold/40" /> Active
@@ -345,11 +378,20 @@ function ProductWorkspace({ product, onBack }) {
   const [sizes, setSizes] = useState([]);
   const [clothTypes, setClothTypes] = useState([]);
   const [seo, setSeo] = useState(null);
+  const [details, setDetails] = useState({
+    fabric_details: "", trims_used: "", special_detailing: "", lining_details: "",
+    product_fit: "", model_fit: "", construction_type: "", sleeve_type: "",
+    sleeve_pattern: "", wash_care: "", sleeve_length: "",
+  });
+  const [detailsSaving, setDetailsSaving] = useState(false);
+  const [sizeChart, setSizeChart] = useState([]);
+  const [sizeUnit, setSizeUnit] = useState("in");
+  const [sizeChartSaving, setSizeChartSaving] = useState(false);
   const [seoForm, setSeoForm] = useState({ seo_title: "", seo_description: "", seo_keywords: "", og_image_url: "" });
   const [msg, setMsg] = useState("");
   const [refresh, setRefresh] = useState(0);
 
-  const [vForm, setVForm] = useState({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", price: "", stock_qty: "" });
+  const [vForm, setVForm] = useState({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", color: "", price: "", stock_qty: "" });
   const [editingVariant, setEditingVariant] = useState(null);
   // Workspace create/update ALWAYS live in popups — never inline.
   const [showVariantForm, setShowVariantForm] = useState(false);
@@ -380,11 +422,13 @@ function ProductWorkspace({ product, onBack }) {
   const closeVariantForm = () => {
     setShowVariantForm(false);
     setEditingVariant(null);
-    setVForm({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", price: "", stock_qty: "" });
+    setVForm({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", color: "", price: "", stock_qty: "" });
   };
   const [vMediaByVariant, setVMediaByVariant] = useState({}); // {variant_id: [media, ...]}
   const [mAlt, setMAlt] = useState("");
   const [mPrimary, setMPrimary] = useState(false);
+  const [mRole, setMRole] = useState("front");
+  const [vRole, setVRole] = useState("front");
   const [mPreview, setMPreview] = useState(null); // { url, name, type } for local preview
   const [uploading, setUploading] = useState(false);
   const [vUploadingId, setVUploadingId] = useState(null); // variant_id being uploaded
@@ -412,7 +456,9 @@ function ProductWorkspace({ product, onBack }) {
       apiFetch("/Products-Sizes").then(unwrap).catch(() => []),
       apiFetch("/Products-Cloth-Types").then(unwrap).catch(() => []),
       apiFetch("/Products-Seo").then(unwrap).catch(() => []),
-    ]).then(([v, m, av, a, s, c, seoList]) => {
+      apiFetch("/Product-Details", { params: { product_id: pid } }).then(unwrap).catch(() => null),
+      apiFetch("/Products-Size-Charts", { params: { product_id: pid } }).then(unwrap).catch(() => []),
+    ]).then(([v, m, av, a, s, c, seoList, detailRow, chartRows]) => {
       if (!live) return;
       const arr = (x) => (Array.isArray(x) ? x : []);
       const variantList = arr(v).filter((x) => x.product_id === pid);
@@ -422,6 +468,9 @@ function ProductWorkspace({ product, onBack }) {
       setAttrValues(arr(av).filter((x) => x.product_id === pid));
       setAttributes(arr(a));
       setSizes(arr(s));
+      const rows = arr(chartRows);
+      if (rows[0]?.unit) setSizeUnit(rows[0].unit);
+      setSizeChart(rows);
       setClothTypes(arr(c));
       // Bucket variant-specific media by variant_id.
       const bucketed = {};
@@ -433,6 +482,7 @@ function ProductWorkspace({ product, onBack }) {
       setVMediaByVariant(bucketed);
       const mine = arr(seoList).find((x) => x.product_id === pid) || null;
       setSeo(mine);
+      if (detailRow) setDetails((current) => ({ ...current, ...detailRow }));
       if (mine) {
         setSeoForm({
           seo_title: mine.seo_title || "", seo_description: mine.seo_description || "",
@@ -446,9 +496,91 @@ function ProductWorkspace({ product, onBack }) {
   }, [pid, refresh]);
 
   const reload = () => setRefresh((n) => n + 1);
+  const saveDetails = async (event) => {
+    event.preventDefault();
+    setDetailsSaving(true);
+    try {
+      await apiFetch("/Product-Details", { method: "PUT", body: { product_id: pid, ...details } });
+      setMsg("Product details saved.");
+      reload();
+    } catch (err) {
+      setMsg(friendlyError(err, "Could not save product details."));
+    } finally {
+      setDetailsSaving(false);
+    }
+  };
+  const setDetail = (key) => (event) => setDetails((current) => ({ ...current, [key]: event.target.value }));
+  const updateSizeChart = (sizeId, field, value) => setSizeChart((rows) => {
+    const existing = rows.find((row) => row.size_id === sizeId) || { size_id: sizeId };
+    const next = { ...existing, [field]: value };
+    return [...rows.filter((row) => row.size_id !== sizeId), next];
+  });
+  const saveSizeChart = async (event) => {
+    event.preventDefault();
+    setSizeChartSaving(true);
+    try {
+      for (const row of sizeChart.filter((r) => r.size_id)) {
+        await apiFetch("/Products-Size-Charts", { method: "PUT", body: { product_id: pid, unit: sizeUnit, ...row } });
+      }
+      setMsg("Size chart saved.");
+      reload();
+    } catch (err) {
+      setMsg(friendlyError(err, "Could not save size chart."));
+    } finally {
+      setSizeChartSaving(false);
+    }
+  };
   const sizeName = (id) => sizes.find((s) => s.size_id === id)?.size_name || id || "—";
   const clothName = (id) => clothTypes.find((c) => c.cloth_type_id === id)?.cloth_type_name || id || "—";
   const attrName = (id) => attributes.find((a) => a.attribute_id === id)?.attribute_name || id;
+  const colorAttribute = attributes.find((a) =>
+    a.attribute_slug?.toLowerCase() === "color" || a.attribute_name?.toLowerCase() === "color"
+  );
+  const colorForVariant = (variantId) => {
+    if (!colorAttribute) return "";
+    return attrValues.find((av) =>
+      av.product_variant_id === variantId && av.attribute_id === colorAttribute.attribute_id
+    )?.attribute_value || "";
+  };
+
+  const syncVariantColor = async (variantId, color) => {
+    if (!colorAttribute || !variantId) return;
+    const current = attrValues.find((av) =>
+      av.product_variant_id === variantId && av.attribute_id === colorAttribute.attribute_id
+    );
+    const value = String(color || "").trim();
+    if (value) {
+      if (current) {
+        await apiFetch("/Products-Attributes-Values", {
+          method: "PUT",
+          body: {
+            product_attribute_value_id: current.product_attribute_value_id,
+            product_id: pid,
+            product_variant_id: variantId,
+            attribute_id: colorAttribute.attribute_id,
+            attribute_value: value,
+            luu: "ADMIN_PORTAL",
+          },
+        });
+      } else {
+        await apiFetch("/Products-Attributes-Values", {
+          method: "POST",
+          body: {
+            product_id: pid,
+            product_variant_id: variantId,
+            attribute_id: colorAttribute.attribute_id,
+            attribute_value: value,
+            rcu: "ADMIN_PORTAL",
+          },
+        });
+      }
+    } else if (current) {
+      await apiFetch("/Products-Attributes-Values", {
+        method: "DELETE",
+        body: { product_attribute_value_id: current.product_attribute_value_id, luu: "ADMIN_PORTAL" },
+      });
+    }
+  };
 
   const saveVariant = async (e) => {
     e.preventDefault();
@@ -467,6 +599,7 @@ function ProductWorkspace({ product, onBack }) {
       stock_qty: Number(vForm.stock_qty) || 0,
     };
     try {
+      let variantId = editingVariant;
       if (editingVariant) {
         await apiFetch("/Products-Variants", {
           method: "PUT",
@@ -474,13 +607,15 @@ function ProductWorkspace({ product, onBack }) {
         });
         setMsg("Variant updated.");
       } else {
-        await apiFetch("/Products-Variants", {
+        const created = await apiFetch("/Products-Variants", {
           method: "POST",
           body: { ...payload, rcu: "ADMIN_PORTAL" },
         });
+        variantId = unwrap(created)?.product_variant_id || created?.data?.product_variant_id;
         setMsg("Variant added.");
       }
-      setVForm({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", price: "", stock_qty: "" });
+      await syncVariantColor(variantId, vForm.color);
+      setVForm({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", color: "", price: "", stock_qty: "" });
       setEditingVariant(null);
       setShowVariantForm(false);
       reload();
@@ -494,6 +629,7 @@ function ProductWorkspace({ product, onBack }) {
     setVForm({
       sku: v.sku || "", variant_name: v.variant_name || "",
       size_id: v.size_id || "", cloth_type_id: v.cloth_type_id || "",
+      color: colorForVariant(v.product_variant_id),
       price: v.price ?? "", stock_qty: v.stock_qty ?? "",
     });
     setShowVariantForm(true);
@@ -551,13 +687,15 @@ function ProductWorkspace({ product, onBack }) {
           product_id: pid,
           media_type: detectMediaType(file),
           media_url: url,
-          alt_text: mAlt || product.product_name,
+           alt_text: mAlt || product.product_name,
+          media_role: mRole,
           isprimary: mPrimary ? 1 : 0,
           rcu: "ADMIN_PORTAL",
         },
       });
       setMAlt("");
       setMPrimary(false);
+      setMRole("front");
       clearMediaPreview();
       setMsg("Image uploaded & attached.");
       setShowMediaForm(false);
@@ -618,11 +756,13 @@ function ProductWorkspace({ product, onBack }) {
           product_variant_id: variantId,
           media_type: detectMediaType(file),
           media_url: url,
+          media_role: vRole,
           alt_text: `${product.product_name} - ${variantId}`,
           rcu: "ADMIN_PORTAL",
         },
       });
       clearVariantPreview();
+      setVRole("front");
       setMsg("Variant image uploaded.");
       reload();
     } catch (err) {
@@ -724,6 +864,58 @@ function ProductWorkspace({ product, onBack }) {
         </p>
       )}
 
+      <form onSubmit={saveDetails} className="mt-6 border border-neutral-200 bg-white p-5 shadow-sm">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-neutral-900"><i className="bi bi-card-text text-gold-deep" /> Product Details</h2>
+        <p className="mt-1 text-xs text-neutral-500">These fields control the structured information shown on the storefront product page.</p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          {[
+            ["fabric_details", "Fabric details", "Describe the fabric and composition"],
+            ["trims_used", "Trims used", "Buttons, zips, embroidery, hardware"],
+            ["special_detailing", "Special detailing", "Craft, finish, or design details"],
+            ["lining_details", "Lining", "Lining material or construction"],
+            ["model_fit", "Model fit", "Example: Model is wearing size M"],
+            ["sleeve_pattern", "Sleeve pattern", "Optional sleeve design details"],
+            ["wash_care", "Wash care instructions", "Cleaning and care instructions"],
+          ].map(([key, label, placeholder]) => (
+            <label key={key} className="text-sm font-semibold text-neutral-700">
+              {label}
+              <textarea value={details[key] || ""} onChange={setDetail(key)} placeholder={placeholder} rows={2} className={`${input} mt-1`} />
+            </label>
+          ))}
+          <label className="text-sm font-semibold text-neutral-700">Product fit
+            <select value={details.product_fit || ""} onChange={setDetail("product_fit")} className={`${input} mt-1`}>
+              <option value="">Select fit</option><option>Regular fit</option><option>Relaxed fit</option><option>Slim fit</option><option>Oversized fit</option>
+            </select>
+          </label>
+          <label className="text-sm font-semibold text-neutral-700">Woven / Knitted
+            <select value={details.construction_type || ""} onChange={setDetail("construction_type")} className={`${input} mt-1`}>
+              <option value="">Select construction</option><option>Woven</option><option>Knitted</option>
+            </select>
+          </label>
+          <label className="text-sm font-semibold text-neutral-700">Sleeve type
+            <input value={details.sleeve_type || ""} onChange={setDetail("sleeve_type")} placeholder="Full sleeve / Half sleeve" className={`${input} mt-1`} />
+          </label>
+          <label className="text-sm font-semibold text-neutral-700">Sleeve length
+            <input value={details.sleeve_length || ""} onChange={setDetail("sleeve_length")} placeholder="Example: 25 inches" className={`${input} mt-1`} />
+          </label>
+        </div>
+        <button type="submit" disabled={detailsSaving} className="mt-5 bg-neutral-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gold hover:text-neutral-950 disabled:opacity-50">
+          {detailsSaving ? "Saving..." : "Save Product Details"}
+        </button>
+      </form>
+
+      <form onSubmit={saveSizeChart} className="mt-6 border border-neutral-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div><h2 className="flex items-center gap-2 text-lg font-bold text-neutral-900"><i className="bi bi-rulers text-gold-deep" /> Size Chart</h2><p className="mt-1 text-xs text-neutral-500">Measurements are product-specific and can be entered for every available size.</p></div>
+          <select value={sizeUnit} onChange={(e) => setSizeUnit(e.target.value)} className={`${input} w-auto`}><option value="in">Inches</option><option value="cm">Centimetres</option></select>
+        </div>
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[720px] text-left text-sm"><thead><tr className="border-b border-neutral-200 text-xs uppercase tracking-wide text-neutral-500"><th className="p-2">Size</th>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <th key={field} className="p-2">{field.replace("_", " ")}</th>)}</tr></thead><tbody>
+          {sizes.filter((s) => variants.some((v) => v.size_id === s.size_id)).map((s) => { const row = sizeChart.find((r) => r.size_id === s.size_id) || {}; return <tr key={s.size_id} className="border-b border-neutral-100"><td className="p-2 font-semibold">{s.size_name}</td>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <td key={field} className="p-2"><input type="number" step="0.01" min="0" value={row[field] ?? ""} onChange={(e) => updateSizeChart(s.size_id, field, e.target.value)} className={`${input} w-28`} /></td>)}</tr>; })}
+        </tbody></table></div>
+        {sizes.filter((s) => variants.some((v) => v.size_id === s.size_id)).length === 0 && <p className="mt-3 text-sm text-neutral-500">Add size variants first to build this chart.</p>}
+        <button type="submit" disabled={sizeChartSaving} className="mt-5 bg-neutral-950 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{sizeChartSaving ? "Saving..." : "Save Size Chart"}</button>
+      </form>
+
       <h2 className="mt-6 flex items-center gap-2 text-lg font-bold text-neutral-900">
         <i className="bi bi-layers text-gold-deep" /> Variants
       </h2>
@@ -743,7 +935,7 @@ function ProductWorkspace({ product, onBack }) {
             <thead>
               <tr className="bg-[#17161a] text-[11px] font-bold uppercase tracking-wider text-white">
                 <th className="px-4 py-3">SKU</th><th className="px-4 py-3">Name</th><th className="px-4 py-3">Size</th>
-                <th className="px-4 py-3">Cloth Type</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Stock</th>
+                 <th className="px-4 py-3">Cloth Type</th><th className="px-4 py-3">Color</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Stock</th>
                 <th className="px-4 py-3">Image (per variant)</th><th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -756,6 +948,7 @@ function ProductWorkspace({ product, onBack }) {
                     <td className="px-4 py-3">{v.variant_name || "—"}</td>
                     <td className="px-4 py-3">{sizeName(v.size_id)}</td>
                     <td className="px-4 py-3">{clothName(v.cloth_type_id)}</td>
+                    <td className="px-4 py-3">{colorForVariant(v.product_variant_id) || "—"}</td>
                     <td className="px-4 py-3">{inr(v.price)}</td>
                     <td className="px-4 py-3">{v.stock_qty}</td>
                     <td className="px-4 py-3">
@@ -766,13 +959,14 @@ function ProductWorkspace({ product, onBack }) {
                           vMedia.map((m) => (
                             <div key={m.product_media_id} className="relative">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
+                               <img
                                 src={resolveUploadUrl(m.media_url)}
                                 alt={m.alt_text || v.sku}
                                 style={{ height: 48, width: 48, objectFit: "cover" }}
                                 className=" border border-neutral-300 bg-white"
                                 onError={(e) => { e.currentTarget.style.display = "none"; }}
                               />
+                              {m.media_role && <span className="absolute bottom-0 left-0 bg-neutral-950/80 px-1 text-[9px] uppercase text-white">{m.media_role}</span>}
                               <button
                                 type="button"
                                 onClick={() => deleteVariantMedia(m)}
@@ -799,9 +993,12 @@ function ProductWorkspace({ product, onBack }) {
                               ) : (
                                 <video src={vPreview.url} style={{ height: 60, width: 60, objectFit: "cover" }} controls className=" border border-neutral-300" />
                               )}
-                          <div className="flex-1">
-                            <p className="text-xs">{vPreview.name}</p>
-                            <p className="text-xs text-neutral-500">Preview</p>
+                           <div className="flex-1">
+                             <p className="text-xs">{vPreview.name}</p>
+                            <select value={vRole} onChange={(e) => setVRole(e.target.value)} className="mt-1 border border-neutral-300 bg-white px-1 py-1 text-xs">
+                              <option value="front">Front</option><option value="side">Side</option><option value="back">Back</option><option value="close-up">Close-up</option><option value="detailing">Detailing</option><option value="video">Video</option>
+                            </select>
+                             <p className="text-xs text-neutral-500">Preview</p>
                           </div>
                           <button
                             type="button"
@@ -839,7 +1036,7 @@ function ProductWorkspace({ product, onBack }) {
         <button
           type="button"
           onClick={() => {
-            setVForm({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", price: "", stock_qty: "" });
+             setVForm({ sku: "", variant_name: "", size_id: "", cloth_type_id: "", color: "", price: "", stock_qty: "" });
             setEditingVariant(null);
             setShowVariantForm(true);
           }}
@@ -868,12 +1065,25 @@ function ProductWorkspace({ product, onBack }) {
                   <option key={s.size_id} value={s.size_id}>{s.size_name}</option>
                 ))}
               </select>
-              <select value={vForm.cloth_type_id} onChange={(e) => setVForm((f) => ({ ...f, cloth_type_id: e.target.value }))} className={input}>
+               <select value={vForm.cloth_type_id} onChange={(e) => setVForm((f) => ({ ...f, cloth_type_id: e.target.value }))} className={input}>
                 <option value="">Cloth Type — none —</option>
                 {clothTypes.map((c) => (
                   <option key={c.cloth_type_id} value={c.cloth_type_id}>{c.cloth_type_name}</option>
                 ))}
-              </select>
+               </select>
+               <input
+                 value={vForm.color}
+                 onChange={(e) => setVForm((f) => ({ ...f, color: e.target.value }))}
+                 list="product-variant-color-options"
+                 placeholder={colorAttribute ? "Color (e.g. Black)" : "Create a Color attribute first"}
+                 disabled={!colorAttribute}
+                 className={input}
+               />
+               <datalist id="product-variant-color-options">
+                 {["Black", "White", "Burgundy", "Red", "Blue", "Green", "Cream", "Ivory", "Gold", "Silver", "Platinum", "Menthol Ice"].map((color) => (
+                   <option key={color} value={color} />
+                 ))}
+               </datalist>
               <div className="relative">
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-500">₹</span>
                 <input value={vForm.price} onChange={(e) => setVForm((f) => ({ ...f, price: e.target.value }))} inputMode="decimal" placeholder="Price" className={`${input} pl-7`} />
@@ -920,7 +1130,7 @@ function ProductWorkspace({ product, onBack }) {
                   e.currentTarget.style.padding = "12px";
                 }}
               />
-              <p className="mt-1 truncate text-xs">{m.alt_text || "—"}{m.isprimary ? " • Primary" : ""}</p>
+               <p className="mt-1 truncate text-xs">{m.alt_text || "—"}{m.media_role ? ` • ${m.media_role}` : ""}{m.isprimary ? " • Primary" : ""}</p>
               <button type="button" onClick={() => deleteMedia(m)} className="mt-1 text-xs text-red-600 underline underline-offset-2 transition-colors hover:text-red-700">Delete</button>
             </div>
           ))}
@@ -946,7 +1156,10 @@ function ProductWorkspace({ product, onBack }) {
           >
             <h3 className="font-display text-lg font-bold text-neutral-900">Add Media</h3>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
-        <input value={mAlt} onChange={(e) => setMAlt(e.target.value)} placeholder="Alt Text" className={input} />
+         <input value={mAlt} onChange={(e) => setMAlt(e.target.value)} placeholder="Alt Text" className={input} />
+         <select value={mRole} onChange={(e) => setMRole(e.target.value)} className={input} aria-label="Media role">
+           <option value="front">Front</option><option value="side">Side</option><option value="back">Back</option><option value="close-up">Close-up</option><option value="detailing">Detailing</option><option value="video">Video</option>
+         </select>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={mPrimary} onChange={(e) => setMPrimary(e.target.checked)} className="h-4 w-4  border-neutral-300 text-neutral-950 focus:ring-gold/40" /> Set as primary
         </label>

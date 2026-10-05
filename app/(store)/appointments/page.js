@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch, unwrap, currentUserId } from "@/lib/api";
+import "./appointments-page.css";
 
 // Appointments: same structure/texts/flows as the previous UI —
 // full cards with slot resolution + cancel with confirm.
@@ -70,7 +71,7 @@ export default function AppointmentsPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-10 text-center">
+      <div className="appointments-page appointments-page--state">
         <div className="spinner-border" role="status">
           <span className="visually-hidden">Loading appointments...</span>
         </div>
@@ -81,7 +82,7 @@ export default function AppointmentsPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-10 text-center">
+      <div className="appointments-page appointments-page--state">
         <div className="bg-red-50 p-3 text-sm text-red-700">{error}</div>
       </div>
     );
@@ -89,10 +90,11 @@ export default function AppointmentsPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-14 text-center">
-        <h2 className="font-display text-4xl font-bold">No appointments yet</h2>
-        <p className="mt-3 text-neutral-500">Book a custom appointment to see it here.</p>
-        <Link href="/" className="mt-6 inline-block bg-neutral-950 px-8 py-3 text-sm font-semibold text-white">
+      <div className="appointments-page appointments-page--state">
+        <p className="appointments-page__eyebrow">HC Atelier</p>
+        <h2>No appointments yet</h2>
+        <p className="appointments-page__muted">Book a custom appointment to see it here.</p>
+        <Link href="/book-appointment" className="appointments-page__button">
           Book Appointment
         </Link>
       </div>
@@ -100,40 +102,45 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <h2 className="mb-4 font-display text-4xl font-bold">My Appointments</h2>
-      <div className="grid gap-4 md:grid-cols-2">
+    <main className="appointments-page">
+      <div className="appointments-page__heading">
+        <p className="appointments-page__eyebrow">HC Atelier</p>
+        <h1>My Appointments</h1>
+      </div>
+      <div className="appointments-page__grid">
         {items.map((a) => {
           const status = a.appointment_status || "Pending";
           const approved = status.toLowerCase() === "approved";
           return (
-            <div key={a.appointment_id || a.custom_appointment_id} className="h-full border border-neutral-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-2">
-                <h5 className="font-semibold">{a.name || "Appointment"}</h5>
-                <span className={`px-2 py-0.5 text-xs font-semibold text-white ${approved ? "bg-green-700" : "bg-neutral-500"}`}>
+            <article key={a.appointment_id || a.custom_appointment_id} className="appointment-card">
+              <div className="appointment-card__heading">
+                <h2>{a.name || "Appointment"}</h2>
+                <span className={`appointment-card__status ${approved ? "is-approved" : ""}`}>
                   {status}
                 </span>
               </div>
-              <p className="mt-3 text-sm"><strong>Date:</strong> {a.slot_date || "N/A"}</p>
-              <p className="text-sm"><strong>Time:</strong> {a.slot_start_time && a.slot_end_time ? `${a.slot_start_time} - ${a.slot_end_time}` : "N/A"}</p>
-              <p className="text-sm"><strong>City:</strong> {a.city || "N/A"}</p>
-              <p className="text-sm"><strong>Occasion:</strong> {a.occasion || "N/A"}</p>
-              <p className="text-sm"><strong>Preferred Delivery:</strong> {a.preferred_delivery_date || "N/A"}</p>
+              <div className="appointment-card__details">
+                <p><strong>Date:</strong> {a.slot_date || "N/A"}</p>
+                <p><strong>Time:</strong> {a.slot_start_time && a.slot_end_time ? `${a.slot_start_time} - ${a.slot_end_time}` : "N/A"}</p>
+                <p><strong>City:</strong> {a.city || "N/A"}</p>
+                <p><strong>Occasion:</strong> {a.occasion || "N/A"}</p>
+                <p><strong>Preferred Delivery:</strong> {a.preferred_delivery_date || "N/A"}</p>
+              </div>
               {a.appointment_notes && (
-                <p className="text-sm"><strong>Notes:</strong> {a.appointment_notes}</p>
+                <p className="appointment-card__notes"><strong>Notes:</strong> {a.appointment_notes}</p>
               )}
               <button
                 onClick={() => handleCancel(a)}
-                className="mt-3 border border-red-600 px-3 py-1 text-xs font-semibold text-red-600"
+                className="appointment-card__cancel"
               >
                 Cancel Appointment
               </button>
-            </div>
+            </article>
           );
         })}
       </div>
       <SpinnerStyle />
-    </div>
+    </main>
   );
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { inr } from "@/lib/api";
@@ -40,12 +39,13 @@ export default function ProductCard({ product, index = 0 }) {
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
         <Link href={href} aria-label={product.name} className="relative block h-full w-full">
-          <Image
+          {/* Backend upload URLs may resolve to private infrastructure; keep
+              them as native images instead of sending them through Next's
+              server-side optimizer. */}
+          <img
             src={product.image || PLACEHOLDER_IMAGE}
             alt={product.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         </Link>
         <div className="absolute inset-x-0 bottom-0 translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0">

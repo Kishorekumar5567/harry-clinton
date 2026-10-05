@@ -102,31 +102,41 @@ export default function HomeFaqs() {
   }, []);
 
   return (
-    <section className="w-full bg-white py-16 md:py-24 border-b border-neutral-200/60">
-      <div className="mx-auto w-[92%] lg:w-[84%] 2xl:w-[80%]">
-        <h2 className="text-center font-display !text-[32px] sm:!text-[40px] md:!text-[48px] !leading-tight font-bold tracking-tight text-neutral-950 uppercase">
+    <section className="hc-home-faqs w-full bg-white my-12">
+      <div className="mx-auto w-full px-3">
+        <h2 className="mb-6 text-center font-display !text-[24px] md:!text-[32px] !leading-tight font-bold text-neutral-950">
           {title}
         </h2>
         {subtitle ? (
           <p className="mt-3 text-center text-sm sm:text-base text-neutral-500 max-w-2xl mx-auto">{subtitle}</p>
         ) : null}
-        <div className="mt-12 space-y-4">
+        <div className="space-y-0">
           {faqs.map((faq, i) => {
             const id = i + 1;
             const isOpen = openId === id;
             return (
-              <div key={id} className="border border-neutral-200 bg-white transition-colors duration-200 hover:border-neutral-300">
+              <div
+                key={id}
+                className={`border-x border-b border-[#dee2e6] bg-white ${i === 0 ? "border-t" : "border-t-0"}`}
+              >
                 <button
                   onClick={() => setOpenId(isOpen ? null : id)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between p-5 sm:p-6 text-left font-medium text-neutral-900 transition-colors"
+                  className={`faq-question flex w-full items-center justify-between px-5 py-5 text-left !text-[16px] leading-normal font-normal text-[#212529] transition-colors ${isOpen ? "bg-[#e7f1ff] text-[#0c63e4]" : "bg-white"}`}
                 >
-                  <span className="!text-[18px] sm:!text-[20px] !leading-snug">{`${i + 1}) ${faq.question}`}</span>
-                  <span className="ml-4 text-xl font-light text-[#c6a15b] shrink-0">{isOpen ? "−" : "+"}</span>
+                  <span className="!text-[16px] !leading-snug">{`${i + 1}) ${faq.question}`}</span>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    className={`ml-4 h-5 w-5 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180 text-[#0c63e4]" : "text-[#212529]"}`}
+                    fill="currentColor"
+                  >
+                    <path d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                  </svg>
                 </button>
                 {isOpen && (
                   <div
-                    className="px-5 pb-5 sm:px-6 sm:pb-6 !text-[16px] sm:!text-[17px] !leading-relaxed text-neutral-600 border-t border-neutral-100 pt-4"
+                    className="border-t border-[#dee2e6] px-5 py-4 pl-10 !text-[18px] !leading-relaxed font-bold not-italic text-[#212529] max-md:!text-[14px]"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }}
                   />
                 )}
@@ -135,6 +145,18 @@ export default function HomeFaqs() {
           })}
         </div>
       </div>
+      <style jsx>{`
+        :global(.hc-home-faqs),
+        :global(.hc-home-faqs *) {
+          font-family: "MAINLUX", Arial, sans-serif;
+        }
+        @media (max-width: 576px) {
+          .faq-question {
+            font-size: 0.9rem !important;
+            padding: 0.75rem !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

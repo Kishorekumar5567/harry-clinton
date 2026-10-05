@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import "../auth-pages.css";
 
 export const dynamic = "force-dynamic";
 
@@ -51,24 +52,24 @@ function ResetInner() {
     }
   };
 
-  const inputCls = "w-full border border-neutral-300 px-3 py-2 text-sm focus:border-gold focus:outline-none";
+  const inputCls = "auth-input";
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-neutral-100 px-4 py-14">
-      <div className="w-full max-w-md bg-white p-6 shadow-lg" style={{ borderRadius:"0" }}>
-        <h3 className="mb-4 text-center font-display text-3xl font-bold">Reset Password</h3>
+    <div className="auth-register-page">
+      <div className="auth-card">
+        <h3>Reset Password</h3>
         {message && (
-          <div className={`mb-3 p-2 text-center text-sm ${isError ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
+          <div className={`auth-alert ${isError ? "auth-alert-error" : "auth-alert-success"}`}>
             {message}
           </div>
         )}
         <form onSubmit={submit}>
-          <label className="mb-1 block text-sm font-medium">Email address</label>
-          <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={`${inputCls} mb-3`} />
-          <label className="mb-1 block text-sm font-medium">Reset Token / Code</label>
-          <input type="text" autoComplete="off" value={token} onChange={(e) => setToken(e.target.value)} required className={`${inputCls} mb-3`} />
-          <label className="mb-1 block text-sm font-medium">New Password</label>
-          <div className="relative mb-3">
+          <label><span>Email address</span></label>
+          <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputCls} />
+          <label><span>Reset Token / Code</span></label>
+          <input type="text" autoComplete="off" value={token} onChange={(e) => setToken(e.target.value)} required className={inputCls} />
+          <label><span>New Password</span></label>
+          <div className="auth-password-wrap auth-password-field">
             <input
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
@@ -81,13 +82,13 @@ function ResetInner() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500"
+              className="auth-eye"
             >
               <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"} />
             </button>
           </div>
-          <label className="mb-1 block text-sm font-medium">Confirm New Password</label>
-          <div className="relative mb-4">
+          <label><span>Confirm New Password</span></label>
+          <div className="auth-password-wrap auth-password-field auth-password-field-last">
             <input
               type={showConfirm ? "text" : "password"}
               autoComplete="new-password"
@@ -100,7 +101,7 @@ function ResetInner() {
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
               aria-label={showConfirm ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500"
+              className="auth-eye"
             >
               <i className={showConfirm ? "bi bi-eye-slash" : "bi bi-eye"} />
             </button>
@@ -108,13 +109,13 @@ function ResetInner() {
           <button
             type="submit"
             disabled={!email.trim() || !token.trim() || !password.trim() || !confirmPassword.trim() || loading}
-            className="w-full bg-neutral-950 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="auth-submit"
           >
             {loading ? "Resetting..." : "Reset Password"}
           </button>
         </form>
-        <div className="mt-3 text-center text-sm">
-          <Link href="/login" className="underline">Back to login</Link>
+        <div className="auth-register-prompt">
+          <Link href="/login" className="auth-link">Back to login</Link>
         </div>
       </div>
     </div>

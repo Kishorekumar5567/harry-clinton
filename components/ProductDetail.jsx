@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { inr } from "@/lib/api";
+import { inr, resolveUploadUrl } from "@/lib/api";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { useCart } from "./CartProvider";
 import WishlistHeart from "./WishlistHeart";
@@ -44,6 +43,13 @@ export default function ProductDetail({ product }) {
       : product.gallery?.length > 0
       ? product.gallery
       : [product.image || PLACEHOLDER_IMAGE];
+
+  const mediaMetaFor = (src) => {
+    const item = (product.media || []).find((media) => resolveUploadUrl(media.media_url) === src);
+    return item || null;
+  };
+  const activeMediaMeta = mediaMetaFor(currentGallery[activeImg] || currentGallery[0]);
+  const isVideoMedia = activeMediaMeta?.media_type === "video" || activeMediaMeta?.media_role === "video";
 
   // Dynamic titles, prices, and sizes based on chosen colorway
   const displayTitle = activeColorObj?.title || product.name;
@@ -110,10 +116,8 @@ export default function ProductDetail({ product }) {
       setSize("");
     }
 
-    // Update browser URL cleanly without a disruptive page reload
-    if (targetObj?.slug && typeof window !== "undefined") {
-      window.history.replaceState(null, "", `/product/${targetObj.slug}`);
-    }
+    // Colorways are variants of this same product; selecting one must not
+    // navigate to or identify a different product.
   };
 
   const handlePrevImg = () => {
@@ -160,16 +164,29 @@ export default function ProductDetail({ product }) {
           {/* Left: Gallery (Image updates dynamically based on selected color) */}
           <div className="relative">
             <div className="group relative aspect-[4/5] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm">
-              <Image
-                key={`${selectedColor}-${activeImg}-${currentGallery[activeImg] || currentGallery[0]}`}
-                src={currentGallery[activeImg] || currentGallery[0]}
-                alt={`${displayTitle} in ${selectedColor || "atelier colorway"}`}
-                fill
-                priority
-                unoptimized
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition-all duration-300 ease-in-out"
-              />
+               {isVideoMedia ? (
+                 <video
+                   key={`${selectedColor}-${activeImg}-${currentGallery[activeImg] || currentGallery[0]}`}
+                   src={currentGallery[activeImg] || currentGallery[0]}
+                   aria-label={`${displayTitle} ${activeMediaMeta?.media_role || "video"}`}
+                   className="absolute inset-0 h-full w-full object-cover"
+                   controls
+                   muted
+                   playsInline
+                 />
+               ) : (
+                 <img
+                   key={`${selectedColor}-${activeImg}-${currentGallery[activeImg] || currentGallery[0]}`}
+                   src={currentGallery[activeImg] || currentGallery[0]}
+                   alt={`${displayTitle} in ${selectedColor || "atelier colorway"}`}
+                   className="absolute inset-0 h-full w-full origin-center cursor-zoom-in object-cover transition-transform duration-500 ease-out group-hover:scale-150"
+                 />
+               )}
+               {activeMediaMeta?.media_role && (
+                 <span className="absolute bottom-3 left-3 bg-neutral-950/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+                   {activeMediaMeta.media_role}
+                 </span>
+               )}
 
               {/* Luxury Color Pill Overlay */}
               {selectedColor && (
@@ -228,14 +245,12 @@ export default function ProductDetail({ product }) {
                         : "border-neutral-200 opacity-65 hover:opacity-100 hover:border-neutral-400"
                     }`}
                   >
-                      <Image
-                        src={src}
-                        alt={`${displayTitle} ${selectedColor} view ${i + 1}`}
-                        fill
-                        unoptimized
-                        sizes="140px"
-                      className="object-cover"
-                    />
+                       {mediaMetaFor(src)?.media_type === "video" || mediaMetaFor(src)?.media_role === "video" ? (
+                         <video src={src} aria-label={`${displayTitle} video ${i + 1}`} className="absolute inset-0 h-full w-full object-cover" muted />
+                       ) : (
+                         <img src={src} alt={`${displayTitle} ${selectedColor} view ${i + 1}`} className="absolute inset-0 h-full w-full object-cover" />
+                       )}
+                       {mediaMetaFor(src)?.media_role && <span className="absolute bottom-0 left-0 right-0 bg-neutral-950/70 px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white">{mediaMetaFor(src).media_role}</span>}
                   </button>
                 ))}
               </div>
@@ -258,6 +273,54 @@ export default function ProductDetail({ product }) {
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.fullDescription) }}
                 />
               </>
+            )}
+
+            {product.details && Object.entries({
+              "Fabric details": product.details.fabric_details,
+              "Trims used": product.details.trims_used,
+              "Special detailing": product.details.special_detailing,
+              Lining: product.details.lining_details,
+              "Product fit": product.details.product_fit,
+              "Model fit": product.details.model_fit,
+              "Woven / Knitted": product.details.construction_type,
+              "Sleeve type": product.details.sleeve_type,
+              "Sleeve pattern": product.details.sleeve_pattern,
+              "Sleeve length": product.details.sleeve_length,
+              "Wash care": product.details.wash_care,
+            }).some(([, value]) => value) && (
+              <div className="mt-6 border-y border-neutral-200">
+                {Object.entries({
+                  "Fabric details": product.details.fabric_details,
+                  "Trims used": product.details.trims_used,
+                  "Special detailing": product.details.special_detailing,
+                  Lining: product.details.lining_details,
+                  "Product fit": product.details.product_fit,
+                  "Model fit": product.details.model_fit,
+                  "Woven / Knitted": product.details.construction_type,
+                  "Sleeve type": product.details.sleeve_type,
+                  "Sleeve pattern": product.details.sleeve_pattern,
+                  "Sleeve length": product.details.sleeve_length,
+                  "Wash care": product.details.wash_care,
+                }).filter(([, value]) => value).map(([label, value]) => (
+                  <details key={label} className="border-b border-neutral-200 py-3 last:border-b-0">
+                    <summary className="cursor-pointer text-[12px] font-bold uppercase tracking-widest text-neutral-900">{label}</summary>
+                    <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-neutral-600">{value}</p>
+                  </details>
+                ))}
+              </div>
+            )}
+
+            {product.sizeChart?.length > 0 && (
+              <details className="mt-6 border-y border-neutral-200 py-3">
+                <summary className="cursor-pointer text-[12px] font-bold uppercase tracking-widest text-neutral-900">Measurements / Size Guide</summary>
+                <div className="mt-3 overflow-x-auto">
+                  <p className="mb-2 text-[11px] uppercase tracking-widest text-neutral-500">All measurements in {product.sizeChart[0]?.unit === "cm" ? "centimetres" : "inches"}</p>
+                  <table className="w-full min-w-[620px] text-left text-xs text-neutral-600">
+                    <thead><tr className="border-b border-neutral-200 uppercase tracking-wide">{["Size", "Chest", "Waist", "Hip", "Shoulder", "Sleeve"].map((label) => <th key={label} className="px-2 py-2">{label}</th>)}</tr></thead>
+                    <tbody>{product.sizeChart.map((row) => <tr key={row.product_size_measurement_id || row.size_id} className="border-b border-neutral-100"><td className="px-2 py-2 font-semibold text-neutral-900">{row.size_name}</td>{["chest", "waist", "hip", "shoulder", "sleeve_length"].map((field) => <td key={field} className="px-2 py-2">{row[field] ?? "—"}</td>)}</tr>)}</tbody>
+                  </table>
+                </div>
+              </details>
             )}
 
             {/* Luxury Color Swatch Selector — updates images on click */}

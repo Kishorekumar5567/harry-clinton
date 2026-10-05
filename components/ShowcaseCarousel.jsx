@@ -139,7 +139,7 @@ export default function ShowcaseCarousel({
           padding: isMobile ? "8px 20px" : "12px 32px",
           backgroundColor: "rgba(255, 255, 255, 0.72)",
           color: "#000000",
-          fontSize: isMobile ? "22px" : "38px",
+           fontSize: isMobile ? "18px" : "28px",
           fontWeight: "bold",
           fontFamily: "var(--font-mainlux), 'MAINLUX', Arial, sans-serif",
           lineHeight: 1.15,

@@ -8,8 +8,13 @@ import ActiveToggle from "@/components/ActiveToggle";
 import Pagination, { paginate } from "../Pagination";
 import useLockBody from "../useLockBody";
 import { useConfirm } from "../ConfirmProvider";
+import FilePick from "../FilePick";
+import useUploader from "../useUploader";
 
-const empty = { menu_subcategory_name: "", menu_subcategory_slug: "", redirect_link: "", display_order: "", isactive: true };
+const empty = {
+  menu_subcategory_name: "", menu_subcategory_slug: "", redirect_link: "",
+  image_url: "", video_url: "", display_order: "", isactive: true,
+};
 const input =
   "w-full  border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm transition-shadow placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25";
 
@@ -25,15 +30,19 @@ export default function AdminCategoriesPage() {
   const [msg, setMsg] = useState("");
   // Create/update ALWAYS live in the popup — never inline.
   const [showForm, setShowForm] = useState(false);
+  const [staged, setStaged] = useState({});
+  const { upload, upProg } = useUploader();
   useLockBody(showForm);
   const closeForm = () => {
     setShowForm(false);
     setEditing(null);
     setForm(empty);
+    setStaged({});
   };
   const openCreate = () => {
     setForm(empty);
     setEditing(null);
+    setStaged({});
     setShowForm(true);
   };
 
@@ -105,13 +114,17 @@ export default function AdminCategoriesPage() {
       }
     }
     try {
+      const media = { ...form };
+      for (const key of ["image_url", "video_url"]) {
+        if (staged[key]) media[key] = await upload(staged[key], { path: "menu-categories" });
+      }
       if (editing) {
         await apiFetch("/Menu-Sub-Category", {
           method: "PUT",
           body: {
             menu_subcategory_id: editing,
             menu_category_id: activeCat,
-            ...form,
+            ...media,
             display_order: Number(form.display_order) || 0,
             isactive: form.isactive ? 1 : 0,
             luu: "ADMIN_PORTAL",
@@ -123,7 +136,7 @@ export default function AdminCategoriesPage() {
           method: "POST",
           body: {
             menu_category_id: activeCat,
-            ...form,
+            ...media,
             display_order: Number(form.display_order) || 0,
             isactive: form.isactive ? 1 : 0,
             rcu: "ADMIN_PORTAL",
@@ -132,6 +145,7 @@ export default function AdminCategoriesPage() {
         setMsg("Subcategory added.");
       }
       setForm(empty);
+      setStaged({});
       setEditing(null);
       setShowForm(false);
       load();
@@ -147,9 +161,12 @@ export default function AdminCategoriesPage() {
       menu_subcategory_name: s.menu_subcategory_name || "",
       menu_subcategory_slug: s.menu_subcategory_slug || "",
       redirect_link: s.redirect_link || "",
+      image_url: s.image_url || "",
+      video_url: s.video_url || "",
       display_order: s.display_order || "",
       isactive: s.isactive !== false && s.isactive !== 0,
     });
+    setStaged({});
     setShowForm(true);
   };
 
@@ -243,8 +260,18 @@ export default function AdminCategoriesPage() {
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               <input value={form.menu_subcategory_name} onChange={set("menu_subcategory_name")} required placeholder="Subcategory name" className={input} />
               <input value={form.menu_subcategory_slug} onChange={set("menu_subcategory_slug")} placeholder="slug-like-this" className={input} />
-              <input value={form.redirect_link} onChange={set("redirect_link")} placeholder="Redirect link (e.g. /wedding)" className={input} />
-              <input value={form.display_order} onChange={set("display_order")} inputMode="numeric" placeholder="Order" className={input} />
+               <input value={form.redirect_link} onChange={set("redirect_link")} placeholder="Redirect link (e.g. /wedding)" className={input} />
+               <input value={form.display_order} onChange={set("display_order")} inputMode="numeric" placeholder="Order" className={input} />
+               <label className="text-sm text-neutral-700">
+                 Image URL
+                 <input value={form.image_url} onChange={set("image_url")} placeholder="Server path or URL" className={`${input} mt-1`} />
+                 <span className="mt-1 block"><FilePick small accept="image/*" onPick={(file) => setStaged((s) => ({ ...s, image_url: file }))} fileName={staged.image_url?.name} hint="Image" /></span>
+               </label>
+               <label className="text-sm text-neutral-700">
+                 Video URL
+                 <input value={form.video_url} onChange={set("video_url")} placeholder="Server path or URL" className={`${input} mt-1`} />
+                 <span className="mt-1 block"><FilePick small accept="video/*" onPick={(file) => setStaged((s) => ({ ...s, video_url: file }))} fileName={staged.video_url?.name} hint="Video" /></span>
+               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.isactive} onChange={set("isactive")} className="h-4 w-4  border-neutral-300 text-neutral-950 focus:ring-gold/40" /> Active
               </label>
@@ -261,7 +288,7 @@ export default function AdminCategoriesPage() {
                 type="submit"
                 className="inline-flex items-center justify-center  bg-neutral-950 px-6 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gold hover:text-neutral-950 focus:outline-none focus:ring-2 focus:ring-gold/40"
               >
-                {editing ? "Update" : "Add"}
+                {upProg ? `Uploading ${upProg.percent}%` : editing ? "Update" : "Add"}
               </button>
             </div>
           </form>

@@ -23,8 +23,8 @@ import { generatedColor } from "@/lib/colors";
 
 function mapProduct(p, media) {
   const primary =
-    media.find((m) => m.product_id === p.product_id && (m.isprimary === 1 || m.isprimary === true)) ||
-    media.find((m) => m.product_id === p.product_id);
+    media.find((m) => String(m.product_id) === String(p.product_id) && (m.isprimary === 1 || m.isprimary === true)) ||
+    media.find((m) => String(m.product_id) === String(p.product_id));
   return {
     id: p.product_id || p.product_slug,
     slug: p.product_slug,
@@ -45,7 +45,7 @@ export default function ProductDetailLoader({ id }) {
     let live = true;
     (async () => {
       try {
-        const [products, media, variants, sizes, clothTypes, reviews, ratingSummary, attrs, attrValues] = await Promise.all([
+        const [products, media, variants, sizes, clothTypes, reviews, ratingSummary, attrs, attrValues, productDetails, sizeChart] = await Promise.all([
           apiCached("/Products", { params: { pageSize: 200 } }).catch(() => []),
           apiCached("/Products-Media", { params: { pageSize: 200 } }).catch(() => []),
           apiCached("/Products-Variants", { params: { pageSize: 200 } }).catch(() => []),
@@ -55,18 +55,24 @@ export default function ProductDetailLoader({ id }) {
           apiCached("/Product-Rating-Summary").catch(() => []),
           apiCached("/Products-Attributes").catch(() => []),
           apiCached("/Products-Attributes-Values", { params: { pageSize: 200 } }).catch(() => []),
+          apiCached("/Product-Details", { params: { product_id: id } }).catch(() => null),
+          apiCached("/Products-Size-Charts", { params: { product_id: id } }).catch(() => []),
         ]);
         if (!live) return;
 
         const p = (Array.isArray(products) ? products : []).find(
-          (x) => x.product_id === id || x.product_slug === id
+          (x) => String(x.product_id) === String(id) || String(x.product_slug) === String(id)
         );
         if (!p) {
           setStatus("missing");
           return;
         }
+        const resolvedProductDetails = productDetails || await apiCached("/Product-Details", { params: { product_id: p.product_id } }).catch(() => null);
+        const resolvedSizeChart = (Array.isArray(sizeChart) && sizeChart.length > 0)
+          ? sizeChart
+          : await apiCached("/Products-Size-Charts", { params: { product_id: p.product_id } }).catch(() => []);
         const mediaList = Array.isArray(media) ? media : [];
-        const allProductMedia = mediaList.filter((m) => m.product_id === p.product_id);
+        const allProductMedia = mediaList.filter((m) => String(m.product_id) === String(p.product_id));
         const productLevelMedia = allProductMedia.filter((m) => !m.product_variant_id);
         const variantMedia = allProductMedia.filter((m) => m.product_variant_id);
         const gallery = productLevelMedia
@@ -78,10 +84,14 @@ export default function ProductDetailLoader({ id }) {
         const colorAttr = (Array.isArray(attrs) ? attrs : []).find(
           (a) => a.attribute_slug?.toLowerCase() === "color" || a.attribute_name?.toLowerCase() === "color"
         );
+        const splitColors = (value) => String(value || "")
+          .split(/[\\/|,]+/)
+          .map((s) => s.trim())
+          .filter((s) => s && !["nil", "f"].includes(s.toLowerCase()));
         const variantColor = (variantId) =>
-          (Array.isArray(attrValues) ? attrValues : []).find(
-            (v) => v.product_variant_id === variantId && v.attribute_id === colorAttr?.attribute_id
-          )?.attribute_value || "";
+          (Array.isArray(attrValues) ? attrValues : [])
+            .filter((v) => String(v.product_variant_id) === String(variantId) && v.attribute_id === colorAttr?.attribute_id)
+            .flatMap((v) => splitColors(v.attribute_value));
 
         const builtVariants = (Array.isArray(variants) ? variants : [])
           .filter((v) => v.product_id === p.product_id)
@@ -95,7 +105,7 @@ export default function ProductDetailLoader({ id }) {
               label: sizeRow?.size_name || v.variant_name || "M",
               sizeName: sizeRow?.size_name || "",
               clothName: clothRow?.cloth_type_name || "",
-              color: variantColor(v.product_variant_id) || null,
+              color: variantColor(v.product_variant_id)[0] || null,
               available:
                 v.stock_qty === undefined || v.stock_qty === null
                   ? true
@@ -105,7 +115,7 @@ export default function ProductDetailLoader({ id }) {
           });
         const variantGalleryForColor = (colorName) => {
           const ids = builtVariants
-            .filter((v) => v.color && v.color.toLowerCase() === colorName.toLowerCase())
+            .filter((v) => !v.color || v.color.toLowerCase() === colorName.toLowerCase())
             .map((v) => v.product_variant_id);
           return variantMedia
             .filter((m) => ids.includes(m.product_variant_id))
@@ -123,7 +133,8 @@ export default function ProductDetailLoader({ id }) {
           .slice(0, 4)
           .map(({ x }) => mapProduct(x, mediaList));
 
-        // Color variants
+        // Colors belong to variants of this product. Do not use sibling
+        // products with similar names as color options.
         const LUXURY_PALETTE = {
           "obsidian black": { name: "Obsidian Black", hex: "#0a0a0a", border: "#222222" },
           "platinum silver": { name: "Platinum Silver", hex: "#c0c0c0", border: "#9e9e9e" },
@@ -182,105 +193,30 @@ export default function ProductDetailLoader({ id }) {
           return null;
         };
 
-        const getCollectionFamily = (title) => {
-          if (!title) return null;
-          const low = title.toLowerCase();
-          if (low.includes("church affair")) return "church affair";
-          if (low.includes("sangeet soiree")) return "sangeet soiree";
-          if (low.includes("linen") && low.includes("shirt")) return "linen shirt";
-          if (low.includes("extreme poppins")) return "extreme poppins";
-          if (low.includes("velvet") && low.includes("suit")) return "velvet suit";
-          const core = low
-            .replace(COLOR_REGEX, "")
-            .replace(/\b(casual|designer|smart|wedding|outfit|suit|shirt|trouser|3pcs|2pcs)\b/gi, "")
-            .replace(/[-–—/\\|]/g, " ")
-            .replace(/\s+/g, " ")
-            .trim();
-          return core.length >= 4 ? core : null;
-        };
-
-        const currentFamily = getCollectionFamily(p.product_name);
-        const siblingProducts = currentFamily
-          ? (Array.isArray(products) ? products : []).filter(
-              (other) =>
-                other.product_id !== p.product_id &&
-                other.isdeleted !== true &&
-                other.isactive !== false &&
-                getCollectionFamily(other.product_name) === currentFamily
-            )
-          : [];
-
         const selfColorMeta = detectColor(p.product_name);
-        const selfColorName = selfColorMeta?.name || "Original";
-
-        let rawColors = [];
+        const productVariants = builtVariants;
+        let rawColors = productVariants.flatMap((v) => variantColor(v.product_variant_id));
+        const hasVariantColors = rawColors.length > 0;
         if (colorAttr) {
           const pVals = (Array.isArray(attrValues) ? attrValues : []).filter(
-            (v) => v.product_id === p.product_id && v.attribute_id === colorAttr.attribute_id
+            (v) => String(v.product_id) === String(p.product_id) && !v.product_variant_id && v.attribute_id === colorAttr.attribute_id
           );
           for (const v of pVals) {
-            if (v.attribute_value && v.attribute_value !== "nil" && v.attribute_value !== "f") {
-              const parts = String(v.attribute_value).split(/[\\/|,]+/).map((s) => s.trim()).filter(Boolean);
-              rawColors.push(...parts);
-            }
+            rawColors.push(...splitColors(v.attribute_value));
           }
         }
-        if (selfColorMeta && !rawColors.some((c) => c.toLowerCase() === selfColorMeta.name.toLowerCase())) {
+        if (selfColorMeta && rawColors.length === 0) {
           rawColors.unshift(selfColorMeta.name);
         }
+        const colorList = [...new Set(rawColors.map((c) => c.trim()).filter(Boolean))];
         const variantsForColor = (colorName) => {
-          const matching = builtVariants.filter((v) => !v.color || v.color.toLowerCase() === colorName.toLowerCase());
-          return matching.length > 0 ? matching : builtVariants;
+          const matching = productVariants.filter((v) => !hasVariantColors || (v.color && v.color.toLowerCase() === colorName.toLowerCase()));
+          return matching.length > 0 ? matching : productVariants;
         };
-        for (const sib of siblingProducts) {
-          const sibColor = detectColor(sib.product_name);
-          if (sibColor && !rawColors.some((c) => c.toLowerCase() === sibColor.name.toLowerCase())) {
-            rawColors.push(sibColor.name);
-          }
-        }
 
-        const uniqueColorNames = [...new Set(rawColors.map((c) => c.trim()).filter(Boolean))];
-        const colorList = uniqueColorNames.length > 0 ? uniqueColorNames : [selfColorName];
-
-        const colorVariants = colorList.map((colName, cIdx) => {
+        const colorVariants = (colorList.length ? colorList : ["Original"]).map((colName) => {
           const key = colName.toLowerCase();
           const meta = LUXURY_PALETTE[key] || generatedColor(colName);
-          const isCurrent = colName.toLowerCase() === selfColorName.toLowerCase();
-          if (isCurrent) {
-            return {
-              name: meta.name || colName,
-              hex: meta.hex || "#333333",
-              border: meta.border || null,
-              slug: p.product_slug,
-              productId: p.product_id,
-              title: p.product_name,
-              price,
-              images: variantGalleryForColor(colName).length > 0 ? variantGalleryForColor(colName) : gallery,
-              variants: variantsForColor(colName),
-            };
-          }
-          const matchingSib = siblingProducts.find((sib) => {
-            const sCol = detectColor(sib.product_name);
-            return sCol?.name.toLowerCase() === key || new RegExp(`\\b${key}\\b`, "i").test(sib.product_name);
-          });
-          if (matchingSib) {
-            const sibMedia = mediaList
-              .filter((m) => m.product_id === matchingSib.product_id && !m.product_variant_id)
-              .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-              .map((m) => resolveUploadUrl(m.media_url))
-              .filter(Boolean);
-            return {
-              name: meta.name || colName,
-              hex: meta.hex || "#333333",
-              border: meta.border || null,
-              slug: matchingSib.product_slug,
-              productId: matchingSib.product_id,
-              title: matchingSib.product_name,
-              price: Number(matchingSib.base_price) || price,
-              images: sibMedia.length > 0 ? sibMedia : gallery,
-              variants: variantsForColor(colName),
-            };
-          }
           return {
             name: meta.name || colName,
             hex: meta.hex || "#333333",
@@ -296,16 +232,20 @@ export default function ProductDetailLoader({ id }) {
 
         setProduct({
           ...mapProduct(p, mediaList),
-          gallery,
+           gallery,
+           media: productLevelMedia,
+           variantMedia,
           variants: builtVariants,
           colors: colorVariants.map((c) => c.name),
           colorVariants,
           reviews: reviewsList.filter(
-            (r) => r.product_id === p.product_id && r.is_approved !== false && r.isdeleted !== true
+           (r) => String(r.product_id) === String(p.product_id) && r.is_approved !== false && r.isdeleted !== true
           ),
-          ratingSummary: (Array.isArray(ratingSummary) ? ratingSummary : []).find(
-            (s) => s.product_id === p.product_id
-          ) || null,
+           ratingSummary: (Array.isArray(ratingSummary) ? ratingSummary : []).find(
+             (s) => String(s.product_id) === String(p.product_id)
+           ) || null,
+           details: resolvedProductDetails || null,
+           sizeChart: Array.isArray(resolvedSizeChart) ? resolvedSizeChart : [],
           related,
         });
         setStatus("ready");

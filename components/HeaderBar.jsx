@@ -13,7 +13,7 @@ import CIconModal from "./CIconModal";
 
 // Header: exact structure of the previous UI —
 // LEFT (hamburger, C-icon appointment, search) | CENTER (logo) | RIGHT (wishlist, bag, profile).
-// All four glyphs are one inline SVG line set (24 grid, 1.8 stroke, round
+// All four glyphs are one inline SVG line set (24 grid, 2.2 stroke, round
 // caps) — never mixed font foundries, so every icon shares one optical
 // center and one weight inside identical boxes.
 function BarIcon({ label, children }) {
@@ -24,7 +24,7 @@ function BarIcon({ label, children }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="3"
+      strokeWidth="2.2"
       strokeLinecap="round"
       strokeLinejoin="round"
       role="img"
@@ -41,7 +41,7 @@ const SearchGlyph = () => (
     viewBox="0 0 25 25"
     fill="none"
     stroke="currentColor"
-    strokeWidth="3"
+    strokeWidth="2.2"
     strokeLinecap="round"
     strokeLinejoin="round"
     role="img"
@@ -118,8 +118,8 @@ export default function HeaderBar({ categories }) {
     <>
       {searchOpen && <SearchDropdown onClose={() => setSearchOpen(false)} />}
 
-      <header className="hc-bar-font topbar-enter relative sticky top-0 z-[80] flex h-[60px] items-center justify-between bg-white px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4">
+      <header className="hc-bar-font topbar-enter relative sticky top-0 z-[80] flex h-[60px] items-center justify-between bg-white px-[15px] shadow-[0_2px_4px_rgba(0,0,0,0.12)]">
+        <div className="flex items-center gap-3">
           <Hamburger categories={categories} onActiveChange={setMenuActive} />
 
           <div className="c-home flex items-center">
@@ -163,12 +163,12 @@ export default function HeaderBar({ categories }) {
               width={40}
               height={40}
               priority
-              style={{ height: "40px", width: "auto", objectFit: "contain", display: "block", margin: 0, padding: 0 }}
+              className="header-logo"
             />
           </Link>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Link href="/wishlist" className="hicon relative text-neutral-900" aria-label="Wishlist">
             <HeartGlyph />
             {wishlistCount > 0 && (
@@ -213,6 +213,8 @@ export default function HeaderBar({ categories }) {
 
       <style jsx>{`
         .fs-4 { font-size: 1.4rem; }
+        .header-logo { height: 40px; width: auto; object-fit: contain; display: block; margin: 0; padding: 0; }
+        @media (max-width: 768px) { .header-logo { height: 30px; } }
         /* all header icons ride in an identical 25x25 box with equal bold weight */
         .hicon {
           width: 25px; height: 25px; flex: none;

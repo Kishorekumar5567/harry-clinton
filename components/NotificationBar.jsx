@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { apiCached } from "@/lib/api";
 import TrainTicker, { TRAIN_DEFAULT_MS } from "./TrainTicker";
 
@@ -16,9 +17,11 @@ const DEFAULT_SLIDES = [
 ];
 
 export default function NotificationBar() {
+  const pathname = usePathname();
   const [slides, setSlides] = useState(DEFAULT_SLIDES);
 
   useEffect(() => {
+    if (pathname !== "/") return undefined;
     let live = true;
     apiCached("/Notification-Bar")
       .then((rows) => {
@@ -41,7 +44,8 @@ export default function NotificationBar() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [pathname]);
 
+  if (pathname !== "/") return null;
   return <TrainTicker slides={slides} dark arrows />;
 }

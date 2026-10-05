@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
+import "../auth-pages.css";
 
 // Forgot Password: same structure/texts/flow as the previous UI.
 export default function ForgotPasswordPage() {
@@ -36,16 +37,16 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-neutral-100 px-4 py-14">
-      <div className="w-full max-w-md bg-white p-6 shadow-lg" style={{ borderRadius:"0" }}>
-        <h3 className="mb-4 text-center font-display text-3xl font-bold">Forgot Password</h3>
+    <div className="auth-register-page">
+      <div className="auth-card">
+        <h3>Forgot Password</h3>
         {message && (
-          <div className={`mb-3 p-2 text-center text-sm ${isError ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
+          <div className={`auth-alert ${isError ? "auth-alert-error" : "auth-alert-success"}`}>
             {message}
           </div>
         )}
         <form onSubmit={submit}>
-          <label className="mb-1 block text-sm font-medium">Email address</label>
+          <label><span>Email address</span></label>
           <input
             type="email"
             value={email}
@@ -53,18 +54,18 @@ export default function ForgotPasswordPage() {
             placeholder="Enter your email"
             autoComplete="email"
             required
-            className="w-full border border-neutral-900 px-3 py-2 text-sm focus:outline-none"
+            className="auth-input"
           />
           <button
             type="submit"
             disabled={!email.trim() || loading}
-            className="mt-4 w-full bg-neutral-950 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="auth-submit"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
-        <div className="mt-3 text-center text-sm">
-          <Link href="/login" className="underline">Back to login</Link>
+        <div className="auth-register-prompt">
+          <Link href="/login" className="auth-link">Back to login</Link>
         </div>
       </div>
     </div>

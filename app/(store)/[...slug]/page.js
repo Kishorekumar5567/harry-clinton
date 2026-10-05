@@ -14,7 +14,7 @@ import ServicePage from "@/components/ServicePage";
 import ServicesHub from "@/components/ServicesHub";
 import ComingSoonView from "@/components/ComingSoonView";
 import FAQsView from "@/components/FAQsView";
-import TheVisionView from "@/components/TheVisionView";
+import TheVisionLanding from "@/components/TheVisionLanding";
 import AboutUsView from "@/components/AboutUsView";
 import AboutDesignerView from "@/components/AboutDesignerView";
 import ContactUsView from "@/components/ContactUsView";
@@ -87,6 +87,9 @@ export default async function SlugPage({ params }) {
   if (key === "coming-soon") {
     return <ComingSoonView />;
   }
+  if (key === "track-order") {
+    return <ComingSoonView title="Track Order Coming Soon" message="Our order tracking experience is being built for you. Please check back soon" />;
+  }
   if (key === "aboutUs") {
     return <AboutUsView />;
   }
@@ -109,7 +112,7 @@ export default async function SlugPage({ params }) {
     return <LegalView doc="terms" />;
   }
   if (key === "the-vision") {
-    return <TheVisionView />;
+    return <TheVisionLanding />;
   }
   if (key === "FAQs") {
     return <FAQsView />;
@@ -192,7 +195,7 @@ export default async function SlugPage({ params }) {
   }
 
   if (resolved.type === "service") {
-    if (resolved.slug === "services") return <ServicesHub />;
+    if (resolved.slug === "services") return <ServicesHub initialService="overview" />;
     const config = servicePage(resolved.slug);
     if (!config) notFound();
     return <ServicePage config={config} />;

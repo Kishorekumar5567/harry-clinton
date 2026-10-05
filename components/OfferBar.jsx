@@ -12,7 +12,7 @@ import MarqueeTape from "./MarqueeTape";
 //   ordered by display_order ASC
 // - tape speed honors the DB: loop time = sum of duration_seconds
 const DEFAULT_SLIDES = [
-  { text: "Enjoy an Exclusive 50% Privilege on All Orders Today Only !", secs: 30, showLogo: true },
+  { text: "Enjoy an Exclusive 50% Privilege on All Orders Today Only !", secs: 5, showLogo: true },
 ];
 
 const isOn = (v) => v === 1 || v === true;

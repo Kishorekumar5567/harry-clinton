@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
-import ShowcaseHeader from "./ShowcaseHeader";
+import "./reference-page-typography.css";
+import "./contact-us.css";
 
 // Contact Us page: hero, equal-height info cards, centered message form,
 // atelier banner — aligned to the site grid.
@@ -43,44 +44,42 @@ export default function ContactUsView() {
   const inputCls = "w-full border border-neutral-300 px-3 py-2.5 text-sm focus:border-gold focus:outline-none";
 
   return (
-    <div className="pb-16">
-      <div className="bg-white py-14 text-[#101010]">
-        <ShowcaseHeader
-          title="Contact Us"
-          sub="We would love to hear from you. Reach out for bespoke consultations, orders, or any questions."
-        />
+    <div className="hc-reference-page contact-page">
+      <div className="contact-hero">
+        <div className="contact-hero__inner">
+          <img src="/brand/hc-black-contact.png" alt="Harry Clinton" />
+          <h1>Contact Us</h1>
+          <p>We would love to hear from you. Reach out for bespoke consultations, orders, or any questions.</p>
+        </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="mt-10 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <InfoCard title="Phone" value="+91 7094 094 194" href="tel:+917094094194" />
-          <InfoCard title="Email" value="connect@harryclinton.com" href="mailto:connect@harryclinton.com" />
-          <InfoCard title="Atelier" value="Chennai, Tamil Nadu, India" href="#" />
-          <InfoCard title="Working Hours" value="Mon – Sat, 10am – 7pm IST" href="#" />
+      <div className="contact-page__container">
+        <div className="contact-info-grid">
+          <InfoCard icon="bi-telephone" title="Phone" value="+91 7094 094 194" href="tel:+917094094194" />
+          <InfoCard icon="bi-envelope" title="Email" value="connect@harryclinton.com" href="mailto:connect@harryclinton.com" />
+          <InfoCard icon="bi-geo-alt" title="Atelier" value="Chennai, Tamil Nadu, India" href="#" />
+          <InfoCard icon="bi-clock" title="Working Hours" value="Mon – Sat, 10am – 7pm IST" href="#" />
         </div>
 
-        <div className="mx-auto mt-10 max-w-3xl border border-neutral-200 bg-white p-6 shadow-sm md:p-10">
-          <h3 className="text-center font-display text-3xl font-bold">Send us a Message</h3>
-          {status && (
-            <p className={`mt-4 p-3 text-center text-sm ${isError ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
-              {status}
-            </p>
-          )}
-          <form onSubmit={submit} className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Full Name</span>
+        <div className="contact-main-grid">
+          <div className="contact-card contact-form-card">
+            <h2>Send us a Message</h2>
+            {status && <p className={`contact-alert ${isError ? "contact-alert--error" : "contact-alert--success"}`}>{status}</p>}
+            <form onSubmit={submit} className="contact-form">
+            <label>
+              <span>Full Name</span>
               <input value={form.name} onChange={set("name")} placeholder="Your name" required className={inputCls} />
             </label>
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Email Address</span>
+            <label>
+              <span>Email Address</span>
               <input type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" required className={inputCls} />
             </label>
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Phone Number</span>
+            <label>
+              <span>Phone Number</span>
               <input type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 98765 43210" className={inputCls} />
             </label>
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium">Subject</span>
+            <label>
+              <span>Subject</span>
               <select value={form.subject} onChange={set("subject")} required className={inputCls}>
                 <option value="">Select a subject</option>
                 <option value="Bespoke Consultation">Bespoke Consultation</option>
@@ -90,55 +89,52 @@ export default function ContactUsView() {
                 <option value="Other">Other</option>
               </select>
             </label>
-            <label className="block text-sm md:col-span-2">
-              <span className="mb-1 block font-medium">Message</span>
+            <label className="contact-form__wide">
+              <span>Message</span>
               <textarea value={form.message} onChange={set("message")} placeholder="Tell us how we can help..." rows="5" required className={inputCls} />
             </label>
-            <div className="md:col-span-2">
-              <button disabled={sending} className="btn-primary w-full disabled:opacity-50">
+            <div className="contact-form__wide">
+              <button disabled={sending} className="contact-submit">
                 {sending ? "Sending..." : "Send Message"}
               </button>
             </div>
           </form>
-        </div>
+          </div>
 
-        <div className="mt-10 bg-[#f4f4f4] p-8 text-[#101010] md:p-12">
-          <div className="mx-auto max-w-3xl text-center">
-            <h3 className="font-display text-3xl font-bold md:text-4xl">Visit Our Atelier</h3>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-[#101010]/70">
+          <div className="contact-card atelier-card">
+            <h2>Visit Our Atelier</h2>
+            <p className="atelier-card__intro">
               Experience the world of Harry Clinton in person. Schedule a bespoke consultation with our master tailors and explore fabrics, fits, and finishes tailored to you.
             </p>
-            <ul className="mx-auto mt-6 grid max-w-2xl gap-2 text-sm text-[#101010]/70 sm:grid-cols-2">
-              <li className="border border-neutral-300 bg-white px-4 py-3">Harry Clinton Atelier, Chennai, Tamil Nadu, India</li>
-              <li className="border border-neutral-300 bg-white px-4 py-3">connect@harryclinton.com</li>
-              <li className="border border-neutral-300 bg-white px-4 py-3">+91 7094 094 194</li>
-              <li className="border border-neutral-300 bg-white px-4 py-3">Mon – Sat, 10am – 7pm IST</li>
+            <ul className="atelier-details">
+              <li><i className="bi bi-geo-alt" />Harry Clinton Atelier, Chennai, Tamil Nadu, India</li>
+              <li><i className="bi bi-envelope" />connect@harryclinton.com</li>
+              <li><i className="bi bi-telephone" />+91 7094 094 194</li>
+              <li><i className="bi bi-clock" />Mon – Sat, 10am – 7pm IST</li>
             </ul>
-            <p className="mt-6 text-sm text-[#101010]/70">Prefer a face-to-face consultation?</p>
-            <Link href="/help-center" className="btn-primary mt-3 !bg-gold !text-neutral-950 hover:!bg-neutral-950 hover:!text-white">
-              Visit Help Center
-            </Link>
+            <div className="consultation-box">
+              <i className="bi bi-calendar-check" />
+              <p>Prefer a face-to-face consultation?</p>
+              <Link href="/help-center">Visit Help Center</Link>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 text-center">
-          <Link href="/" className="link-sweep text-sm font-semibold">
-            Back to Home
-          </Link>
-        </div>
+        <div className="contact-back"><Link href="/">Back to Home</Link></div>
       </div>
     </div>
   );
 }
 
-function InfoCard({ title, value, href }) {
+function InfoCard({ icon, title, value, href }) {
   return (
     <a
       href={href}
-      className="flex min-h-32 flex-col items-center justify-center border border-neutral-200 bg-white p-6 text-center shadow-sm transition-colors hover:border-gold"
+      className="contact-info-card"
     >
-      <p className="eyebrow text-neutral-500">{title}</p>
-      <p className="mt-2 font-semibold">{value}</p>
+      <i className={`bi ${icon}`} />
+      <h3>{title}</h3>
+      <p>{value}</p>
     </a>
   );
 }

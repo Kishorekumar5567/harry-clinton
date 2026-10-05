@@ -1,0 +1,15 @@
+.faqs-page { min-height:100vh; background:#f8f9fa; }
+.faqs-container { width:100%; max-width:1300px; margin:0 auto; padding:48px 12px 0; }
+.faqs-container>h2 { margin:0 0 24px; color:#212529; text-align:center; font-family:"MAINLUX",Arial,sans-serif; font-size:32px; font-weight:500; line-height:1.2; }
+.faq-accordion { margin-bottom:48px; }
+.faq-accordion details { margin-bottom:8px; overflow:hidden; border:1px solid rgba(0,0,0,.125); border-radius:6px !important; background:#fff; }
+.faq-accordion summary { position:relative; cursor:pointer; padding:16px 48px 16px 20px; color:#212529; font-family:"MAINLUX",Arial,sans-serif; font-size:16px; font-weight:400; line-height:1.5; list-style:none; }
+.faq-accordion summary::-webkit-details-marker { display:none; }
+.faq-accordion summary::after { position:absolute; top:50%; right:20px; width:12px; height:12px; border-right:2px solid #212529; border-bottom:2px solid #212529; content:""; transform:translateY(-65%) rotate(45deg); transition:transform .2s ease-in-out; }
+.faq-accordion details[open] summary::after { transform:translateY(-35%) rotate(225deg); }
+.faq-accordion__body { margin-left:20px; padding:20px; border-top:1px solid rgba(0,0,0,.125); color:#212529; font-family:"MAINLUX",Arial,sans-serif; font-size:18px; font-style:italic; font-weight:700 !important; line-height:1.6; }
+.faq-accordion__body p { margin:0 0 10px; font:inherit; }.faq-accordion__body ul { margin:0; padding-left:20px; }
+.faqs-footer { padding:16px 0; background:#212529; color:#fff; text-align:center; }
+.faqs-footer p { margin:0 0 4px; font-size:16px; font-weight:400; }.faqs-footer a { color:#b38b59; text-decoration:none; }.faqs-footer a:hover { text-decoration:underline; }
+@media(min-width:576px){.faqs-container{max-width:540px}}@media(min-width:768px){.faqs-container{max-width:720px}}@media(min-width:992px){.faqs-container{max-width:960px}}@media(min-width:1200px){.faqs-container{max-width:1300px}}
+@media(max-width:576px){.faqs-container>h2{font-size:28px}.faq-accordion summary{padding:12px 40px 12px 12px;font-size:14.4px}.faq-accordion summary::after{right:16px}.faq-accordion__body{margin-left:10px;padding:12px;font-size:13.6px}}

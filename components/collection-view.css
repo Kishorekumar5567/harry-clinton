@@ -88,12 +88,24 @@
 .collection-price-range { margin: 4px 0 0; color: #6c757d; font-size: 12px; }
 
 .collection-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 48px 20px; }
+.collection-grid--four { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.category-view--compact .collection-grid { gap: 10px; }
+.category-view--compact .collection-card-shell { margin: 0; }
 .collection-card { min-width: 0; color: inherit; text-decoration: none; }
+.collection-card-shell { position: relative; min-width: 0; }
+.new-arrivals-card { position: relative; min-width: 0; }
+.new-arrivals-card__badge { position: absolute; top: 12px; left: 12px; z-index: 3; padding: 4px 8px; color: #111; background: #d4af37; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 .collection-card__image-wrap { position: relative; aspect-ratio: 4/5; overflow: hidden; background: #f4f4f4; }
 .collection-card__image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 500ms cubic-bezier(.2,.7,.2,1); }
 .collection-card__image--empty { background: #f4f4f4; }
 .collection-card:hover .collection-card__image { transform: scale(1.035); }
+.collection-card__overlay { position: absolute; right: 0; bottom: 0; left: 0; padding: 18px 16px 15px; color: #fff; background: rgba(0,0,0,.72); transform: translateY(0); transition: background 260ms ease; }
+.collection-card__overlay h3 { margin: 4px 0 7px; color: #fff; font-size: 20px; }
+.collection-card__overlay .collection-card__subtitle { color: rgba(255,255,255,.72); }
+.collection-card__overlay .collection-card__price { color: #fff; }
+.collection-card__overlay .collection-card__price del { color: rgba(255,255,255,.58); }
 .collection-card__view { position: absolute; right: 14px; bottom: 14px; left: 14px; display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; color: #111; background: rgba(255,255,255,.94); font-size: 10px; font-weight: 600; letter-spacing: .14em; opacity: 0; text-transform: uppercase; transform: translateY(8px); transition: opacity 220ms ease, transform 220ms ease; }
+.collection-card:hover .collection-card__overlay { background: rgba(0,0,0,.82); }
 .collection-card:hover .collection-card__view { opacity: 1; transform: translateY(0); }
 .collection-card__body { padding-top: 16px; }
 .collection-card__subtitle { color: #777; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
@@ -102,9 +114,32 @@
 .collection-card__price del { color: #999; }
 .collection-card__swatches { display: flex; gap: 7px; margin-top: 13px; }
 .collection-card__swatches span { width: 13px; height: 13px; border: 1px solid #b8b8b8; border-radius: 50% !important; }
+.collection-card__heart {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #111;
+  opacity: 0;
+  transform: translateY(4px);
+  box-shadow: none;
+  transition: background-color 180ms ease, color 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+.collection-card-shell:hover .collection-card__heart,
+.collection-card__heart--saved { opacity: 1; transform: translateY(0); }
+.collection-card__heart--saved { background: transparent; }
+.collection-card__heart:hover { background: transparent; color: #c6a15b; }
 .collection-empty { padding: 80px 20px; color: #666; background: #f7f7f7; text-align: center; }
 
-@media (max-width: 900px) { .collection-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .collection-card__view { opacity: 1; transform: none; } }
+@media (max-width: 1100px) { .collection-grid--four { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media (max-width: 900px) { .collection-grid, .collection-grid--four { grid-template-columns: repeat(2,minmax(0,1fr)); } .collection-card__view { opacity: 1; transform: none; } .collection-card__overlay { transform: translateY(0); } .collection-card__heart { opacity: 1; transform: none; } }
 @media (max-width: 767.98px) {
   .collection-results { grid-template-columns: 1fr; }
   .collection-filters { position: static; max-height: none; overflow: visible; }
