@@ -13,7 +13,7 @@ const GROUPS = [
     label: "Home Screen Content",
     labels: ["Notification Bar", "Hero Slider", "Running Bar", "Home Video Slider", "HC Spotlight", "Style By HC", "The Collection", "New Arrivals", "Customer Reviews", "FAQs", "Footer"],
   },
-  { key: "users", label: "User Management", labels: ["Users", "Roles", "Customer Profiles"] },
+  { key: "users", label: "User Management", labels: ["Users", "Roles", "Customer Profiles", "Customer Measurements"] },
   {
     key: "catalog",
     label: "Catalog & Products",
