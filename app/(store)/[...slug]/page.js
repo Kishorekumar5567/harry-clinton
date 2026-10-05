@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 import { resolveSlug, titleFor, allStorefrontSlugs, COLLECTIONS } from "@/lib/catalog";
 import { getCategoryData, getProduct, resolveDbSlug } from "@/lib/shop";
 import { apiGet, unwrap, resolveUploadUrl } from "@/lib/api";
@@ -100,7 +101,7 @@ export default async function SlugPage({ params }) {
     return <ContactUsView />;
   }
   if (key === "Policies") {
-    return <PoliciesView />;
+    return <Suspense fallback={<div className="min-h-[40vh]" />}><PoliciesView /></Suspense>;
   }
   if (key === "help-center") {
     return <HelpCenterView />;
