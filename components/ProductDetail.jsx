@@ -162,7 +162,7 @@ export default function ProductDetail({ product }) {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid items-start gap-10 md:grid-cols-2">
           {/* Left: Gallery (Image updates dynamically based on selected color) */}
-          <div className="relative">
+          <div className="relative md:sticky md:top-24 md:self-start">
             <div className="group relative aspect-[4/5] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm">
                {isVideoMedia ? (
                  <video
@@ -258,7 +258,7 @@ export default function ProductDetail({ product }) {
           </div>
 
           {/* Right: Product Info, Colorway Swatches, Sizes, Bag Action */}
-          <Reveal className="md:sticky md:top-24">
+           <Reveal>
             <h1 className="font-display text-[32px] font-bold leading-tight text-neutral-950">{displayTitle}</h1>
             {product.description && (
               <p className="mt-2 text-[15px] text-neutral-600 font-normal leading-relaxed">{product.description}</p>
