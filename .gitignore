@@ -50,6 +50,8 @@ test-results/
 !public/brand/**
 !public/slides/**
 !public/category-pages/**
+!public/fonts/
+!public/fonts/*.ttf
 
 # EXCEPTION: MAINLUX brand typeface, required at BUILD time by next/font/local
 # (app/layout.js) for the notification bar / navbar / running bar. Unlike runtime

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch, currentUser, currentUserId, friendlyError } from "@/lib/api";
 
@@ -10,11 +10,16 @@ import { apiFetch, currentUser, currentUserId, friendlyError } from "@/lib/api";
 export default function ReviewsSection({ productId, initialReviews }) {
   const [reviews] = useState(() => (initialReviews || []).filter((review) => String(review.product_id) === String(productId)));
   const [loading] = useState(false);
-  const [user] = useState(() => currentUser());
+  const [user, setUser] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ rating: 5, review_title: "", review_text: "" });
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setUser(currentUser()), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const submitReview = async (event) => {
     event.preventDefault();
