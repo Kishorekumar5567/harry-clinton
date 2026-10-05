@@ -163,7 +163,7 @@ export default function ProductDetail({ product }) {
         <div className="grid items-start gap-10 md:grid-cols-2">
           {/* Left: Gallery (Image updates dynamically based on selected color) */}
           <div className="relative md:sticky md:top-24 md:self-start">
-            <div className="group relative aspect-[4/5] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm">
+             <div className="group relative aspect-[4/5] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm md:aspect-auto md:h-[min(68vh,620px)]">
                {isVideoMedia ? (
                  <video
                    key={`${selectedColor}-${activeImg}-${currentGallery[activeImg] || currentGallery[0]}`}
