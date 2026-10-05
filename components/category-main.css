@@ -14,7 +14,10 @@
   position: relative;
   height: 95vh;
   overflow: hidden;
-  background: #fff;
+  background-color: #101010;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   color: #fff;
 }
 

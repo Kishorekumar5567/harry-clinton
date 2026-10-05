@@ -46,7 +46,10 @@ export default function CategoryHero({ image, title, subtitle, description, ctaT
   };
 
   return (
-    <section className="category-hero">
+    <section
+      className="category-hero"
+      style={{ backgroundImage: `url(${JSON.stringify(image)})` }}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img ref={imageRef} src={image} alt={title} className="category-hero__image" />
       <div className="category-hero__shade" />

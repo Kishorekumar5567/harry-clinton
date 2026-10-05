@@ -12,7 +12,7 @@ import "../auth-pages.css";
 // Admins land on /admin after login, everyone else on /.
 export default function LoginPage() {
   const router = useRouter();
-  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [otpEmail, setOtpEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otpMessage, setOtpMessage] = useState("");
@@ -28,33 +28,23 @@ export default function LoginPage() {
     router.push(isAdminRole(roleCode) ? "/admin" : "/");
   };
 
-  // Backend OTP endpoints require email_id; when the input looks like a
-  // mobile number we also send mobile_number so either lookup can match.
-  // email_id is always sent (required) — never dropped.
-  const otpIdentity = (value) => {
-    const v = (value || "").trim();
-    const body = { email_id: v };
-    if (/^[+\d][\d\s-]{7,}$/.test(v)) body.mobile_number = v;
-    return body;
-  };
+  const otpIdentity = (value) => ({ email_id: (value || "").trim() });
 
   const sendOtp = async () => {
-    const v = (emailOrMobile || "").trim();
+    const v = (otpEmail || "").trim();
     if (!v) {
-      setOtpMessage("Enter email or mobile.");
+      setOtpMessage("Enter your email.");
       return;
     }
-    // No false success: garbage like "not-an-email" never reaches the API.
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    const isMobile = /^[+\d][\d\s-]{7,}$/.test(v);
-    if (!isEmail && !isMobile) {
-      setOtpMessage("Enter a valid email or mobile number.");
+    if (!isEmail) {
+      setOtpMessage("Enter a valid email address.");
       return;
     }
     setSendingOtp(true);
     setOtpMessage("");
     try {
-      const sent = await apiFetch("/Auth/OTP-Login", { method: "POST", body: otpIdentity(emailOrMobile) });
+      const sent = await apiFetch("/Auth/OTP-Login", { method: "POST", body: otpIdentity(otpEmail) });
       throwIfAuthFailed(sent, "Failed to send OTP.");
       setOtpSent(true);
       setOtpMessage("OTP sent! Check your email.");
@@ -75,7 +65,7 @@ export default function LoginPage() {
     try {
       const res = await apiFetch("/Auth/Verify-Login-OTP", {
         method: "POST",
-        body: { ...otpIdentity(emailOrMobile), otp: otp.trim() },
+        body: { ...otpIdentity(otpEmail), otp: otp.trim() },
       });
       throwIfAuthFailed(res, "Invalid OTP.");
       afterLogin(saveSession(res));
@@ -122,8 +112,8 @@ export default function LoginPage() {
 
       <div>
         <label>
-          <span>Email or Mobile</span>
-          <input value={emailOrMobile} onChange={(e) => setEmailOrMobile(e.target.value)} placeholder="Enter email or mobile number" className={inputCls} />
+          <span>Email</span>
+          <input type="email" value={otpEmail} onChange={(e) => setOtpEmail(e.target.value)} placeholder="Enter your email" className={inputCls} />
         </label>
         {otpSent ? (
           <>
