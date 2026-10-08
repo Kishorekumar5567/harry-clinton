@@ -30,10 +30,10 @@ export default function ActiveToggle({ active, onToggle }) {
         on ? "justify-end border-green-700" : "justify-start border-red-700"
       } ${busy ? "cursor-wait opacity-50" : ""}`}
     >
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <span className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-1 text-[10px] leading-none text-white">
         {on ? "ON" : "OFF"}
       </span>
-      <span className="relative z-10 h-5 w-5 rounded-full bg-white shadow-md transition-transform" />
+      <span className={`pointer-events-none absolute top-0.5 z-10 h-5 w-5 rounded-full bg-white shadow-md transition-all ${on ? "right-0.5" : "left-0.5"}`} />
     </button>
   );
 }
