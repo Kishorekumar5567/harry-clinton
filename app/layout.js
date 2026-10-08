@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import AuthListener from "@/components/AuthListener";
 import { CartProvider } from "@/components/CartProvider";
+import GlobalLoader from "@/components/GlobalLoader";
 
 // Exclusive site-wide typeface: MAINLUX (regular, semibold/bold, and italic)
 const mainlux = localFont({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={mainlux.variable}>
       <body className="min-h-screen bg-white text-neutral-900 antialiased">
         <SmoothScroll>
+          <GlobalLoader />
           <AuthListener />
           <CartProvider>{children}</CartProvider>
         </SmoothScroll>
