@@ -169,13 +169,13 @@ export default function ProductDetail({ product }) {
         <div className="grid items-start gap-10 md:grid-cols-2">
           {/* Left: Gallery (Image updates dynamically based on selected color) */}
           <div className="relative md:sticky md:top-24 md:self-start">
-             <div className="group relative aspect-[4/5] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm md:aspect-auto md:h-[min(68vh,620px)]">
+             <div className="group relative aspect-[4/5] overflow-hidden border border-neutral-200 bg-white shadow-sm md:aspect-auto md:h-[min(68vh,620px)]">
                {isVideoMedia ? (
                  <video
                    key={`${selectedColor}-${activeImg}-${currentGallery[activeImg] || currentGallery[0]}`}
                    src={currentGallery[activeImg] || currentGallery[0]}
                    aria-label={`${displayTitle} ${activeMediaMeta?.media_role || "video"}`}
-                   className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full bg-white object-contain"
                    controls
                    muted
                    playsInline
@@ -185,7 +185,7 @@ export default function ProductDetail({ product }) {
                    key={`${selectedColor}-${activeImg}-${currentGallery[activeImg] || currentGallery[0]}`}
                    src={currentGallery[activeImg] || currentGallery[0]}
                    alt={`${displayTitle} in ${selectedColor || "atelier colorway"}`}
-                   className="absolute inset-0 h-full w-full origin-center cursor-zoom-in object-cover transition-transform duration-500 ease-out group-hover:scale-150"
+                    className="absolute inset-0 h-full w-full bg-white object-contain"
                  />
                )}
                {activeMediaMeta?.media_role && (
@@ -252,9 +252,9 @@ export default function ProductDetail({ product }) {
                     }`}
                   >
                        {mediaMetaFor(src)?.media_type === "video" || mediaMetaFor(src)?.media_role === "video" ? (
-                         <video src={src} aria-label={`${displayTitle} video ${i + 1}`} className="absolute inset-0 h-full w-full object-cover" muted />
+                          <video src={src} aria-label={`${displayTitle} video ${i + 1}`} className="absolute inset-0 h-full w-full bg-white object-contain" muted />
                        ) : (
-                         <img src={src} alt={`${displayTitle} ${selectedColor} view ${i + 1}`} className="absolute inset-0 h-full w-full object-cover" />
+                          <img src={src} alt={`${displayTitle} ${selectedColor} view ${i + 1}`} className="absolute inset-0 h-full w-full bg-white object-contain" />
                        )}
                        {mediaMetaFor(src)?.media_role && <span className="absolute bottom-0 left-0 right-0 bg-neutral-950/70 px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white">{mediaMetaFor(src).media_role}</span>}
                   </button>

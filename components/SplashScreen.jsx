@@ -6,43 +6,35 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 // splash synchronously for returning visitors without a flash frame.
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-// The intro must last SPLASH_MS, but the brand clip is longer. Rather than
-// re-encode the asset, play it faster: playbackRate = duration / 3s, so the
-// clip lands on its own final frame at the 3s mark and onEnded fires for
-// real. SPLASH_MS is also a hard fallback, so a stalled or undecodable video
-// can never trap the visitor on the splash.
-const SPLASH_MS = 3000;
+const SPLASH_ACTIVITY_EVENT = "hc:splash-activity";
 
-// Opening splash: brand video plays at a raised rate so the intro lasts
-// SPLASH_MS (3s), then reveals the store. Dismissed by the video ending, that
-// hard cap, the Skip button, or Esc. Taps elsewhere on the screen must NOT
-// skip it. Frontend-only asset by design.
+// Opening splash: the store is revealed only after the complete video emits
+// `ended`. There is intentionally no duration shortcut or timeout fallback.
 export default function SplashScreen() {
   // Start VISIBLE so the server HTML already covers the homepage — no
   // homepage flash before the splash. Returning visitors are hidden
   // synchronously pre-paint below, so they never see a flicker either.
   const [show, setShow] = useState(true);
   const videoRef = useRef(null);
+  const splashLoading = useRef(false);
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useIsomorphicLayoutEffect(() => {
     if (sessionStorage.getItem("hc_splash_seen")) {
       setShow(false);
     }
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const dismiss = useCallback(() => {
+    if (splashLoading.current) {
+      window.dispatchEvent(new CustomEvent(SPLASH_ACTIVITY_EVENT, { detail: { delta: -1 } }));
+      splashLoading.current = false;
+    }
     sessionStorage.setItem("hc_splash_seen", "1");
     setShow(false);
   }, []);
 
   useEffect(() => {
     if (!show) return;
-    const onKey = (e) => {
-      if (e.key === "Escape") dismiss();
-    };
-    window.addEventListener("keydown", onKey);
     // Freeze the homepage behind the video: no scrollbar, no scroll — native
     // AND Lenis (which drives wheel scrolling past overflow locks).
     const prevBody = document.body.style.overflow;
@@ -55,7 +47,6 @@ export default function SplashScreen() {
       /* no smooth scroller */
     }
     return () => {
-      window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevBody;
       document.documentElement.style.overflow = prevHtml;
       try {
@@ -66,36 +57,25 @@ export default function SplashScreen() {
     };
   }, [show, dismiss]);
 
-  // Raise the playback rate so the clip finishes in SPLASH_MS. The video is
-  // server-rendered with preload="auto", so metadata can already be ready
-  // before React hydrates — apply immediately AND on the event, otherwise the
-  // rate silently stays at 1.
   useEffect(() => {
     if (!show) return undefined;
     const v = videoRef.current;
     if (!v) return undefined;
-    const speedUp = () => {
-      if (Number.isFinite(v.duration) && v.duration > 0) {
-        // 10s clip -> 3.33x, so it lands on its own final frame at 3s.
-        v.preservedPitch = false; // keep the original pitch if ever unmuted
-        v.defaultPlaybackRate = v.duration / (SPLASH_MS / 1000);
-        v.playbackRate = v.defaultPlaybackRate;
-      }
+    const announceLoading = () => {
+      if (splashLoading.current) return;
+      splashLoading.current = true;
+      window.dispatchEvent(new CustomEvent(SPLASH_ACTIVITY_EVENT, { detail: { delta: 1 } }));
     };
-    speedUp();
-    v.addEventListener("loadedmetadata", speedUp);
-    return () => v.removeEventListener("loadedmetadata", speedUp);
+    const ready = () => {
+      if (!splashLoading.current) return;
+      splashLoading.current = false;
+      window.dispatchEvent(new CustomEvent(SPLASH_ACTIVITY_EVENT, { detail: { delta: -1 } }));
+    };
+    announceLoading();
+    v.addEventListener("canplay", ready, { once: true });
+    if (v.readyState >= 3) ready();
+    return () => v.removeEventListener("canplay", ready);
   }, [show]);
-
-  // Stall guard only. The video's own onEnded is the normal exit (it lands at
-  // SPLASH_MS thanks to the raised playback rate); this backstop is a little
-  // longer so a healthy clip always ends on its own final frame, while a
-  // stalled, blocked or undecodable video still can't trap the visitor.
-  useEffect(() => {
-    if (!show) return undefined;
-    const t = window.setTimeout(dismiss, SPLASH_MS + 600);
-    return () => window.clearTimeout(t);
-  }, [show, dismiss]);
 
   if (!show) return null;
 
@@ -115,16 +95,6 @@ export default function SplashScreen() {
         preload="auto"
         onEnded={dismiss}
       />
-      <div className="absolute bottom-6 md:bottom-8 flex flex-col items-center z-20">
-        <button
-          type="button"
-          onClick={dismiss}
-          aria-label="Skip intro video"
-          className="!border-0 !bg-transparent !shadow-none px-3 py-2 !text-[12px] !font-normal uppercase tracking-[0.12em] !text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white cursor-pointer"
-        >
-          <span>Skip</span>
-        </button>
-      </div>
     </div>
   );
 }

@@ -7,10 +7,12 @@ import { useCart } from "@/components/CartProvider";
 import { apiFetch, unwrap, currentUser, currentUserId, resolveUploadUrl } from "@/lib/api";
 
 const initialAddress = {
+  address_label: "Home",
+  house_no_floor: "",
+  building_block: "",
+  area_name: "",
   recipient_name: "",
   phone_number: "",
-  address_line1: "",
-  address_line2: "",
   city: "",
   state: "",
   postal_code: "",
@@ -61,11 +63,13 @@ export default function CheckoutPage() {
         const def = list.find((a) => a.isdefault === 1 || a.isdefault === true) || list[0];
         if (def) {
           setSelectedAddressId(def.address_id);
-          setAddress({
-            recipient_name: def.full_name || "",
+           setAddress({
+             address_label: def.address_label || "Home",
+             house_no_floor: def.house_no_floor || def.house_street || "",
+             building_block: def.building_block || "",
+             area_name: def.area_name || def.landmark || "",
+             recipient_name: def.full_name || "",
             phone_number: def.mobile_number || "",
-            address_line1: def.house_street || "",
-            address_line2: def.landmark || "",
             city: def.city || "",
             state: def.state || "",
             postal_code: def.pincode || "",
@@ -186,11 +190,15 @@ export default function CheckoutPage() {
           address_type: "shipping",
           full_name: address.recipient_name,
           mobile_number: address.phone_number,
-          house_street: address.address_line1,
+          address_label: address.address_label,
+          house_no_floor: address.house_no_floor,
+          building_block: address.building_block,
+          area_name: address.area_name,
+          house_street: `${address.house_no_floor}, ${address.building_block}`,
           city: address.city,
           state: address.state,
           pincode: address.postal_code,
-          landmark: address.address_line2,
+          landmark: address.area_name,
           country: address.country,
           rcu: "website",
         },
@@ -216,11 +224,15 @@ export default function CheckoutPage() {
               full_name: address.recipient_name,
               mobile_number: address.phone_number,
               emailid: "",
-              house_street: address.address_line1,
+              address_label: address.address_label,
+              house_no_floor: address.house_no_floor,
+              building_block: address.building_block,
+              area_name: address.area_name,
+              house_street: `${address.house_no_floor}, ${address.building_block}`,
               city: address.city,
               state: address.state,
               pincode: address.postal_code,
-              landmark: address.address_line2,
+              landmark: address.area_name,
               country: address.country,
               isdefault: savedAddresses.length === 0 ? 1 : 0,
               isactive: 1,
@@ -292,12 +304,14 @@ export default function CheckoutPage() {
                   setSelectedAddressId(id);
                   // Dropdown values are strings; DB ids may be numbers — compare loosely.
                   const addr = savedAddresses.find((a) => String(a.address_id) === String(id));
-                  if (addr) {
-                    setAddress({
-                      recipient_name: addr.full_name || "",
-                      phone_number: addr.mobile_number || "",
-                      address_line1: addr.house_street || "",
-                      address_line2: addr.landmark || "",
+                   if (addr) {
+                     setAddress({
+                       address_label: addr.address_label || "Home",
+                       house_no_floor: addr.house_no_floor || addr.house_street || "",
+                       building_block: addr.building_block || "",
+                       area_name: addr.area_name || addr.landmark || "",
+                       recipient_name: addr.full_name || "",
+                       phone_number: addr.mobile_number || "",
                       city: addr.city || "",
                       state: addr.state || "",
                       postal_code: addr.pincode || "",
@@ -310,29 +324,32 @@ export default function CheckoutPage() {
                 <option value="">Use a saved address</option>
                 {savedAddresses.map((addr) => (
                   <option value={addr.address_id} key={addr.address_id}>
-                    {addr.full_name} — {addr.house_street}, {addr.city}
+                    {addr.address_label || "Address"} — {addr.full_name}, {addr.city}
                   </option>
                 ))}
               </select>
             </div>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="mb-1 block text-sm font-medium">Full Name</label>
-              <input type="text" name="recipient_name" value={address.recipient_name} onChange={handleChange} required className={inputCls} />
-            </div>
-            <div className="mb-3">
-              <label className="mb-1 block text-sm font-medium">Phone Number</label>
-              <input type="tel" name="phone_number" value={address.phone_number} onChange={handleChange} required className={inputCls} />
-            </div>
-            <div className="mb-3">
-              <label className="mb-1 block text-sm font-medium">Address Line 1</label>
-              <input type="text" name="address_line1" value={address.address_line1} onChange={handleChange} required className={inputCls} />
-            </div>
-            <div className="mb-3">
-              <label className="mb-1 block text-sm font-medium">Address Line 2</label>
-              <input type="text" name="address_line2" value={address.address_line2} onChange={handleChange} className={inputCls} />
-            </div>
+            <fieldset className="mb-4">
+              <legend className="mb-2 text-sm font-semibold">Address details</legend>
+              <div className="mb-3 flex flex-wrap gap-2">
+                {["Home", "Work", "Other"].map((label) => (
+                  <label key={label} className={`cursor-pointer rounded-full border px-4 py-2 text-xs font-semibold ${address.address_label === label ? "border-neutral-950 bg-neutral-950 text-white" : "border-neutral-300 text-neutral-600"}`}>
+                    <input type="radio" name="address_label" value={label} checked={address.address_label === label} onChange={handleChange} className="sr-only" />
+                    {label}
+                  </label>
+                ))}
+              </div>
+              <div className="mb-3"><label className="mb-1 block text-sm font-medium">House no. &amp; floor</label><input type="text" name="house_no_floor" value={address.house_no_floor} onChange={handleChange} required className={inputCls} /></div>
+              <div className="mb-3"><label className="mb-1 block text-sm font-medium">Building &amp; block no.</label><input type="text" name="building_block" value={address.building_block} onChange={handleChange} required className={inputCls} /></div>
+              <div className="mb-3"><label className="mb-1 block text-sm font-medium">Landmark &amp; area name</label><input type="text" name="area_name" value={address.area_name} onChange={handleChange} required className={inputCls} /></div>
+            </fieldset>
+            <fieldset>
+              <legend className="mb-2 text-sm font-semibold">Receiver details</legend>
+              <div className="mb-3"><label className="mb-1 block text-sm font-medium">Name</label><input type="text" name="recipient_name" value={address.recipient_name} onChange={handleChange} required className={inputCls} /></div>
+              <div className="mb-3"><label className="mb-1 block text-sm font-medium">Phone number</label><input type="tel" name="phone_number" value={address.phone_number} onChange={handleChange} required className={inputCls} /></div>
+            </fieldset>
             <div className="grid gap-3 md:grid-cols-2">
               <div className="mb-3">
                 <label className="mb-1 block text-sm font-medium">City</label>
@@ -375,7 +392,7 @@ export default function CheckoutPage() {
             </button>
           </form>
         </div>
-        <div className="h-fit border border-neutral-200 bg-white p-5 shadow-sm">
+         <div className="h-fit border border-neutral-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
           <h5 className="mb-3 font-semibold">Order Summary</h5>
            <div className="space-y-4">
              {cart.items.map((item, index) => {

@@ -66,7 +66,6 @@ export default function AdminMenuVideosPage() {
   const [stagedVideo, setStagedVideo] = useState(null);
   const [stagedPoster, setStagedPoster] = useState(null);
   // Open popup owns the scroll — page behind is frozen.
-  useLockBody(!!modal || !!lightbox);
   // Uploads with live ring progress (%, MB, speed, ETA).
   const { upProg, upload } = useUploader();
   // false | array of ids in manual order — reorder mode.
@@ -75,10 +74,11 @@ export default function AdminMenuVideosPage() {
   // null | { url, title } — fullscreen video viewer.
   const [lightbox, setLightbox] = useState(null);
   const dragId = useRef(null);
+  useLockBody(!!modal || !!lightbox);
 
   useEffect(() => {
     let live = true;
-    apiFetch("/Menu-Video", { params: { includeInactive: 1 } })
+    apiFetch("/Menu-Video", { params: { includeInactive: 1, includeDeleted: 1 } })
       .then(unwrap)
       .then((list) => {
         if (live) setRows(Array.isArray(list) ? list : []);
@@ -108,9 +108,7 @@ export default function AdminMenuVideosPage() {
 
   const live = useMemo(
     () =>
-      rows
-        .filter((r) => r.isdeleted !== 1 && r.isdeleted !== true)
-        .sort((a, b) => (Number(a.display_order) || 0) - (Number(b.display_order) || 0)),
+      [...rows].sort((a, b) => (Number(a.display_order) || 0) - (Number(b.display_order) || 0)),
     [rows]
   );
 
@@ -197,6 +195,8 @@ export default function AdminMenuVideosPage() {
         loop_video: modal.loop_video ? 1 : 0,
         mute_default: modal.mute_default ? 1 : 0,
         isactive: modal.isactive ? 1 : 0,
+        // Saving an archived video from this admin page restores it.
+        isdeleted: 0,
         luu: "ADMIN_PORTAL",
       };
       if (modal.id) {
@@ -324,6 +324,9 @@ export default function AdminMenuVideosPage() {
       <p className="mt-1 text-xs text-neutral-500">
         Full-viewport section below the running bar • {live.length} video(s) • MP4/WEBM ≤ 50 MB
       </p>
+      <p className="mt-1 text-xs text-amber-700">
+        If no active database video exists, the homepage uses the built-in fallback: /brand/luxury-wedding-home.mp4.
+      </p>
       {msg && (
         <p className="mt-3  border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700 shadow-sm">
           {msg}
@@ -426,6 +429,11 @@ export default function AdminMenuVideosPage() {
                     {(r.isactive !== 1 && r.isactive !== true) && (
                       <span className="ml-2  bg-neutral-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-neutral-600">
                         Off
+                      </span>
+                    )}
+                    {(r.isdeleted === 1 || r.isdeleted === true) && (
+                      <span className="ml-2 bg-red-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-700">
+                        Deleted — edit to restore
                       </span>
                     )}
                   </td>

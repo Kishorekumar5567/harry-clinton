@@ -48,13 +48,16 @@ function cellText(r, c, refOptions = {}) {
 }
 
 export default function AdminModulePage({ module: slug, lock }) {
-  const mod = adminModule(slug);
+  // adminModule() adds child metadata and therefore returns a fresh object;
+  // memoizing it prevents data-fetch effects from firing on every render.
+  const mod = useMemo(() => adminModule(slug), [slug]);
   const toast = useToast();
   const confirm = useConfirm();
   const [rows, setRows] = useState([]);
   const [form, setForm] = useState({});
   const [editing, setEditing] = useState(null);
   const [msg, setMsg] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [search, setSearch] = useState("");
   // Staged files: { columnKey: File } — picked in the form, uploaded on
@@ -81,6 +84,7 @@ export default function AdminModulePage({ module: slug, lock }) {
   const [refOptions, setRefOptions] = useState({});
   const [workspace, setWorkspace] = useState(null);
   const [workspaceTab, setWorkspaceTab] = useState(0);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // FK dropdown options (v1 optionsLoader pattern): loaded once per ref.
   useEffect(() => {
@@ -89,7 +93,7 @@ export default function AdminModulePage({ module: slug, lock }) {
     let live = true;
     Promise.all(
       refs.map((r) =>
-        apiFetch(REFS[r].endpoint)
+        apiFetch(REFS[r].endpoint, { params: { includeInactive: 1, includeDeleted: 1 } })
           .then(unwrap)
           .then((list) => [r, Array.isArray(list) ? list : []])
           .catch(() => [r, []])
@@ -117,13 +121,21 @@ export default function AdminModulePage({ module: slug, lock }) {
   useEffect(() => {
     if (!mod) return undefined;
     let live = true;
-    apiFetch(mod.endpoint)
+    // Admin must be able to see inactive records too; storefront endpoints
+    // otherwise return an empty list when every record is switched off.
+    apiFetch(mod.endpoint, { params: { includeInactive: 1, includeDeleted: 1 } })
       .then(unwrap)
       .then((list) => {
-        if (live) setRows(Array.isArray(list) ? list : []);
+        if (live) {
+          setRows(Array.isArray(list) ? list : []);
+          setLoadError("");
+        }
       })
       .catch(() => {
-        if (live) setRows([]);
+        if (live) {
+          setRows([]);
+          setLoadError(`Could not load ${mod.title}. The request timed out or the API returned an error.`);
+        }
       });
     return () => {
       live = false;
@@ -131,6 +143,38 @@ export default function AdminModulePage({ module: slug, lock }) {
   }, [mod, refresh]);
 
   const reload = () => setRefresh((n) => n + 1);
+
+  const bulkDelete = async (hard) => {
+    if (selectedIds.length === 0) return;
+    const action = hard ? "PERMANENTLY delete" : "soft-delete";
+    const ok = await confirm({
+      title: `${action} ${selectedIds.length} record${selectedIds.length === 1 ? "" : "s"}?`,
+      message: hard
+        ? "This permanently removes the selected database records and cannot be undone. Continue only if you are certain."
+        : "The selected records will be hidden from normal views and can be retained in the database.",
+      confirmLabel: hard ? "Hard Delete" : "Delete",
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      if (hard) {
+        await apiFetch("/Admin-Bulk-Delete", {
+          method: "POST",
+          body: { resource: mod.endpoint, id_field: mod.id, ids: selectedIds, hard_delete: true, luu: "ADMIN_PORTAL" },
+        });
+      } else {
+        await Promise.all(selectedIds.map((id) => apiFetch(mod.endpoint, { method: "DELETE", body: { [mod.id]: id, luu: "ADMIN_PORTAL" } })));
+      }
+      setSelectedIds([]);
+      toast?.success(`${selectedIds.length} record${selectedIds.length === 1 ? "" : "s"} deleted.`);
+      reload();
+      revalidateSite();
+    } catch (err) {
+      const m = friendlyError(err, `${hard ? "Hard delete" : "Delete"} failed`);
+      setMsg(m);
+      toast?.error(m);
+    }
+  };
 
   const visible = useMemo(() => {
     const base = lock ? rows.filter((r) => String(r[lock.field]) === String(lock.value)) : rows;
@@ -143,10 +187,23 @@ export default function AdminModulePage({ module: slug, lock }) {
   // Pagination (page sizes 5/10/15/25/50) — resets on search/module change.
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  /* eslint-disable react-hooks/set-state-in-effect -- reset pagination for a new filter */
   useEffect(() => {
     setPage(1);
   }, [search, mod]);
+  /* eslint-enable react-hooks/set-state-in-effect */
   const shown = paginate(visible, page, pageSize);
+  const rowId = (row) => String(row?.[mod.id] ?? "");
+  const visibleIds = shown.map(rowId).filter(Boolean);
+  const allVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+  const toggleSelected = (id) => {
+    setSelectedIds((ids) => (ids.includes(id) ? ids.filter((v) => v !== id) : [...ids, id]));
+  };
+  const toggleAllVisible = () => {
+    setSelectedIds((ids) => allVisibleSelected
+      ? ids.filter((id) => !visibleIds.includes(id))
+      : [...new Set([...ids, ...visibleIds])]);
+  };
 
   if (!mod) return <p className="text-sm text-neutral-500">Unknown module.</p>;
 
@@ -461,6 +518,14 @@ export default function AdminModulePage({ module: slug, lock }) {
           )}
         </div>
       </div>
+      {selectedIds.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <strong>{selectedIds.length}</strong> selected
+          <button type="button" onClick={() => bulkDelete(false)} className={btnOutline}>Delete selected</button>
+          <button type="button" onClick={() => bulkDelete(true)} className="inline-flex items-center justify-center border border-red-700 bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800">Hard delete selected</button>
+          <button type="button" onClick={() => setSelectedIds([])} className="ml-auto text-xs underline">Clear</button>
+        </div>
+      )}
       {msg && (
         <p className="mt-3  border border-neutral-200 bg-white px-4 py-3 text-sm shadow-sm text-neutral-700">
           {msg}
@@ -520,10 +585,19 @@ export default function AdminModulePage({ module: slug, lock }) {
       <p className="mb-2 mt-1 text-xs text-neutral-500">
         {visible.length} record{visible.length === 1 ? "" : "s"}
       </p>
+      {loadError && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <span>{loadError}</span>
+          <button type="button" onClick={() => { setLoadError(""); reload(); }} className={btnOutline}>Retry</button>
+        </div>
+      )}
       <div className={tableWrapCls}>
         <table className="w-full bg-white text-left text-sm">
           <thead>
             <tr className="bg-[#17161a] text-[11px] font-bold uppercase tracking-wider text-white">
+              <th className="w-12 px-4 py-3">
+                <input type="checkbox" checked={allVisibleSelected} onChange={toggleAllVisible} aria-label="Select visible records" />
+              </th>
               {mod.columns.map((c) => (
                 <th key={c.key} className={thCls}>{c.label}</th>
               ))}
@@ -533,14 +607,17 @@ export default function AdminModulePage({ module: slug, lock }) {
           <tbody>
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={mod.columns.length + 1} className="p-5 text-center text-neutral-500">
+                 <td colSpan={mod.columns.length + 2} className="p-5 text-center text-neutral-500">
                   No records found.
                 </td>
               </tr>
             ) : (
-            shown.map((r, i) => (
-              <tr key={r[mod.id] || i} className="border-b transition-colors last:border-0 hover:bg-[#faf8f4]">
-                {mod.columns.map((c) => (
+             shown.map((r, i) => (
+               <tr key={r[mod.id] || i} className="border-b transition-colors last:border-0 hover:bg-[#faf8f4]">
+                 <td className="px-4 py-3">
+                   <input type="checkbox" checked={selectedIds.includes(rowId(r))} onChange={() => toggleSelected(rowId(r))} aria-label={`Select ${cellText(r, mod.columns[0], refOptions)}`} />
+                 </td>
+                 {mod.columns.map((c) => (
                   <td key={c.key} className={tdCls}>
                     {mod.toggle && c.key === mod.toggle ? (
                       <ActiveToggle active={r[c.key]} onToggle={(next) => toggle(r, next)} />
