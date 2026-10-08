@@ -25,15 +25,14 @@ export default function ActiveToggle({ active, onToggle }) {
       disabled={busy}
       aria-pressed={on}
       title={on ? "Active — click to deactivate" : "Inactive — click to activate"}
-      className={`relative h-[22px] w-10 shrink-0  transition-colors focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 ${
-        on ? "bg-emerald-600" : "bg-neutral-300"
-      } ${busy ? "opacity-50" : ""}`}
+      className={`relative inline-flex h-7 w-[68px] shrink-0 items-center rounded-full px-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 ${
+        on ? "justify-end bg-emerald-600" : "justify-start bg-red-600"
+      } ${busy ? "cursor-wait opacity-50" : ""}`}
     >
-      <span
-        className={`absolute top-[2px] h-[18px] w-[18px]  bg-white shadow transition-all ${
-          on ? "left-[20px]" : "left-[2px]"
-        }`}
-      />
+      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        {on ? "ON" : "OFF"}
+      </span>
+      <span className="relative z-10 h-5 w-5 rounded-full bg-white shadow-md transition-transform" />
     </button>
   );
 }
