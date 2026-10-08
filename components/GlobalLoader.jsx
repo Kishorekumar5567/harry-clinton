@@ -42,7 +42,7 @@ export default function GlobalLoader() {
           align-items: center;
           justify-content: center;
           gap: 18px;
-          background: rgba(255, 255, 255, 0.58);
+          background: rgba(255, 255, 255, 0.7);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
         }

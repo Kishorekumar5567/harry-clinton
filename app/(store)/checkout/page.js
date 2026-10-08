@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useCart } from "@/components/CartProvider";
-import { apiFetch, unwrap, currentUser, currentUserId } from "@/lib/api";
+import { apiFetch, unwrap, currentUser, currentUserId, resolveUploadUrl } from "@/lib/api";
 
 const initialAddress = {
   recipient_name: "",
@@ -90,8 +91,9 @@ export default function CheckoutPage() {
   const discountedTotal = cart.total;
   const discountAmount = cart.discount;
   const shippingPrice = discountedTotal >= 5000 ? 0 : 150;
-  const taxAmount = Math.round(discountedTotal * 0.05 * 100) / 100;
-  const totalPrice = discountedTotal + taxAmount + shippingPrice;
+  // Product prices already include GST. Do not add tax again at checkout.
+  const taxAmount = 0;
+  const totalPrice = discountedTotal + shippingPrice;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -375,14 +377,39 @@ export default function CheckoutPage() {
         </div>
         <div className="h-fit border border-neutral-200 bg-white p-5 shadow-sm">
           <h5 className="mb-3 font-semibold">Order Summary</h5>
-          {cart.items.map((item) => (
-            <div className="mb-2 flex justify-between text-sm" key={item.id}>
-              <span>
-                {item.name} x {item.qty || 1}
-              </span>
-              <span>₹{((item.price || 0) * (item.qty || 1)).toLocaleString("en-IN")}</span>
-            </div>
-          ))}
+           <div className="space-y-4">
+             {cart.items.map((item, index) => {
+               const productHref = `/product/${item.slug || item.product_id || item.id}`;
+               const itemImage = resolveUploadUrl(item.image) || "/brand/logo-black.png";
+               return (
+                 <div
+                   className="flex gap-3 border-b border-neutral-100 pb-4 last:border-b-0 last:pb-0"
+                   key={item.key || `${item.id}-${item.product_variant_id || "default"}-${index}`}
+                 >
+                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-950 text-xs font-semibold text-white">
+                     {index + 1}
+                   </span>
+                   <Link href={productHref} className="h-20 w-16 shrink-0 overflow-hidden border border-neutral-200 bg-neutral-50" aria-label={`View ${item.name || "product"}`}>
+                     {/* eslint-disable-next-line @next/next/no-img-element */}
+                     <img src={itemImage} alt={item.name || "Product"} className="h-full w-full object-cover transition-transform hover:scale-105" />
+                   </Link>
+                   <div className="min-w-0 flex-1">
+                     <Link href={productHref} className="block text-sm font-semibold text-neutral-900 underline-offset-2 hover:underline">
+                       {item.name}
+                     </Link>
+                     <p className="mt-1 text-xs text-neutral-500">Qty: {item.qty || 1}</p>
+                     <div className="mt-1 flex flex-wrap gap-x-2 text-xs text-neutral-500">
+                       {item.size && <span>Size: {item.size}</span>}
+                       {item.color && <span>Color: {item.color}</span>}
+                     </div>
+                   </div>
+                   <span className="shrink-0 text-sm font-semibold text-neutral-900">
+                     ₹{((item.price || 0) * (item.qty || 1)).toLocaleString("en-IN")}
+                   </span>
+                 </div>
+               );
+             })}
+           </div>
           <hr className="my-3" />
           <div className="mb-2 flex justify-between text-sm">
             <span>Subtotal</span>
@@ -394,10 +421,6 @@ export default function CheckoutPage() {
               <span>-₹{cart.discount.toLocaleString("en-IN")}</span>
             </div>
           )}
-          <div className="mb-2 flex justify-between text-sm">
-            <span>Tax (5%)</span>
-            <span>₹{taxAmount.toLocaleString("en-IN")}</span>
-          </div>
           <div className="mb-2 flex justify-between text-sm">
             <span>Shipping</span>
             <span>{discountedTotal >= 5000 ? "Free" : "₹150"}</span>

@@ -75,6 +75,12 @@ export default function ProductDetail({ product }) {
   const [size, setSize] = useState(baseSizes.length === 1 ? baseSizes[0].key : "");
   const selected = baseSizes.find((s) => s.key === size) || (baseSizes.length === 1 ? baseSizes[0] : null);
   const displayPrice = selected?.price ?? basePrice;
+  // Displayed product prices are GST-inclusive. This is only an informational
+  // split; the amount must not be added again in cart or checkout.
+  const gstAmount = Math.round((displayPrice - displayPrice / 1.05) * 100) / 100;
+  const cgstAmount = Math.round((displayPrice - displayPrice / 1.05) * 0.5 * 100) / 100;
+  const sgstAmount = Math.round((gstAmount - cgstAmount) * 100) / 100;
+  const preGstPrice = Math.round((displayPrice - gstAmount) * 100) / 100;
 
   // Active product identification
   const activeId = activeColorObj?.productId || product.id;
@@ -263,7 +269,24 @@ export default function ProductDetail({ product }) {
             {product.description && (
               <p className="mt-2 text-[15px] text-neutral-600 font-normal leading-relaxed">{product.description}</p>
             )}
-            <h3 className="mt-3 text-[22px] font-bold text-neutral-900 tracking-tight">{inr(displayPrice)}</h3>
+             <div className="mt-3 flex items-center gap-2">
+               <h3 className="text-[22px] font-bold tracking-tight text-neutral-900">{inr(displayPrice)}</h3>
+               <details className="relative">
+                 <summary
+                   aria-label="View GST price split"
+                   className="flex h-5 w-5 cursor-pointer list-none items-center justify-center rounded-full border border-neutral-400 text-[11px] font-bold text-neutral-600 transition hover:border-neutral-900 hover:text-neutral-900"
+                 >
+                   i
+                 </summary>
+                 <div className="absolute left-0 top-7 z-20 w-56 border border-neutral-200 bg-white p-3 text-xs leading-relaxed text-neutral-600 shadow-lg">
+                   <p className="mb-1 font-semibold text-neutral-900">GST included in price</p>
+                   <div className="flex justify-between"><span>Price before GST</span><span>{inr(preGstPrice)}</span></div>
+                   <div className="flex justify-between"><span>CGST (2.5%)</span><span>{inr(cgstAmount)}</span></div>
+                   <div className="flex justify-between"><span>SGST (2.5%)</span><span>{inr(sgstAmount)}</span></div>
+                   <div className="mt-1 flex justify-between border-t border-neutral-200 pt-1 font-semibold text-neutral-900"><span>Total</span><span>{inr(displayPrice)}</span></div>
+                 </div>
+               </details>
+             </div>
 
             {product.fullDescription && product.fullDescription !== product.description && (
               <>
