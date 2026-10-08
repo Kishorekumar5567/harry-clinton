@@ -50,6 +50,55 @@ function checkPoster(file) {
   return null;
 }
 
+function HoverVideoPreview({ videoUrl, posterUrl, title }) {
+  const videoRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
+  const src = resolveUploadUrl(videoUrl);
+
+  const start = () => {
+    setHovered(true);
+    videoRef.current?.play().catch(() => {});
+  };
+  const stop = () => {
+    setHovered(false);
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
+  };
+
+  return (
+    <span
+      className="relative block h-12 w-24 overflow-hidden bg-neutral-950"
+      onMouseEnter={start}
+      onMouseLeave={stop}
+    >
+      {posterUrl ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img src={resolveUploadUrl(posterUrl)} alt={title} className={`absolute inset-0 h-full w-full object-cover transition-opacity ${hovered ? "opacity-0" : "opacity-100"}`} loading="lazy" />
+      ) : (
+        <span className={`absolute inset-0 flex items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gold transition-opacity ${hovered ? "opacity-0" : "opacity-100"}`}>
+          <i className="bi bi-film" /> Video
+        </span>
+      )}
+      <video
+        ref={videoRef}
+        src={src}
+        title={title}
+        muted
+        playsInline
+        loop
+        preload="none"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity ${hovered ? "opacity-100" : "opacity-0"}`}
+        onError={() => setHovered(false)}
+      />
+      <span className="pointer-events-none absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5 text-center text-[8px] font-semibold uppercase tracking-wide text-white">
+        Hover to play
+      </span>
+    </span>
+  );
+}
+
 // Home Video section (tbl_menu_videos): upload/replace with validation,
 // autoplay-loop-mute toggles, poster with preview, activate toggle,
 // drag-and-drop display_order with batch save.
@@ -409,19 +458,7 @@ export default function AdminMenuVideosPage() {
                       onClick={() => setLightbox({ url: resolveUploadUrl(r.video_url), poster: resolveUploadUrl(r.poster_image_url), title: r.video_type || "Home video" })}
                       className="block overflow-hidden  border border-neutral-200 transition hover:border-gold"
                     >
-                      {r.poster_image_url ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={resolveUploadUrl(r.poster_image_url)}
-                          alt=""
-                          className="h-12 w-24 object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span className="flex h-12 w-24 items-center justify-center gap-1 bg-neutral-950 text-[10px] font-bold uppercase tracking-wider text-gold">
-                          <i className="bi bi-film" /> Video
-                        </span>
-                      )}
+                      <HoverVideoPreview videoUrl={r.video_url} posterUrl={r.poster_image_url} title={r.video_type || "Home video"} />
                     </button>
                   </td>
                   <td className={tdCls}>
