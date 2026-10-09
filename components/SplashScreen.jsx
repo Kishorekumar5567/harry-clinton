@@ -9,6 +9,7 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : us
 const SPLASH_MS = 3000;
 const SPLASH_SRC = "/brand/hc-splash.mp4";
 const SPLASH_CACHE = "hc-splash-v1";
+const SPLASH_VISIBILITY_EVENT = "hc:splash-visibility";
 
 // Opening splash: the store is revealed only after the complete video emits
 // `ended`. There is intentionally no duration shortcut or timeout fallback.
@@ -30,6 +31,15 @@ export default function SplashScreen() {
     sessionStorage.setItem("hc_splash_seen", "1");
     setShow(false);
   }, []);
+
+  useEffect(() => {
+    window.__hcSplashActive = show;
+    window.dispatchEvent(new CustomEvent(SPLASH_VISIBILITY_EVENT, { detail: { active: show } }));
+    return () => {
+      window.__hcSplashActive = false;
+      window.dispatchEvent(new CustomEvent(SPLASH_VISIBILITY_EVENT, { detail: { active: false } }));
+    };
+  }, [show]);
 
   useEffect(() => {
     if (!show) return;
@@ -143,11 +153,11 @@ export default function SplashScreen() {
         onCanPlayThrough={startVideo}
         onEnded={dismiss}
       />
-      <button
+    <button
         type="button"
         onClick={dismiss}
         aria-label="Skip intro video"
-        className="absolute bottom-6 z-20 cursor-pointer border-0 bg-transparent px-3 py-2 text-[11px] uppercase tracking-[0.16em] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+        className="!border-0 !bg-transparent !shadow-none absolute bottom-6 z-20 cursor-pointer px-3 py-2 !text-[12px] !font-normal uppercase tracking-[0.12em] !text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
         Skip
       </button>

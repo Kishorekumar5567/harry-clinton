@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const API_ACTIVITY_EVENT = "hc:api-activity";
+const SPLASH_VISIBILITY_EVENT = "hc:splash-visibility";
 
 export default function GlobalLoader() {
   const pathname = usePathname();
   const [pending, setPending] = useState(0);
   const [navigating, setNavigating] = useState(false);
+  const [splashActive, setSplashActive] = useState(false);
   const [visible, setVisible] = useState(false);
   const [dots, setDots] = useState(".");
 
@@ -17,6 +19,14 @@ export default function GlobalLoader() {
       setDots((previous) => (previous.length >= 3 ? "." : `${previous}.`));
     }, 700);
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const sync = () => setSplashActive(Boolean(window.__hcSplashActive));
+    const onSplashVisibility = (event) => setSplashActive(Boolean(event.detail?.active));
+    sync();
+    window.addEventListener(SPLASH_VISIBILITY_EVENT, onSplashVisibility);
+    return () => window.removeEventListener(SPLASH_VISIBILITY_EVENT, onSplashVisibility);
   }, []);
 
   useEffect(() => {
@@ -65,10 +75,10 @@ export default function GlobalLoader() {
   }, [navigating]);
 
   useEffect(() => {
-    const busy = pending > 0 || navigating;
+    const busy = !splashActive && (pending > 0 || navigating);
     const timer = window.setTimeout(() => setVisible(busy), busy ? 180 : 280);
     return () => window.clearTimeout(timer);
-  }, [pending, navigating]);
+  }, [pending, navigating, splashActive]);
 
   if (!visible) return null;
 
