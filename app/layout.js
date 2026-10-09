@@ -24,6 +24,11 @@ export const metadata = {
   title: { default: "Harry Clinton | Bespoke Menswear", template: "%s | Harry Clinton" },
   description: "Bespoke suits, shirts, trousers and Indo-Western menswear, tailored for the moments that matter.",
   metadataBase: new URL("https://harryclinton.in"),
+  icons: {
+    icon: [{ url: "/brand/hc-black-contact.png", type: "image/png" }],
+    shortcut: "/brand/hc-black-contact.png",
+    apple: "/brand/hc-black-contact.png",
+  },
 };
 
 export default function RootLayout({ children }) {

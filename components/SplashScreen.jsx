@@ -6,8 +6,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 // splash synchronously for returning visitors without a flash frame.
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-const SPLASH_ACTIVITY_EVENT = "hc:splash-activity";
 const SPLASH_MS = 3000;
+const SPLASH_SRC = "/brand/hc-splash.mp4";
+const SPLASH_CACHE = "hc-splash-v1";
 
 // Opening splash: the store is revealed only after the complete video emits
 // `ended`. There is intentionally no duration shortcut or timeout fallback.
@@ -16,8 +17,8 @@ export default function SplashScreen() {
   // homepage flash before the splash. Returning visitors are hidden
   // synchronously pre-paint below, so they never see a flicker either.
   const [show, setShow] = useState(true);
+  const [videoSrc, setVideoSrc] = useState(null);
   const videoRef = useRef(null);
-  const splashLoading = useRef(false);
 
   useIsomorphicLayoutEffect(() => {
     if (sessionStorage.getItem("hc_splash_seen")) {
@@ -25,18 +26,10 @@ export default function SplashScreen() {
     }
   }, []);
 
-  const releaseSplashLoader = useCallback(() => {
-    if (splashLoading.current) {
-      window.dispatchEvent(new CustomEvent(SPLASH_ACTIVITY_EVENT, { detail: { delta: -1 } }));
-      splashLoading.current = false;
-    }
-  }, []);
-
   const dismiss = useCallback(() => {
-    releaseSplashLoader();
     sessionStorage.setItem("hc_splash_seen", "1");
     setShow(false);
-  }, [releaseSplashLoader]);
+  }, []);
 
   useEffect(() => {
     if (!show) return;
@@ -67,28 +60,44 @@ export default function SplashScreen() {
     };
   }, [show, dismiss]);
 
-  // Once the browser has received usable video data, release the global loader.
-  // The intro itself remains visible while its accelerated playback completes.
+  // Fully fetch the splash before attaching it to the video element. Cache
+  // Storage keeps the blob available for fast repeat visits on this client;
+  // next.config also gives the static asset a long server/CDN cache lifetime.
   useEffect(() => {
     if (!show) return undefined;
-    const v = videoRef.current;
-    if (!v) return undefined;
-    const announceLoading = () => {
-      if (splashLoading.current) return;
-      splashLoading.current = true;
-      window.dispatchEvent(new CustomEvent(SPLASH_ACTIVITY_EVENT, { detail: { delta: 1 } }));
+    let live = true;
+    let objectUrl = null;
+    const load = async () => {
+      try {
+        let response;
+        if ("caches" in window) {
+          const cache = await window.caches.open(SPLASH_CACHE);
+          response = await cache.match(SPLASH_SRC);
+          if (!response) {
+            response = await fetch(SPLASH_SRC, { cache: "force-cache" });
+            if (!response.ok) throw new Error(`Splash video failed: ${response.status}`);
+            await cache.put(SPLASH_SRC, response.clone());
+          }
+        } else {
+          response = await fetch(SPLASH_SRC, { cache: "force-cache" });
+          if (!response.ok) throw new Error(`Splash video failed: ${response.status}`);
+        }
+        const blob = await response.blob();
+        if (!live) return;
+        objectUrl = URL.createObjectURL(blob);
+        setVideoSrc(objectUrl);
+      } catch {
+        // Keep the splash visible and allow the native URL to retry rather
+        // than sending the visitor to the homepage before the intro plays.
+        if (live) setVideoSrc(SPLASH_SRC);
+      }
     };
-    announceLoading();
-    const ready = releaseSplashLoader;
-    v.addEventListener("loadeddata", ready, { once: true });
-    v.addEventListener("canplay", ready, { once: true });
-    if (v.readyState >= 2) ready();
+    load();
     return () => {
-      v.removeEventListener("loadeddata", ready);
-      v.removeEventListener("canplay", ready);
-      releaseSplashLoader();
+      live = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [show, releaseSplashLoader]);
+  }, [show]);
 
   // Restore the intended 3-second intro by speeding up the complete source
   // clip rather than cutting it off at an arbitrary timestamp.
@@ -106,11 +115,15 @@ export default function SplashScreen() {
     return () => video.removeEventListener("loadedmetadata", speedUp);
   }, [show]);
 
-  useEffect(() => {
-    if (!show) return undefined;
-    const timer = window.setTimeout(dismiss, SPLASH_MS + 600);
-    return () => window.clearTimeout(timer);
-  }, [show, dismiss]);
+  const startVideo = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (Number.isFinite(video.duration) && video.duration > 0) {
+      video.defaultPlaybackRate = video.duration / (SPLASH_MS / 1000);
+      video.playbackRate = video.defaultPlaybackRate;
+    }
+    video.play().catch(() => {});
+  }, []);
 
   if (!show) return null;
 
@@ -122,14 +135,12 @@ export default function SplashScreen() {
     >
       <video
         ref={videoRef}
-        src="/brand/hc-splash.mp4"
+        src={videoSrc || undefined}
         className="h-full w-full object-cover lg:scale-[1.12] xl:scale-[1.22] 2xl:scale-[1.3]"
-        autoPlay
         muted
         playsInline
         preload="auto"
-        onLoadedData={releaseSplashLoader}
-        onPlaying={releaseSplashLoader}
+        onCanPlayThrough={startVideo}
         onEnded={dismiss}
       />
       <button

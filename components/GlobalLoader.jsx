@@ -4,14 +4,20 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const API_ACTIVITY_EVENT = "hc:api-activity";
-const SPLASH_ACTIVITY_EVENT = "hc:splash-activity";
 
 export default function GlobalLoader() {
   const pathname = usePathname();
   const [pending, setPending] = useState(0);
-  const [splashPending, setSplashPending] = useState(0);
   const [navigating, setNavigating] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [dots, setDots] = useState(".");
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setDots((previous) => (previous.length >= 3 ? "." : `${previous}.`));
+    }, 700);
+    return () => window.clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const onActivity = (event) => {
@@ -20,15 +26,6 @@ export default function GlobalLoader() {
     };
     window.addEventListener(API_ACTIVITY_EVENT, onActivity);
     return () => window.removeEventListener(API_ACTIVITY_EVENT, onActivity);
-  }, []);
-
-  useEffect(() => {
-    const onSplashActivity = (event) => {
-      const delta = Number(event.detail?.delta) || 0;
-      setSplashPending((count) => Math.max(0, count + delta));
-    };
-    window.addEventListener(SPLASH_ACTIVITY_EVENT, onSplashActivity);
-    return () => window.removeEventListener(SPLASH_ACTIVITY_EVENT, onSplashActivity);
   }, []);
 
   // Cover client-side route transitions, which may begin before their page API
@@ -68,21 +65,19 @@ export default function GlobalLoader() {
   }, [navigating]);
 
   useEffect(() => {
-    const busy = pending > 0 || splashPending > 0 || navigating;
+    const busy = pending > 0 || navigating;
     const timer = window.setTimeout(() => setVisible(busy), busy ? 180 : 280);
     return () => window.clearTimeout(timer);
-  }, [pending, splashPending, navigating]);
+  }, [pending, navigating]);
 
   if (!visible) return null;
 
   return (
     <div className="hc-global-loader" role="status" aria-live="polite" aria-label="Loading">
-      <div className="hc-global-loader__ring">
-        {/* The navbar logo is used as the loader mark. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo-white.png" alt="Harry Clinton" className="hc-global-loader__logo" />
-      </div>
-      <span className="hc-global-loader__text">Loading</span>
+      {/* White HC mark, matching the Coming Soon treatment. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/hc-white.png" alt="Harry Clinton" className="hc-global-loader__logo" />
+      <span className="hc-global-loader__text">Loading<span className="hc-global-loader__dots">{dots}</span></span>
       <style jsx>{`
         .hc-global-loader {
           position: fixed;
@@ -96,37 +91,17 @@ export default function GlobalLoader() {
           align-items: center;
           justify-content: center;
           box-sizing: border-box;
-          gap: 18px;
+        gap: 22px;
           margin: 0;
           padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
           background: rgba(0, 0, 0, 0.78);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
         }
-        .hc-global-loader__ring {
-          position: relative;
-          display: grid;
-          width: 132px;
-          height: 132px;
-          place-items: center;
-          border: 2px solid rgba(255, 255, 255, 0.2);
-          border-top-color: #fff;
-          border-right-color: #c6a15b;
-          border-radius: 50%;
-          animation: hc-loader-spin 2.2s linear infinite;
-        }
-        .hc-global-loader__ring::after {
-          position: absolute;
-          inset: 10px;
-          border: 1px solid rgba(198, 161, 91, 0.42);
-          border-radius: 50%;
-          content: "";
-        }
         .hc-global-loader__logo {
-          width: 78px;
+          width: min(118px, 30vw);
           height: auto;
           object-fit: contain;
-          animation: hc-loader-counter-spin 2.2s linear infinite;
         }
         .hc-global-loader__text {
           color: #fff;
@@ -136,15 +111,17 @@ export default function GlobalLoader() {
           letter-spacing: 0.28em;
           text-transform: uppercase;
         }
-        @keyframes hc-loader-spin { to { transform: rotate(360deg); } }
-        @keyframes hc-loader-counter-spin { to { transform: rotate(-360deg); } }
+        .hc-global-loader__dots {
+          display: inline-block;
+          width: 24px;
+          text-align: left;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .hc-global-loader__ring, .hc-global-loader__logo { animation: none; }
+          .hc-global-loader__dots { animation: none; }
         }
         @media (max-width: 640px) {
           .hc-global-loader { gap: 16px; }
-          .hc-global-loader__ring { width: 116px; height: 116px; }
-          .hc-global-loader__logo { width: 68px; }
+          .hc-global-loader__logo { width: 96px; }
         }
       `}</style>
     </div>

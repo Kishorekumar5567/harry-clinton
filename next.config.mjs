@@ -21,6 +21,18 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: "/brand/hc-splash.mp4",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        source: "/brand/hc-black-contact.png",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {
