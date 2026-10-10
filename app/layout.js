@@ -25,9 +25,9 @@ export const metadata = {
   description: "Bespoke suits, shirts, trousers and Indo-Western menswear, tailored for the moments that matter.",
   metadataBase: new URL("https://harryclinton.in"),
   icons: {
-    icon: [{ url: "/brand/hc-black-contact.png", type: "image/png" }],
-    shortcut: "/brand/hc-black-contact.png",
-    apple: "/brand/hc-black-contact.png",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 };
 

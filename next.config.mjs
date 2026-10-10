@@ -27,7 +27,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/brand/hc-black-contact.png",
+        source: "/icon.svg",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
