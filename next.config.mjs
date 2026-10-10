@@ -27,7 +27,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/icon.svg",
+        source: "/icon.png",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
